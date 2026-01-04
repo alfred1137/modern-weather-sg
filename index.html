@@ -9,7 +9,7 @@
     <!-- PWA Primary Meta Tags -->
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -77,24 +77,34 @@
     <div id="root"></div>
     
     <script>
+      /**
+       * PWA Service Worker Registration
+       * Optimized for GitHub Pages subfolder deployment (/modern-weather-sg/)
+       */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
+          // Check if we are in a preview/sandbox environment
           const isSandboxed = 
             window.location.hostname.includes('usercontent.goog') || 
-            window.location.hostname.includes('ai.studio') ||
-            (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'https:');
+            window.location.hostname.includes('ai.studio');
           
           if (isSandboxed) {
-            console.info('PWA: Service Worker registration skipped (Preview/Insecure Environment).');
+            console.info('PWA: Registration skipped in preview environment.');
             return;
           }
 
-          navigator.serviceWorker.register('sw.js')
+          // Use the absolute path matching your repository name for GitHub Pages
+          const swUrl = '/modern-weather-sg/sw.js';
+          
+          navigator.serviceWorker.register(swUrl)
             .then(reg => {
               console.log('PWA: Service Worker registered for scope:', reg.scope);
             })
             .catch(err => {
-              console.warn('PWA: Service Worker registration error:', err.message);
+              // Fallback to relative registration if absolute fails (useful for local dev)
+              navigator.serviceWorker.register('sw.js').catch(e => {
+                console.warn('PWA: Service Worker registration failed:', e.message);
+              });
             });
         });
       }

@@ -4,12 +4,13 @@
   "short_name": "Weather.sg",
   "description": "Premium real-time Singapore weather nowcast, rain radar, and flood alerts.",
   "id": "/modern-weather-sg/",
-  "start_url": ".",
-  "scope": ".",
+  "start_url": "/modern-weather-sg/",
+  "scope": "/modern-weather-sg/",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/192/1163/1163763.png",
