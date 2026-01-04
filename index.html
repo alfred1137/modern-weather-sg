@@ -10,8 +10,8 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
     
-    <!-- Manifest: Added ?v=7 to force browser to ignore old cached 404/HTML versions -->
-    <link rel="manifest" href="./manifest.json?v=7">
+    <!-- Manifest: Added ?v=8 to force browser to ignore old cached 404/HTML versions -->
+    <link rel="manifest" href="./manifest.json?v=8">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -95,8 +95,8 @@
             return;
           }
 
-          // Added ?v=7 to ensure the new Service Worker logic is loaded immediately
-          navigator.serviceWorker.register('./sw.js?v=7')
+          // Added ?v=8 to ensure the new Service Worker logic is loaded immediately
+          navigator.serviceWorker.register('./sw.js?v=8')
             .then(reg => {
               console.log('PWA: Service Worker active');
             })
