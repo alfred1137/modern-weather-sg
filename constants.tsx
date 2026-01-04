@@ -1,30 +1,92 @@
 
 import React from 'react';
 
-// Simplified mapping from NEA descriptions to Icon types
+// Enhanced mapping for all NEA forecast values
+// Using FontAwesome 6 classes and Tailwind for a premium feel
 export const WeatherIconMap: Record<string, React.ReactNode> = {
-  'Sunny': <i className="fas fa-sun text-yellow-400 text-3xl drop-shadow-[0_0_8px_rgba(250,204,21,0.4)]"></i>,
-  'Fair': <i className="fas fa-sun text-yellow-300 text-3xl drop-shadow-[0_0_8px_rgba(253,224,71,0.4)]"></i>,
+  // Fair & Sunny
+  'Fair (Day)': <i className="fas fa-sun text-yellow-400 text-3xl drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]"></i>,
+  'Fair (Night)': <i className="fas fa-moon text-blue-100 text-3xl drop-shadow-[0_0_10px_rgba(241,245,249,0.4)]"></i>,
+  'Fair': <i className="fas fa-sun text-yellow-400 text-3xl drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]"></i>,
+  'Fair and Warm': <i className="fas fa-sun text-orange-400 text-3xl drop-shadow-[0_0_12px_rgba(251,146,60,0.6)]"></i>,
+  'Sunny': <i className="fas fa-sun text-yellow-400 text-3xl drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]"></i>,
+
+  // Cloudy variants
+  'Partly Cloudy (Day)': <i className="fas fa-cloud-sun text-gray-300 text-3xl drop-shadow-[0_0_8px_rgba(209,213,219,0.4)]"></i>,
+  'Partly Cloudy (Night)': <i className="fas fa-cloud-moon text-slate-400 text-3xl drop-shadow-[0_0_8px_rgba(148,163,184,0.3)]"></i>,
   'Partly Cloudy': <i className="fas fa-cloud-sun text-gray-300 text-3xl drop-shadow-[0_0_8px_rgba(209,213,219,0.3)]"></i>,
   'Cloudy': <i className="fas fa-cloud text-gray-400 text-3xl drop-shadow-[0_0_8px_rgba(156,163,175,0.3)]"></i>,
-  'Hazy': <i className="fas fa-smog text-gray-500 text-3xl"></i>,
-  'Light Rain': <i className="fas fa-cloud-rain text-blue-400 text-3xl drop-shadow-[0_0_8px_rgba(96,165,250,0.4)]"></i>,
+
+  // Atmospheric
+  'Hazy': <i className="fas fa-smog text-gray-500 text-3xl opacity-80"></i>,
+  'Slightly Hazy': <i className="fas fa-smog text-gray-400 text-3xl opacity-60"></i>,
+  'Windy': <i className="fas fa-wind text-teal-300 text-3xl drop-shadow-[0_0_8px_rgba(94,234,212,0.4)]"></i>,
+  'Mist': <i className="fas fa-water text-slate-400 text-3xl opacity-70"></i>,
+  'Fog': <i className="fas fa-smog text-slate-300 text-3xl opacity-90"></i>,
+
+  // Rain & Showers
+  'Light Rain': <i className="fas fa-cloud-rain text-blue-300 text-3xl drop-shadow-[0_0_8px_rgba(147,197,253,0.4)]"></i>,
+  'Moderate Rain': <i className="fas fa-cloud-showers-heavy text-blue-400 text-3xl drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]"></i>,
+  'Heavy Rain': <i className="fas fa-cloud-showers-water text-blue-600 text-3xl drop-shadow-[0_0_12px_rgba(37,99,235,0.6)]"></i>,
+  'Passing Showers': <i className="fas fa-cloud-sun-rain text-blue-300 text-3xl opacity-90"></i>,
+  'Light Showers': <i className="fas fa-cloud-rain text-blue-400 text-3xl opacity-80"></i>,
   'Showers': <i className="fas fa-cloud-showers-heavy text-blue-500 text-3xl drop-shadow-[0_0_8px_rgba(59,130,246,0.4)]"></i>,
-  'Heavy Rain': <i className="fas fa-cloud-showers-water text-blue-600 text-3xl drop-shadow-[0_0_8px_rgba(37,99,235,0.4)]"></i>,
-  'Thundery Showers': <i className="fas fa-cloud-bolt text-indigo-400 text-3xl drop-shadow-[0_0_12px_rgba(129,140,248,0.5)]"></i>,
+  'Heavy Showers': <i className="fas fa-cloud-showers-water text-blue-700 text-3xl drop-shadow-[0_0_10px_rgba(29,78,216,0.5)]"></i>,
+
+  // Thundery
+  'Thundery Showers': <i className="fas fa-cloud-bolt text-indigo-400 text-3xl drop-shadow-[0_0_15px_rgba(129,140,248,0.6)]"></i>,
+  'Heavy Thundery Showers': <i className="fas fa-cloud-bolt text-purple-500 text-3xl drop-shadow-[0_0_20px_rgba(168,85,247,0.7)] animate-pulse"></i>,
+  'Heavy Thundery Showers with Gusty Winds': <i className="fas fa-cloud-bolt text-fuchsia-600 text-3xl drop-shadow-[0_0_25px_rgba(192,38,211,0.8)] animate-bounce"></i>,
+
   'default': <i className="fas fa-cloud text-gray-400 text-3xl"></i>
 };
 
+/**
+ * Returns a React node for the weather icon based on the forecast description.
+ * It uses a prioritized matching system to handle specific cases like 'Night' and 'Heavy'.
+ */
 export const getWeatherIcon = (description: string, sizeClass: string = "text-3xl") => {
-  const key = Object.keys(WeatherIconMap).find(k => description.toLowerCase().includes(k.toLowerCase()));
-  const icon = key ? WeatherIconMap[key] : WeatherIconMap['default'];
+  const desc = description.trim();
   
-  // If a custom size is needed, we'd wrap it, but for simplicity we use the default
-  return icon;
+  // 1. Direct match check (most accurate)
+  if (WeatherIconMap[desc]) {
+    return WeatherIconMap[desc];
+  }
+
+  // 2. Case-insensitive full match
+  const lowerDesc = desc.toLowerCase();
+  const exactKey = Object.keys(WeatherIconMap).find(k => k.toLowerCase() === lowerDesc);
+  if (exactKey) return WeatherIconMap[exactKey];
+
+  // 3. Sub-string priority matching
+  // Check for complex conditions first
+  if (lowerDesc.includes('heavy thundery showers')) {
+    return lowerDesc.includes('gusty') 
+      ? WeatherIconMap['Heavy Thundery Showers with Gusty Winds']
+      : WeatherIconMap['Heavy Thundery Showers'];
+  }
+
+  if (lowerDesc.includes('thundery')) return WeatherIconMap['Thundery Showers'];
+  
+  // Handle Night vs Day for common types
+  if (lowerDesc.includes('night')) {
+    if (lowerDesc.includes('fair')) return WeatherIconMap['Fair (Night)'];
+    if (lowerDesc.includes('cloudy')) return WeatherIconMap['Partly Cloudy (Night)'];
+  }
+
+  if (lowerDesc.includes('heavy rain')) return WeatherIconMap['Heavy Rain'];
+  if (lowerDesc.includes('showers')) return WeatherIconMap['Showers'];
+  if (lowerDesc.includes('rain')) return WeatherIconMap['Light Rain'];
+  if (lowerDesc.includes('cloudy')) return WeatherIconMap['Cloudy'];
+  if (lowerDesc.includes('hazy')) return WeatherIconMap['Hazy'];
+  if (lowerDesc.includes('fair') || lowerDesc.includes('sunny')) return WeatherIconMap['Fair (Day)'];
+  if (lowerDesc.includes('windy')) return WeatherIconMap['Windy'];
+  if (lowerDesc.includes('mist') || lowerDesc.includes('fog')) return WeatherIconMap['Mist'];
+
+  return WeatherIconMap['default'];
 };
 
 // Normalized coordinates (0-100%) for Singapore Weather Areas
-// Derived from NEA mobile map layout
 export const AREA_COORDINATES: Record<string, { x: number, y: number }> = {
   'Ang Mo Kio':  { x: 49.77, y: 26.95},
   'Bedok':  { x: 65.52, y: 45.76},

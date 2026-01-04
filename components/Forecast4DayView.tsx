@@ -57,7 +57,7 @@ const Forecast4DayView: React.FC<Props> = ({ data }) => {
         </h2>
         <div className="flex items-start gap-6">
             <p className="text-slate-400 text-xs font-medium leading-relaxed">
-                Our extended 4-day outlook leverages advanced multi-model ensemble forecasting. In Singapore's tropical microclimate, localized heating can trigger isolated thundery showers. We recommend consulting the <span className="text-slate-200">2-Hour Nowcast</span> for immediate, high-resolution precision before outdoor engagements.
+                National Environment Agency (NEA) Meteorological Service Singapore (MSS) provides extended 4-day outlook, leveraging on advanced multi-model ensemble forecasting. In Singapore's tropical microclimate, localized heating can trigger isolated thundery showers. Consulting the <span className="text-slate-200">2-Hour Nowcast</span> for immediate, high-resolution precision before outdoor engagements is recommended.
             </p>
         </div>
       </div>
