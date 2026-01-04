@@ -1,6 +1,6 @@
 # SG Weather Modernized
 
-A modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
+A premium, modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
 
 > **Development Note**: This minisite was developed as a hobbyist project. Its creation was largely built using **"vibe coding"** and was highly dependent on the **Gemini 3 Preview** model within **Google AI Studio Build mode** for logic generation and UI styling. As the creator is not an experienced programmer, this project serves as a showcase of how AI tools can bridge the gap between creative ideas and functional code.
 
@@ -34,31 +34,19 @@ This application utilizes real-time data provided by the Singapore Government's 
 
 *Note: This is a hobbyist, community-driven modernization project and is not an official application of the Singapore Government.*
 
-## 🚀 Getting Started
+## 🚀 Deployment (The Vibe Way)
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn
+This project is set up with **GitHub Actions**. You don't need to run `npm run deploy` manually anymore.
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/alfred1137/sg-weather-modernized.git
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+1.  **Push your code**: Simply commit and push your changes to the `main` branch.
+2.  **Wait for the Magic**: Go to the **Actions** tab in your GitHub repository. You will see a "Deploy to GitHub Pages" workflow running.
+3.  **Check the Site**: Once it turns green, your site is updated!
 
-### Deployment
-This project is configured for easy deployment to GitHub Pages:
-```bash
-npm run deploy
-```
+### First Time Setup
+If this is your first time:
+1. Go to **Settings > Pages** in your repo.
+2. Ensure **Build and deployment > Source** is set to "Deploy from a branch".
+3. Set the **Branch** to `gh-pages` and folder to `/(root)`.
 
 ## 📜 License
 This project is open-source and available under the MIT License. Data used within the app is subject to the [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).
