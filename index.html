@@ -9,7 +9,9 @@
     <!-- PWA Primary Meta Tags -->
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
-    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    
+    <!-- FIX: Removed crossorigin="use-credentials" which blocks manifest loading on GitHub Pages -->
+    <link rel="manifest" href="manifest.json">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -79,32 +81,28 @@
     <script>
       /**
        * PWA Service Worker Registration
-       * Optimized for GitHub Pages subfolder deployment (/modern-weather-sg/)
        */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          const isSandboxed = 
-            window.location.hostname.includes('usercontent.goog') || 
-            window.location.hostname.includes('ai.studio');
+          // Strict check: Only register SW on localhost or GitHub Pages to prevent 
+          // cross-origin errors in preview environments (like AI Studio).
+          const hostname = window.location.hostname;
+          const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+          const isGitHubPages = hostname.endsWith('github.io');
           
-          if (isSandboxed) {
-            console.info('PWA: Registration skipped in preview environment.');
+          if (!isLocal && !isGitHubPages) {
+            console.info('PWA: Registration skipped (restricted to localhost/github.io).');
             return;
           }
 
-          // Use the absolute path matching the repository name
-          const swUrl = '/modern-weather-sg/sw.js';
-          
-          navigator.serviceWorker.register(swUrl)
+          // FIX: Use simple relative path './sw.js'. 
+          // This works for both localhost and /modern-weather-sg/ subfolder.
+          navigator.serviceWorker.register('./sw.js')
             .then(reg => {
               console.log('PWA: Service Worker active for scope:', reg.scope);
             })
             .catch(err => {
-              // Fallback for local development or unexpected environments
-              console.warn('PWA: Primary SW registration failed, attempting relative fallback:', err.message);
-              navigator.serviceWorker.register('sw.js').catch(e => {
-                console.error('PWA: All registration attempts failed:', e.message);
-              });
+              console.warn('PWA: Service Worker registration failed:', err.message);
             });
         });
       }
