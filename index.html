@@ -19,7 +19,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Weather.sg">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1163/1163763.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/512/weather--v1.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,7 +83,6 @@
        */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Check if we are in a preview/sandbox environment
           const isSandboxed = 
             window.location.hostname.includes('usercontent.goog') || 
             window.location.hostname.includes('ai.studio');
@@ -93,17 +92,18 @@
             return;
           }
 
-          // Use the absolute path matching your repository name for GitHub Pages
+          // Use the absolute path matching the repository name
           const swUrl = '/modern-weather-sg/sw.js';
           
           navigator.serviceWorker.register(swUrl)
             .then(reg => {
-              console.log('PWA: Service Worker registered for scope:', reg.scope);
+              console.log('PWA: Service Worker active for scope:', reg.scope);
             })
             .catch(err => {
-              // Fallback to relative registration if absolute fails (useful for local dev)
+              // Fallback for local development or unexpected environments
+              console.warn('PWA: Primary SW registration failed, attempting relative fallback:', err.message);
               navigator.serviceWorker.register('sw.js').catch(e => {
-                console.warn('PWA: Service Worker registration failed:', e.message);
+                console.error('PWA: All registration attempts failed:', e.message);
               });
             });
         });
