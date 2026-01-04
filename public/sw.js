@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'sg-weather-v6';
+const CACHE_NAME = 'sg-weather-v7';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -69,6 +69,15 @@ self.addEventListener('fetch', (event) => {
 
         // 3. Update Cache (if allowed and valid)
         if (networkResponse && networkResponse.ok && event.request.url.startsWith(self.location.origin)) {
+          
+          // CRITICAL FIX: Do not cache HTML responses if we expected JSON/Images
+          // This prevents 404 HTML pages from poisoning the cache for manifest.json
+          const contentType = networkResponse.headers.get('content-type');
+          const url = event.request.url;
+          if (url.endsWith('.json') && contentType && contentType.includes('text/html')) {
+            return networkResponse; // Return network response but DO NOT cache it
+          }
+
           if ('caches' in self) {
             try {
               const cache = await caches.open(CACHE_NAME);
