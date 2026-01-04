@@ -1,9 +1,10 @@
 
-const CACHE_NAME = 'sg-weather-v4';
+const CACHE_NAME = 'sg-weather-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './icon.svg'
 ];
 
 // Install: Cache core assets
@@ -11,10 +12,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       try {
-        const cache = await caches.open(CACHE_NAME);
-        await cache.addAll(ASSETS_TO_CACHE);
+        if ('caches' in self) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.addAll(ASSETS_TO_CACHE);
+        }
       } catch (err) {
-        console.warn('PWA: Cache addAll failed (storage restricted?):', err);
+        console.warn('PWA: Cache addAll failed (storage restricted). App will work online but not offline.', err);
       }
     })()
   );
@@ -26,10 +29,12 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
       try {
-        const keys = await caches.keys();
-        await Promise.all(
-          keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-        );
+        if ('caches' in self) {
+          const keys = await caches.keys();
+          await Promise.all(
+            keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+          );
+        }
       } catch (err) {
         console.warn('PWA: Cache cleanup failed:', err);
       }
@@ -49,9 +54,15 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       try {
         // 1. Try Cache
-        const cachedResponse = await caches.match(event.request);
-        if (cachedResponse) {
-          return cachedResponse;
+        if ('caches' in self) {
+          try {
+            const cachedResponse = await caches.match(event.request);
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+          } catch (e) {
+            // Ignore cache read errors
+          }
         }
 
         // 2. Try Network
@@ -59,13 +70,13 @@ self.addEventListener('fetch', (event) => {
 
         // 3. Update Cache (if allowed and valid)
         if (networkResponse && networkResponse.ok && event.request.url.startsWith(self.location.origin)) {
-          try {
-            const cache = await caches.open(CACHE_NAME);
-            // Clone because response stream can only be read once
-            cache.put(event.request, networkResponse.clone());
-          } catch (storageErr) {
-            // Ignore storage errors (e.g. private mode, restricted storage)
-            // This prevents "Access to storage is not allowed" from breaking the app
+          if ('caches' in self) {
+            try {
+              const cache = await caches.open(CACHE_NAME);
+              cache.put(event.request, networkResponse.clone());
+            } catch (storageErr) {
+              // Ignore storage errors (e.g. private mode, restricted storage)
+            }
           }
         }
 
@@ -73,11 +84,13 @@ self.addEventListener('fetch', (event) => {
 
       } catch (fetchErr) {
         // 4. Offline Fallback
-        // Only return index.html for navigation requests (HTML pages), not images/JSON
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
+        if (event.request.mode === 'navigate' && 'caches' in self) {
+          try {
+             return await caches.match('./index.html');
+          } catch (e) {
+             // Fallthrough to error
+          }
         }
-        // Propagate error for other types so the browser knows it failed
         throw fetchErr;
       }
     })()
