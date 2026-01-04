@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 type RadarMode = 'SG' | 'REGIONAL';
@@ -15,20 +14,6 @@ const RainAreasView: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const playbackTimerRef = useRef<number | null>(null);
-
-  // Helper to format Date to YYYYMMDDHHmm precisely as expected by NEA file naming
-  const formatRadarTime = (date: Date) => {
-    const sgtOffset = 8 * 60; // 8 hours in minutes
-    const sgtDate = new Date(date.getTime() + (date.getTimezoneOffset() + sgtOffset) * 60000);
-    
-    const year = sgtDate.getFullYear();
-    const month = String(sgtDate.getMonth() + 1).padStart(2, '0');
-    const day = String(sgtDate.getDate()).padStart(2, '0');
-    const hours = String(sgtDate.getHours()).padStart(2, '0');
-    const mins = String(sgtDate.getMinutes()).padStart(2, '0');
-    
-    return `${year}${month}${day}${hours}${mins}`;
-  };
 
   const generateHistory = useCallback(() => {
     const now = new Date();
@@ -107,68 +92,55 @@ const RainAreasView: React.FC = () => {
 
   const currentItem = history[selectedIndex];
 
-  // Intensity bar colors matching the user's reference (Left to Right: Heavy to Light)
   const intensityColors = [
-    '#ff00ff', '#f500f5', '#cc00cc', '#9b009b', // Magenta/Pink (Heavy)
-    '#ff0000', '#ff3300', '#ff6600', '#ff9900', // Red/Orange
-    '#ffcc00', '#ffff00', '#ccff00', '#99ff00', // Yellow/Lime (Moderate)
-    '#33ff00', '#00ff00', '#00ff33', '#00ff66', // Green
-    '#00ff99', '#00ffcc', '#00ffff', '#00ccff', // Cyan/Teal (Light)
-    '#0099ff', '#0066ff', '#0033ff', '#1a00ff'  // Blue
+    '#ff00ff', '#f500f5', '#cc00cc', '#9b009b',
+    '#ff0000', '#ff3300', '#ff6600', '#ff9900',
+    '#ffcc00', '#ffff00', '#ccff00', '#99ff00',
+    '#33ff00', '#00ff00', '#00ff33', '#00ff66',
+    '#00ff99', '#00ffcc', '#00ffff', '#00ccff',
+    '#0099ff', '#0066ff', '#0033ff', '#1a00ff'
   ];
 
   return (
-    <div className="flex flex-col gap-4 animate-fadeIn">
-      {/* Header aligned with screenshot */}
-      <div className="flex flex-col gap-1">
-        <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-bold tracking-tight text-slate-100">Rain Areas</h1>
-          
-          <div className="flex glass p-1 rounded-xl border border-white/5 shadow-2xl">
-            <button
-              onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
-              className={`px-6 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                mode === 'SG' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
-              }`}
-            >
-              Singapore
-            </button>
-            <button
-              onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
-              className={`px-6 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
-              }`}
-            >
-              Regional (240km)
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2 px-1">
-          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-          <p className="text-slate-500 text-sm font-medium">
-            Observation: <span className="text-slate-400">{currentItem?.label || '...'}</span>
+    <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase text-slate-100">Rain Areas</h1>
+          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
+            Real-time Radar Observation: <span className="text-blue-400">{currentItem?.label || '...'}</span>
           </p>
         </div>
-      </div>
+        
+        <div className="flex glass p-1 rounded-xl border border-white/5 shadow-2xl self-start sm:self-auto">
+          <button
+            onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
+            className={`px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${
+              mode === 'SG' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            Singapore
+          </button>
+          <button
+            onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
+            className={`px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${
+              mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            Regional (240km)
+          </button>
+        </div>
+      </header>
 
-      {/* Map Display Container */}
-      <div className="glass rounded-[32px] overflow-hidden relative aspect-[853/562] max-w-5xl mx-auto w-full bg-[#0f172a] border border-white/5 shadow-2xl">
-        {/* Layer 1: Base Map - Optimized for visibility on dark background */}
+      <div className="glass rounded-[32px] overflow-hidden relative aspect-[853/562] max-w-4xl mx-auto w-full bg-[#0f172a] border border-white/5 shadow-2xl">
         <img
           src={mode === 'SG' 
             ? 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/base-853.png'
             : 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/240km-v2.png'
           }
-          style={{ 
-            filter: 'invert(1) brightness(2.5) contrast(1.2) opacity(0.35)',
-            mixBlendMode: 'screen' 
-          }}
+          style={{ filter: 'invert(1) brightness(2.5) contrast(1.2) opacity(0.35)', mixBlendMode: 'screen' }}
           className="absolute inset-0 w-full h-full object-contain pointer-events-none"
           alt="Base Map"
         />
-
-        {/* Layer 2: Radar Overlay */}
         {currentItem && (
           <img
             src={getRadarUrl(currentItem)}
@@ -178,26 +150,17 @@ const RainAreasView: React.FC = () => {
             key={`${mode}-${currentItem.value}`}
           />
         )}
-
-        {/* Layer 3: MRT Overlay */}
         {mode === 'SG' && (
           <img
             src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/MRT.png"
-            style={{ 
-              // Technique to invert lightness (making black text white) while preserving hue (keeping line colors correct).
-              // Hue rotate 180 reverses the color flip caused by invert(1).
-              // Drop-shadow adds an outline/glow to improve visibility against dark map or bright rain areas.
-              filter: 'invert(1) hue-rotate(180deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))',
-              opacity: 0.8
-            }}
+            style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))', opacity: 0.8 }}
             className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
             alt="MRT Overlay"
           />
         )}
       </div>
 
-      {/* Playback Controls & Timeline */}
-      <div className="glass p-6 rounded-[32px] border border-white/5 shadow-xl mt-2">
+      <div className="glass p-6 rounded-[32px] border border-white/5 shadow-xl mt-2 max-w-4xl mx-auto w-full">
         <div className="flex items-center justify-between gap-6">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
@@ -229,35 +192,27 @@ const RainAreasView: React.FC = () => {
             />
           </div>
         </div>
+      </div>
 
-        {/* Modern Color Scheme Legend Matching User Reference */}
-        <div className="mt-10 mb-2 max-w-4xl mx-auto w-full px-2">
-          {/* Legend Labels & Indicator Arrows */}
-          <div className="flex justify-between items-end mb-1.5 px-1">
-            <div className="flex flex-col items-center">
-              <span className="text-slate-400 text-sm font-semibold mb-1">Heavy</span>
-              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-600"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-slate-400 text-sm font-semibold mb-1">Moderate</span>
-              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-600"></div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-slate-400 text-sm font-semibold mb-1">Light</span>
-              <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-600"></div>
-            </div>
+      <div className="mt-4 mb-2 max-w-4xl mx-auto w-full px-2">
+        <div className="flex justify-between items-end mb-1.5 px-1">
+          <div className="flex flex-col items-center">
+            <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Heavy</span>
+            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-600"></div>
           </div>
-          
-          {/* Legend Bar */}
-          <div className="flex h-5 w-full rounded-sm overflow-hidden border border-white/5 shadow-2xl">
-            {intensityColors.map((color, idx) => (
-              <div 
-                key={idx} 
-                className="flex-1 transition-opacity hover:opacity-80" 
-                style={{ backgroundColor: color }}
-              />
-            ))}
+          <div className="flex flex-col items-center">
+            <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Moderate</span>
+            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-600"></div>
           </div>
+          <div className="flex flex-col items-center">
+            <span className="text-slate-500 text-[9px] font-black uppercase tracking-widest mb-1">Light</span>
+            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-slate-600"></div>
+          </div>
+        </div>
+        <div className="flex h-4 w-full rounded-sm overflow-hidden border border-white/5 shadow-2xl">
+          {intensityColors.map((color, idx) => (
+            <div key={idx} className="flex-1" style={{ backgroundColor: color }} />
+          ))}
         </div>
       </div>
     </div>

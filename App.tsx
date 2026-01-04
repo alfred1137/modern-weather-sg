@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppTab, WeatherUIState } from './types';
 import Navigation from './components/Navigation';
@@ -64,11 +63,11 @@ const App: React.FC = () => {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           <i className="fas fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-          <h2 className="text-xl font-bold mb-2">Sync Error</h2>
-          <p className="text-slate-400 max-w-md">{state.error}</p>
+          <h2 className="text-xl font-bold mb-2 uppercase tracking-tighter">Sync Error</h2>
+          <p className="text-slate-400 max-w-md text-sm">{state.error}</p>
           <button 
             onClick={loadData}
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full transition-colors"
+            className="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold uppercase text-xs tracking-widest transition-all shadow-lg shadow-blue-500/20"
           >
             Retry Connection
           </button>
@@ -93,22 +92,22 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 lg:pb-12 lg:pt-20">
+    <div className="min-h-screen pb-32 md:pb-12 md:pt-24 lg:pt-28">
       {/* Background Decor */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/10 rounded-full blur-[120px]"></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/5 rounded-full blur-[120px]"></div>
       </div>
 
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      <main className="container mx-auto px-4 lg:px-8 py-8">
+      {/* Container with specified margins: 16px Mobile, 32px Tablet, 138px Desktop */}
+      <main className="mx-auto px-4 md:px-8 xl:px-[138px] w-full max-w-[1920px]">
         {renderContent()}
       </main>
 
-      <footer className="text-center text-slate-500 text-[10px] pb-8 px-4 max-w-2xl mx-auto">
-        Data provided by the National Environment Agency & PUB, Singapore. 
-        Developed with modern web standards for the ultimate local weather experience.
+      <footer className="text-center text-slate-500 text-[9px] md:text-[10px] py-16 px-6 max-w-4xl mx-auto uppercase tracking-[0.15em] font-bold opacity-40 leading-relaxed">
+        Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience.
       </footer>
     </div>
   );

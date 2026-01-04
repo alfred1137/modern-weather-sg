@@ -43,7 +43,7 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
             <i className="fas fa-cloud-sun text-white text-xs"></i>
           </div>
           <span className="text-sm font-black tracking-tighter text-slate-100 uppercase">
-            SG Weather
+            Modern Weather.sg
           </span>
         </div>
 

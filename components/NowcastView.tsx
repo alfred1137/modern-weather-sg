@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { NowcastData, NowcastArea } from '../types';
 import { getWeatherIcon, AREA_COORDINATES } from '../constants';
@@ -18,77 +17,72 @@ const NowcastView: React.FC<Props> = ({ data }) => {
     i.area.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Use React.FC to include standard React props like 'key' in the type definition for internal component
+  const formatTime = (isoString: string) => {
+    return new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+  };
+
   const MapMarker: React.FC<{ item: NowcastArea }> = ({ item }) => {
     const coords = AREA_COORDINATES[item.area];
     if (!coords) return null;
 
+    const isActive = hoveredArea?.area === item.area;
+
     return (
       <div 
-        className="absolute transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+        className={`absolute transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group ${isActive ? 'z-30' : 'z-10'}`}
         style={{ left: `${coords.x}%`, top: `${coords.y}%` }}
         onMouseEnter={() => setHoveredArea(item)}
         onMouseLeave={() => setHoveredArea(null)}
         onClick={() => setHoveredArea(item)}
       >
-        <div className="relative flex items-center justify-center p-1 rounded-full group-hover:scale-125 transition-transform">
-          {/* Pulsing indicator behind icon for active/clickable feel */}
-          <div className="absolute inset-0 bg-blue-500/10 rounded-full animate-ping group-hover:bg-blue-500/20"></div>
-          <div className="scale-50 sm:scale-75 md:scale-100 opacity-90 group-hover:opacity-100 drop-shadow-lg">
+        <div className={`relative flex items-center justify-center p-0.5 rounded-full transition-transform duration-300 ${isActive ? 'scale-150' : 'group-hover:scale-125'}`}>
+          {isActive && (
+            <div className="absolute inset-0 bg-blue-500/30 rounded-full animate-ping"></div>
+          )}
+          <div className="absolute inset-0 bg-blue-500/5 rounded-full hidden sm:block animate-ping group-hover:bg-blue-500/20"></div>
+          <div className={`transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'} scale-[0.32] sm:scale-75 md:scale-100 drop-shadow-xl`}>
             {getWeatherIcon(item.forecast)}
           </div>
         </div>
-
-        {/* Localized Tooltip for mobile tapping or specific desktop hover */}
-        {hoveredArea?.area === item.area && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 pointer-events-none">
-            <div className="glass px-3 py-2 rounded-xl border border-white/10 shadow-2xl whitespace-nowrap animate-in fade-in slide-in-from-bottom-2 duration-200">
-              <p className="text-[10px] font-bold text-blue-400 uppercase tracking-tighter">{item.area}</p>
-              <p className="text-xs font-medium text-slate-100">{item.forecast}</p>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-slate-800/80"></div>
-            </div>
-          </div>
-        )}
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col gap-6 animate-fadeIn">
-      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-             <h1 className="text-4xl font-black tracking-tight">Nowcast</h1>
-             <span className="bg-blue-600 text-[10px] font-black uppercase px-2 py-0.5 rounded text-white tracking-widest">Live</span>
+    <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-4">
+             <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase text-slate-100">Nowcast</h1>
+             <span className="bg-blue-600 text-[9px] md:text-[10px] font-black uppercase px-2 py-1 rounded text-white tracking-widest shadow-lg shadow-blue-500/20">Live</span>
           </div>
-          <p className="text-slate-400 text-sm font-medium">
-            Next 2 Hours • {new Date(data.validPeriod.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(data.validPeriod.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
+            2-hour Nowcast: {formatTime(data.validPeriod.start)} - {formatTime(data.validPeriod.end)}
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-          {/* View Toggler */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
           <div className="glass p-1 rounded-xl flex border border-white/5">
             <button 
               onClick={() => setViewMode('map')}
-              className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`flex-1 sm:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
             >
-              <i className="fas fa-map"></i> Map
+              <i className="fas fa-map text-[9px] md:text-[10px]"></i> Map
             </button>
             <button 
               onClick={() => setViewMode('grid')}
-              className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`flex-1 sm:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
             >
-              <i className="fas fa-grip"></i> Grid
+              <i className="fas fa-grip text-[9px] md:text-[10px]"></i> Grid
             </button>
           </div>
 
           <div className="relative group">
-            <i className="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 text-xs"></i>
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 text-xs"></i>
             <input
               type="text"
-              placeholder="Filter area..."
-              className="w-full sm:w-48 bg-slate-800/50 border border-slate-700/50 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
+              placeholder="SEARCH AREA..."
+              className="w-full sm:w-56 bg-slate-800/50 border border-slate-700/50 rounded-xl py-2.5 md:py-3 pl-10 pr-4 text-[9px] md:text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -98,74 +92,77 @@ const NowcastView: React.FC<Props> = ({ data }) => {
 
       {viewMode === 'map' ? (
         <div className="relative flex flex-col gap-4">
-          <div className="glass rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-full border border-white/5 shadow-2xl bg-[#0f172a]">
-            {/* Dark Styled Background Map */}
+          <div className="glass rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-full max-w-5xl mx-auto border border-white/5 shadow-2xl bg-[#0f172a]">
             <img 
               src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
               className="absolute inset-0 w-full h-full object-cover opacity-20 contrast-125 brightness-75 mix-blend-screen pointer-events-none"
               alt="Singapore Background"
             />
             
-            {/* SVG Overlay for a more modern, crisp vector feel */}
-            <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-10 pointer-events-none">
-               <rect width="100%" height="100%" fill="none" />
-            </svg>
-
-            {/* Interactive Markers */}
             <div className="absolute inset-0">
                {data.items.map((item, idx) => (
                  <MapMarker key={idx} item={item} />
                ))}
             </div>
 
-            {/* Tap Instruction Overlay (Matches User Screenshot hint) */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none">
-               <div className="bg-slate-900/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/5 text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+            <div className="absolute bottom-4 right-4 pointer-events-none z-20">
+               <div className="bg-slate-900/80 backdrop-blur-md px-3 py-1.5 md:px-5 md:py-2 rounded-full border border-white/10 text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 shadow-xl">
                  <i className="fas fa-hand-pointer text-blue-500"></i>
-                 Tap icons to view area names
+                 <span>Tap Icons</span>
                </div>
             </div>
+          </div>
 
-            {/* Active Hover Detail (Desktop primarily) */}
-            {hoveredArea && (
-              <div className="absolute top-6 left-6 glass p-4 rounded-2xl border border-blue-500/20 shadow-2xl hidden md:block w-48 animate-in fade-in duration-300">
-                <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1 block">Selected Area</span>
-                <h3 className="text-lg font-bold text-white mb-2">{hoveredArea.area}</h3>
-                <div className="flex items-center gap-3">
-                   <div className="scale-75 origin-left">
-                    {getWeatherIcon(hoveredArea.forecast)}
-                   </div>
-                   <p className="text-sm text-slate-400 font-medium leading-tight">{hoveredArea.forecast}</p>
+          <div className="min-h-[70px] md:min-h-[80px] flex items-center justify-center max-w-5xl mx-auto w-full">
+            {hoveredArea ? (
+              <div className="w-full glass px-4 py-4 md:px-8 md:py-6 rounded-[24px] border border-blue-500/30 shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-row items-stretch gap-3 md:gap-6">
+                {/* Left Side: Location Information - 1/2 space */}
+                <div className="flex-1 flex flex-col justify-center text-left min-w-0">
+                  <span className="text-[6px] md:text-[9px] font-black text-blue-400/80 uppercase tracking-[0.2em] mb-1 truncate">Detailed Forecast</span>
+                  <h2 className="text-[14px] md:text-2xl font-black text-slate-100 uppercase tracking-tight leading-none truncate">{hoveredArea.area}</h2>
                 </div>
+                
+                {/* Right Side: Weather Status - 1/2 space */}
+                <div className="flex-1 flex items-center justify-center gap-2 md:gap-5 bg-slate-900/40 px-3 py-2 md:px-6 md:py-3 rounded-2xl border border-white/5 min-w-0">
+                  <div className="scale-[0.55] sm:scale-75 md:scale-110 flex-shrink-0 origin-center">
+                    {getWeatherIcon(hoveredArea.forecast)}
+                  </div>
+                  <span className="text-[9px] md:text-base font-black text-slate-100 uppercase tracking-tight whitespace-normal leading-tight text-center">
+                    {hoveredArea.forecast}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="w-full py-6 text-center border border-dashed border-slate-800/50 rounded-[24px]">
+                 <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em]">Select an area on the map</p>
               </div>
             )}
           </div>
           
-          <div className="flex justify-end items-center px-4">
-             <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-               Updated at {new Date(data.updateTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <div className="flex justify-between items-center px-4 max-w-5xl mx-auto w-full">
+             <div className="flex items-center gap-2 text-[8px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest">
+               <i className="fas fa-circle-info text-blue-500/40"></i>
+               Real-time Data
+             </div>
+             <p className="text-[8px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest">
+               Sync: {new Date(data.updateTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
              </p>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 animate-fadeIn">
+        <div className="grid grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-[10px] md:gap-4 animate-fadeIn">
           {filtered.map((item, idx) => (
-            <div key={idx} className="glass p-4 rounded-2xl flex items-center justify-between weather-card border border-white/5">
-              <div>
-                <h3 className="font-bold text-slate-100 text-sm">{item.area}</h3>
-                <p className="text-slate-400 text-xs mt-0.5">{item.forecast}</p>
-              </div>
-              <div className="ml-4 opacity-80 scale-90">
+            <div 
+              key={idx} 
+              className="col-span-2 md:col-span-2 xl:col-span-3 glass p-4 md:p-5 rounded-2xl flex flex-col items-center text-center justify-center weather-card border border-white/5 hover:border-blue-500/30 transition-all"
+            >
+              <div className="mb-2 md:mb-3 opacity-90 scale-90 md:scale-100">
                 {getWeatherIcon(item.forecast)}
               </div>
+              <h3 className="font-black text-slate-100 text-[10px] md:text-[11px] uppercase tracking-tighter mb-0.5 md:mb-1 leading-tight">{item.area}</h3>
+              <p className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase opacity-60">{item.forecast}</p>
             </div>
           ))}
-          {filtered.length === 0 && (
-            <div className="col-span-full py-12 text-center text-slate-500">
-              <i className="fas fa-magnifying-glass mb-2 text-xl block"></i>
-              No areas found matching "{search}"
-            </div>
-          )}
         </div>
       )}
     </div>

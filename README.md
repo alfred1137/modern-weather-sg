@@ -1,4 +1,4 @@
-# SG Weather Modernized
+# Modern Weather.sg
 
 A premium, modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
 
