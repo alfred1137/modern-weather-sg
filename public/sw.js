@@ -1,10 +1,9 @@
 
-const CACHE_NAME = 'sg-weather-v5';
+const CACHE_NAME = 'sg-weather-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json',
-  './icon.svg'
+  './manifest.json'
 ];
 
 // Install: Cache core assets

@@ -3,17 +3,23 @@
   "name": "Modern Weather Singapore",
   "short_name": "Weather.sg",
   "description": "Premium real-time Singapore weather nowcast, rain radar, and flood alerts.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./icon.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
+      "src": "https://img.icons8.com/color/192/weather--v1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/weather--v1.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
