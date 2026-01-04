@@ -32,21 +32,21 @@ This application utilizes real-time data provided by the Singapore Government's 
 - **Flood Alerts**: Provided by [PUB, Singapore's National Water Agency](https://www.pub.gov.sg/).
 - **Map Assets**: Based on official meteorological layouts provided by Meteorological Service Singapore (MSS).
 
-*Note: This is a hobbyist, community-driven modernization project and is not an official application of the Singapore Government.*
-
 ## 🚀 Deployment (The Vibe Way)
 
-This project is set up with **GitHub Actions**. You don't need to run `npm run deploy` manually anymore.
+This project is set up with **GitHub Actions**.
 
 1.  **Push your code**: Simply commit and push your changes to the `main` branch.
 2.  **Wait for the Magic**: Go to the **Actions** tab in your GitHub repository. You will see a "Deploy to GitHub Pages" workflow running.
 3.  **Check the Site**: Once it turns green, your site is updated!
 
-### First Time Setup
-If this is your first time:
-1. Go to **Settings > Pages** in your repo.
-2. Ensure **Build and deployment > Source** is set to "Deploy from a branch".
-3. Set the **Branch** to `gh-pages` and folder to `/(root)`.
+### ⚠️ Critical First-Time Setup
+If the Action is green but the site is a 404:
+1. Go to your repo on GitHub.com.
+2. Click **Settings** > **Pages**.
+3. Under **Build and deployment > Source**, ensure it says "Deploy from a branch".
+4. Under **Branch**, select `gh-pages` (this branch is created by the Action) and click **Save**.
+5. Wait 1-2 minutes for GitHub to start serving the files.
 
 ## 📜 License
 This project is open-source and available under the MIT License. Data used within the app is subject to the [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).

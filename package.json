@@ -1,9 +1,8 @@
-
 {
   "name": "sg-weather-modernized",
   "version": "1.0.0",
   "private": true,
-  "homepage": ".",
+  "homepage": "https://alfred1137.github.io/modern-weather-sg/",
   "dependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
