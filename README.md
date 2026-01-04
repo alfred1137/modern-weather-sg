@@ -2,7 +2,7 @@
 
 A premium, modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
 
-> **Development Note**: This minisite was developed as a hobbyist project. Its creation was largely built using **"vibe coding"** and was highly dependent on the **Gemini 3 Preview** model within **Google AI Studio Build mode** for logic generation and UI styling. As the creator is not an experienced programmer, this project serves as a showcase of how AI tools can bridge the gap between creative ideas and functional code.
+> **Development Note**: This minisite was developed as a hobbyist project. Its creation was largely built with **vibe coding** with **Gemini 3 Preview** model within **Google AI Studio Build mode** for logic generation and UI styling. As the creator is not an experienced programmer, this project serves as a showcase of how AI tools can bridge the gap between creative ideas and functional code.
 
 ## 🌟 Features
 
@@ -32,17 +32,17 @@ This application utilizes real-time data provided by the Singapore Government's 
 - **Flood Alerts**: Provided by [PUB, Singapore's National Water Agency](https://www.pub.gov.sg/).
 - **Map Assets**: Based on official meteorological layouts provided by Meteorological Service Singapore (MSS).
 
-## 🚀 Deployment (The Vibe Way)
+## 🚀 Deployment
 
 This project is set up with **GitHub Actions**.
 
-1.  **Push your code**: Simply commit and push your changes to the `main` branch.
-2.  **Wait for the Magic**: Go to the **Actions** tab in your GitHub repository. You will see a "Deploy to GitHub Pages" workflow running.
-3.  **Check the Site**: Once it turns green, your site is updated!
+1.  **Push the code**: Simply commit and push changes to the `main` branch.
+2.  **Wait for the Magic**: Go to the **Actions** tab in the GitHub repository. "Deploy to GitHub Pages" workflow will run automatically to compile the site into `gh-pages` branch.
+3.  **Check the Site**: Once it turns green, the site is updated!
 
 ### ⚠️ Critical First-Time Setup
 If the Action is green but the site is a 404:
-1. Go to your repo on GitHub.com.
+1. Go to the repo on GitHub.com.
 2. Click **Settings** > **Pages**.
 3. Under **Build and deployment > Source**, ensure it says "Deploy from a branch".
 4. Under **Branch**, select `gh-pages` (this branch is created by the Action) and click **Save**.

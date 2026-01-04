@@ -3,8 +3,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Modern Weather.sg</title>
+    
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- iOS / Safari Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Weather.sg">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1163/1163763.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +29,7 @@
             color: #f8fafc;
             margin: 0;
             overflow-x: hidden;
+            overscroll-behavior-y: contain;
         }
         .glass {
             background: rgba(30, 41, 59, 0.7);
@@ -47,18 +60,55 @@
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
-    "vite": "https://esm.sh/vite@^7.3.0"
+    "react/": "https://esm.sh/react@^19.0.0/",
+    "react": "https://esm.sh/react@^19.0.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.0.0/",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.3.0",
+    "vite": "https://esm.sh/vite@^6.0.0"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
-    <!-- Entry point for React app -->
+    
+    <script>
+      /**
+       * PWA Service Worker Registration
+       * Designed to be resilient to sandboxed preview environments (like AI Studio)
+       * while providing full offline capabilities in production (GitHub Pages).
+       */
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Detect restricted environments where Service Workers are typically blocked
+          const isSandboxed = 
+            window.location.hostname.includes('usercontent.goog') || 
+            window.location.hostname.includes('ai.studio') ||
+            window.location.hostname.includes('localhost') === false && window.location.protocol !== 'https:';
+          
+          if (isSandboxed) {
+            console.info('PWA: Service Worker registration skipped (Preview/Insecure Environment).');
+            return;
+          }
+
+          // In production, register the service worker
+          // Using a relative path that works with Vite's 'base: ./' config
+          const swPath = 'sw.js';
+          
+          navigator.serviceWorker.register(swPath)
+            .then(reg => {
+              console.log('PWA: Service Worker active scope:', reg.scope);
+            })
+            .catch(err => {
+              // Only log actual errors, ignore common origin/security mismatches in dev tools
+              if (err.name !== 'SecurityError' && !err.message.includes('origin')) {
+                console.warn('PWA: Service Worker registration failed:', err.message);
+              }
+            });
+        });
+      }
+    </script>
+
     <script type="module" src="./index.tsx"></script>
 </body>
 </html>

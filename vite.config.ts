@@ -1,10 +1,12 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // Setting base to the repository name ensures assets are loaded correctly from the subfolder
-  base: '/modern-weather-sg/',
+  // Using a relative base path makes the build portable between root-served 
+  // previews and subfolder deployments like GitHub Pages.
+  base: './',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
