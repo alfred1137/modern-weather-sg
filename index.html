@@ -11,6 +11,10 @@
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
     <link rel="manifest" href="manifest.json">
     
+    <!-- Android / Chrome Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Weather.sg">
+    
     <!-- iOS / Safari Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -73,37 +77,24 @@
     <div id="root"></div>
     
     <script>
-      /**
-       * PWA Service Worker Registration
-       * Designed to be resilient to sandboxed preview environments (like AI Studio)
-       * while providing full offline capabilities in production (GitHub Pages).
-       */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Detect restricted environments where Service Workers are typically blocked
           const isSandboxed = 
             window.location.hostname.includes('usercontent.goog') || 
             window.location.hostname.includes('ai.studio') ||
-            window.location.hostname.includes('localhost') === false && window.location.protocol !== 'https:';
+            (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'https:');
           
           if (isSandboxed) {
             console.info('PWA: Service Worker registration skipped (Preview/Insecure Environment).');
             return;
           }
 
-          // In production, register the service worker
-          // Using a relative path that works with Vite's 'base: ./' config
-          const swPath = 'sw.js';
-          
-          navigator.serviceWorker.register(swPath)
+          navigator.serviceWorker.register('sw.js')
             .then(reg => {
-              console.log('PWA: Service Worker active scope:', reg.scope);
+              console.log('PWA: Service Worker registered for scope:', reg.scope);
             })
             .catch(err => {
-              // Only log actual errors, ignore common origin/security mismatches in dev tools
-              if (err.name !== 'SecurityError' && !err.message.includes('origin')) {
-                console.warn('PWA: Service Worker registration failed:', err.message);
-              }
+              console.warn('PWA: Service Worker registration error:', err.message);
             });
         });
       }
