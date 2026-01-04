@@ -1,3 +1,4 @@
+
 name: Deploy to GitHub Pages
 
 on:
@@ -26,3 +27,5 @@ jobs:
         with:
           folder: dist # The folder the action should deploy.
           branch: gh-pages # The branch the action should deploy to.
+          clean: true # Automatically remove deleted files from the deploy branch
+          single-commit: true # This destroys the history of gh-pages and forces a clean slate every time
