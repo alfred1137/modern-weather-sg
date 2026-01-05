@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sg-weather-v9';
+const CACHE_NAME = 'sg-weather-v10';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -44,7 +44,7 @@ self.addEventListener('activate', (event) => {
 
 // Fetch: Standard PWA caching strategy with error handling
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET and external API requests
+  // Skip non-GET and external API requests (Open Data API)
   if (event.request.method !== 'GET' || event.request.url.includes('api-open.data.gov.sg')) {
     return;
   }
@@ -68,12 +68,18 @@ self.addEventListener('fetch', (event) => {
         const networkResponse = await fetch(event.request);
 
         // 3. Update Cache (if allowed and valid)
-        if (networkResponse && networkResponse.ok && event.request.url.startsWith(self.location.origin)) {
+        // We now allow caching of the origin AND critical UI CDNs
+        const url = event.request.url;
+        const isOrigin = url.startsWith(self.location.origin);
+        const isCdn = url.includes('cdn.tailwindcss.com') || 
+                      url.includes('cdnjs.cloudflare.com') || 
+                      url.includes('fonts.googleapis.com') || 
+                      url.includes('fonts.gstatic.com');
+
+        if (networkResponse && networkResponse.ok && (isOrigin || isCdn)) {
           
           // CRITICAL FIX: Do not cache HTML responses if we expected JSON/Images
-          // This prevents 404 HTML pages from poisoning the cache for manifest.json
           const contentType = networkResponse.headers.get('content-type');
-          const url = event.request.url;
           if (url.endsWith('.json') && contentType && contentType.includes('text/html')) {
             return networkResponse; // Return network response but DO NOT cache it
           }
@@ -83,7 +89,7 @@ self.addEventListener('fetch', (event) => {
               const cache = await caches.open(CACHE_NAME);
               cache.put(event.request, networkResponse.clone());
             } catch (storageErr) {
-              // Ignore storage errors (e.g. private mode, restricted storage)
+              // Ignore storage errors
             }
           }
         }
