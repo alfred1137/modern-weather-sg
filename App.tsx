@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppTab, WeatherUIState } from './types';
 import Navigation from './components/Navigation';
@@ -6,10 +7,12 @@ import RainAreasView from './components/RainAreasView';
 import FloodWarningView from './components/FloodWarningView';
 import Forecast24hView from './components/Forecast24hView';
 import Forecast4DayView from './components/Forecast4DayView';
+import LegendModal from './components/LegendModal';
 import { fetchNowcast, fetch24hForecast, fetch4DayForecast, fetchFloodAlerts } from './services/weatherService';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AppTab>(AppTab.NOWCAST);
+  const [showLegend, setShowLegend] = useState(false);
   const [state, setState] = useState<WeatherUIState>({
     nowcast: null,
     forecast24h: null,
@@ -106,9 +109,21 @@ const App: React.FC = () => {
         {renderContent()}
       </main>
 
-      <footer className="text-center text-slate-500 text-[9px] md:text-[10px] py-16 px-6 max-w-4xl mx-auto uppercase tracking-[0.15em] font-bold opacity-40 leading-relaxed">
-        Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v1.11</span>
+      <footer className="text-center text-slate-500 text-[9px] md:text-[10px] py-16 px-6 max-w-4xl mx-auto uppercase tracking-[0.15em] font-bold opacity-40 leading-relaxed flex flex-col items-center gap-6">
+        <button 
+          onClick={() => setShowLegend(true)}
+          className="bg-slate-800/40 hover:bg-slate-800/80 border border-white/5 px-6 py-2.5 rounded-full transition-all text-slate-400 hover:text-blue-400 flex items-center gap-2"
+        >
+          <i className="fas fa-circle-info text-[10px]"></i>
+          <span className="text-[10px] font-black uppercase tracking-widest">Weather Legend</span>
+        </button>
+
+        <div>
+          Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v1.11</span>
+        </div>
       </footer>
+
+      <LegendModal isOpen={showLegend} onClose={() => setShowLegend(false)} />
     </div>
   );
 };
