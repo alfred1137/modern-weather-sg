@@ -107,7 +107,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="text-center text-slate-500 text-[9px] md:text-[10px] py-16 px-6 max-w-4xl mx-auto uppercase tracking-[0.15em] font-bold opacity-40 leading-relaxed">
-        Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v1.13</span>
+        Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v1.11</span>
       </footer>
     </div>
   );

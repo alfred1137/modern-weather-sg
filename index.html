@@ -9,8 +9,8 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
     
-    <!-- Manifest: Using .webmanifest to prevent caching collisions -->
-    <link rel="manifest" href="./weather.webmanifest">
+    <!-- Manifest: Added v11 to match SW version -->
+    <link rel="manifest" href="./manifest.json?v=11">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -81,40 +81,23 @@
     
     <script>
       /**
-       * PWA "Clean Slate" Registration
-       * This logic aggressively unregisters old SWs to fix the zombie cache issue.
+       * PWA Service Worker Registration
+       * Uses a timestamp query param to strictly bypass HTTP caching for the sw.js file.
        */
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
-          try {
-            // 1. Get all existing registrations
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            
-            // 2. Unregister them to clear old caches/scopes
-            for (let registration of registrations) {
-              await registration.unregister();
-            }
-
-            // 3. Register the new clean version (v13)
-            // The 't' param forces a network fetch for the JS file
-            const newReg = await navigator.serviceWorker.register('./sw.js?v=13&t=' + Date.now());
-            console.log('PWA: Clean Service Worker (v13) registered');
-            
-            // 4. Force update immediately
-            newReg.update();
-
-          } catch (err) {
-            console.debug('PWA: Registration failed:', err.message);
-          }
-        });
-
-        // 5. Reload page if a new controller takes over (self.clients.claim() in sw.js)
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (!refreshing) {
-            refreshing = true;
-            window.location.reload();
-          }
+        window.addEventListener('load', () => {
+          // The 't' param forces the browser to request a fresh copy of sw.js from the server
+          navigator.serviceWorker.register('./sw.js?v=11&t=' + Date.now())
+            .then(reg => {
+              console.log('PWA: Service Worker active (v11)');
+              // Check for updates periodically
+              setInterval(() => {
+                reg.update();
+              }, 60 * 60 * 1000);
+            })
+            .catch(err => {
+              console.debug('PWA: Service Worker registration failed:', err.message);
+            });
         });
       }
     </script>
