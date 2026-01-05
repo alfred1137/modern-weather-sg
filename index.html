@@ -9,8 +9,8 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
     
-    <!-- Manifest: Added v11 to match SW version -->
-    <link rel="manifest" href="./manifest.json?v=11">
+    <!-- Manifest: Using standard .json with explicit versioning -->
+    <link rel="manifest" href="./manifest.json?v=14">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -87,9 +87,9 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           // The 't' param forces the browser to request a fresh copy of sw.js from the server
-          navigator.serviceWorker.register('./sw.js?v=11&t=' + Date.now())
+          navigator.serviceWorker.register('./sw.js?v=14&t=' + Date.now())
             .then(reg => {
-              console.log('PWA: Service Worker active (v11)');
+              console.log('PWA: Service Worker active (v14)');
               // Check for updates periodically
               setInterval(() => {
                 reg.update();

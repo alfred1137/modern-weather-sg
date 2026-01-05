@@ -1,6 +1,6 @@
 {
   "name": "Modern Weather.sg",
-  "description": "A premium, modern React interface for Singapore weather data, featuring real-time nowcasts, rain radar, and multi-day forecasts with high-end UI/UX design.",
+  "description": "A modern React interface for Singapore weather data, featuring real-time nowcasts, rain radar, and multi-day forecasts with high-end UI/UX design.",
   "requestFramePermissions": [
     "geolocation"
   ]
