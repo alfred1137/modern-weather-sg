@@ -103,31 +103,36 @@ const RainAreasView: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
-      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase text-slate-100">Rain Areas</h1>
-          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
-            Real-time Radar Observation: <span className="text-blue-400">{currentItem?.label || '...'}</span>
+      <header className="flex justify-between items-start gap-2">
+        <div className="flex flex-col gap-1 pr-2">
+          <div className="flex items-center gap-3">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-none">Rain Areas</h1>
+            <span className="bg-blue-600 text-[9px] md:text-[10px] font-black uppercase px-2 py-1 rounded text-white tracking-widest shadow-lg shadow-blue-500/20 mb-1">Live</span>
+          </div>
+          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2">
+            Latest observation: <span className="text-blue-400">{currentItem?.label || '...'}</span>
           </p>
         </div>
         
-        <div className="flex glass p-1 rounded-xl border border-white/5 shadow-2xl self-start sm:self-auto">
-          <button
-            onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
-            className={`px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${
-              mode === 'SG' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            Singapore
-          </button>
-          <button
-            onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
-            className={`px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest transition-all ${
-              mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            Regional (240km)
-          </button>
+        <div className="flex flex-col items-end shrink-0">
+          <div className="glass p-1 rounded-xl flex flex-col sm:flex-row border border-white/5 w-auto shadow-2xl">
+            <button
+              onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
+              className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                mode === 'SG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              Singapore
+            </button>
+            <button
+              onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
+              className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              Regional
+            </button>
+          </div>
         </div>
       </header>
 

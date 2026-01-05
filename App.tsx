@@ -95,7 +95,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pb-32 md:pb-12 md:pt-24 lg:pt-28">
+    <div className="min-h-screen pt-8 pb-32 md:pb-12 md:pt-24 lg:pt-36">
       {/* Background Decor */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[120px]"></div>

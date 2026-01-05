@@ -50,45 +50,48 @@ const NowcastView: React.FC<Props> = ({ data }) => {
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
-      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-4">
-             <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase text-slate-100">Nowcast</h1>
-             <span className="bg-blue-600 text-[9px] md:text-[10px] font-black uppercase px-2 py-1 rounded text-white tracking-widest shadow-lg shadow-blue-500/20">Live</span>
-          </div>
-          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
-            2-hour Nowcast: {formatTime(data.validPeriod.start)} - {formatTime(data.validPeriod.end)}
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4">
-          <div className="glass p-1 rounded-xl flex border border-white/5">
-            <button 
-              onClick={() => setViewMode('map')}
-              className={`flex-1 sm:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
-            >
-              <i className="fas fa-map text-[9px] md:text-[10px]"></i> Map
-            </button>
-            <button 
-              onClick={() => setViewMode('grid')}
-              className={`flex-1 sm:flex-none px-4 md:px-6 py-2 rounded-lg text-[10px] md:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
-            >
-              <i className="fas fa-grip text-[9px] md:text-[10px]"></i> Grid
-            </button>
+      <div className="flex flex-col gap-4">
+        <header className="flex justify-between items-start gap-2">
+          <div className="flex flex-col gap-1 pr-2">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-none">Nowcast</h1>
+            <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+              2-hour Nowcast: <span className="text-slate-200">{formatTime(data.validPeriod.start)} ~ {formatTime(data.validPeriod.end)}</span>
+            </p>
           </div>
 
-          <div className="relative group">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 text-xs"></i>
+          <div className="flex flex-col items-end shrink-0">
+            {/* View Toggle - Vertical on Mobile, Horizontal on Desktop */}
+            <div className="glass p-1 rounded-xl flex flex-col sm:flex-row border border-white/5 w-auto">
+              <button 
+                onClick={() => setViewMode('map')}
+                className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                <i className="fas fa-map text-[8px] sm:text-[10px]"></i> Map
+              </button>
+              <button 
+                onClick={() => setViewMode('grid')}
+                className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                <i className="fas fa-grip text-[8px] sm:text-[10px]"></i> Grid
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* Search Bar - Full width on Mobile, extracted from toggle group */}
+        {viewMode === 'grid' && (
+          <div className="relative group w-full animate-in slide-in-from-top-2 duration-300">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 text-xs transition-colors"></i>
             <input
               type="text"
               placeholder="SEARCH AREA..."
-              className="w-full sm:w-56 bg-slate-800/50 border border-slate-700/50 rounded-xl py-2.5 md:py-3 pl-10 pr-4 text-[9px] md:text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-600"
+              className="w-full bg-slate-800/40 border border-slate-700/50 rounded-xl py-3 md:py-3.5 pl-11 pr-4 text-[10px] md:text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition-all placeholder:text-slate-600 shadow-inner"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-        </div>
-      </header>
+        )}
+      </div>
 
       {viewMode === 'map' ? (
         <div className="relative flex flex-col gap-4">
@@ -116,13 +119,11 @@ const NowcastView: React.FC<Props> = ({ data }) => {
           <div className="min-h-[70px] md:min-h-[80px] flex items-center justify-center max-w-5xl mx-auto w-full">
             {hoveredArea ? (
               <div className="w-full glass px-4 py-4 md:px-8 md:py-6 rounded-[24px] border border-blue-500/30 shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-row items-stretch gap-3 md:gap-6">
-                {/* Left Side: Location Information - 1/2 space */}
                 <div className="flex-1 flex flex-col justify-center text-left min-w-0">
                   <span className="text-[6px] md:text-[9px] font-black text-blue-400/80 uppercase tracking-[0.2em] mb-1 truncate">Detailed Forecast</span>
                   <h2 className="text-[14px] md:text-2xl font-black text-slate-100 uppercase tracking-tight leading-none truncate">{hoveredArea.area}</h2>
                 </div>
                 
-                {/* Right Side: Weather Status - 1/2 space */}
                 <div className="flex-1 flex items-center justify-center gap-2 md:gap-5 bg-slate-900/40 px-3 py-2 md:px-6 md:py-3 rounded-2xl border border-white/5 min-w-0">
                   <div className="scale-[0.55] sm:scale-75 md:scale-110 flex-shrink-0 origin-center">
                     {getWeatherIcon(hoveredArea.forecast)}
