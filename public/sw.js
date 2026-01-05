@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sg-weather-v10';
+const CACHE_NAME = 'sg-weather-v11';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -6,8 +6,11 @@ const ASSETS_TO_CACHE = [
   './icon.svg'
 ];
 
-// Install: Cache core assets
+// Install: Cache core assets and force activation
 self.addEventListener('install', (event) => {
+  // Force this new service worker to become the active one, kicking out the old one
+  self.skipWaiting();
+
   event.waitUntil(
     (async () => {
       try {
@@ -16,14 +19,13 @@ self.addEventListener('install', (event) => {
           await cache.addAll(ASSETS_TO_CACHE);
         }
       } catch (err) {
-        console.warn('PWA: Cache addAll failed (storage restricted). App will work online but not offline.', err);
+        console.warn('PWA: Cache addAll failed', err);
       }
     })()
   );
-  self.skipWaiting();
 });
 
-// Activate: Clean up old versions
+// Activate: Clean up old versions and claim clients immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
@@ -39,6 +41,7 @@ self.addEventListener('activate', (event) => {
       }
     })()
   );
+  // Tell the service worker to take control of the page immediately
   self.clients.claim();
 });
 

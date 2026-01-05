@@ -9,8 +9,8 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
     
-    <!-- Manifest: Added ?v=10 to force browser to ignore old cached 404/HTML versions -->
-    <link rel="manifest" href="./manifest.json?v=10">
+    <!-- Manifest: Added v11 to match SW version -->
+    <link rel="manifest" href="./manifest.json?v=11">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -82,13 +82,18 @@
     <script>
       /**
        * PWA Service Worker Registration
-       * Removed domain restrictions to ensure installability on all environments.
+       * Uses a timestamp query param to strictly bypass HTTP caching for the sw.js file.
        */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js?v=10')
+          // The 't' param forces the browser to request a fresh copy of sw.js from the server
+          navigator.serviceWorker.register('./sw.js?v=11&t=' + Date.now())
             .then(reg => {
-              console.log('PWA: Service Worker active');
+              console.log('PWA: Service Worker active (v11)');
+              // Check for updates periodically
+              setInterval(() => {
+                reg.update();
+              }, 60 * 60 * 1000);
             })
             .catch(err => {
               console.debug('PWA: Service Worker registration failed:', err.message);
