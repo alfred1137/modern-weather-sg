@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,8 +9,8 @@
     <meta name="theme-color" content="#0f172a">
     <meta name="description" content="Premium Singapore Weather Nowcast and Radar">
     
-    <!-- Manifest: Added ?v=8 to force browser to ignore old cached 404/HTML versions -->
-    <link rel="manifest" href="./manifest.json?v=8">
+    <!-- Manifest: Added ?v=9 to force browser to ignore old cached 404/HTML versions -->
+    <link rel="manifest" href="./manifest.json?v=9">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -21,7 +20,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Weather.sg">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/512/weather--v1.png">
+    <!-- Use local icon for reliable loading -->
+    <link rel="icon" type="image/svg+xml" href="./icon.svg">
+    <link rel="apple-touch-icon" href="./icon.svg">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -81,28 +82,16 @@
     <script>
       /**
        * PWA Service Worker Registration
+       * Removed domain restrictions to ensure installability on all environments.
        */
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          // Strict check: Only register SW on localhost or GitHub Pages to prevent 
-          // cross-origin errors in preview environments (like AI Studio).
-          const hostname = window.location.hostname;
-          const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
-          const isGitHubPages = hostname.endsWith('github.io');
-          
-          if (!isLocal && !isGitHubPages) {
-            console.info('PWA: Registration skipped (restricted to localhost/github.io).');
-            return;
-          }
-
-          // Added ?v=8 to ensure the new Service Worker logic is loaded immediately
-          navigator.serviceWorker.register('./sw.js?v=8')
+          navigator.serviceWorker.register('./sw.js?v=9')
             .then(reg => {
               console.log('PWA: Service Worker active');
             })
             .catch(err => {
-              // Silently fail if blocked, to prevent user-facing console noise
-              console.debug('PWA: Service Worker registration failed (likely restricted env):', err.message);
+              console.debug('PWA: Service Worker registration failed:', err.message);
             });
         });
       }
