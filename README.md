@@ -6,12 +6,13 @@ A premium, modern web interface for Singapore's real-time weather data. This pro
 
 ## 🌟 Features
 
-- **Real-time Nowcast**: Interactive map and grid views of 2-hour weather forecasts across Singapore's 47 weather areas.
+- **2-Hour Nowcast**: Interactive map and grid views of 2-hour weather forecasts across Singapore's 47 weather areas.
 - **Rain Radar**: High-resolution playback of rain areas (50km and 240km regional views) with an optimized dark-mode interface.
 - **Flood Warnings**: Live alerts synchronized with PUB (Singapore's National Water Agency) including severity levels and instructions.
 - **24-Hour Forecast**: Regional outlooks (North, South, East, West, Central) with temperature, humidity, and wind data.
 - **4-Day Outlook**: Extended weather planning with high-fidelity icons and trend insights.
 - **Fully Responsive**: Optimized for everything from mobile devices to high-resolution desktop monitors.
+- **Progressive Web App (PWA)**: PWA support allowing installation on iOS and Android devices for a native-like experience, complete with offline asset caching.
 - **Automatic Sync**: Data refreshes automatically every 5 minutes from official sources.
 
 ## 🛠️ Tech Stack
