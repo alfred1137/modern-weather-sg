@@ -119,7 +119,7 @@ const App: React.FC = () => {
         </button>
 
         <div>
-          Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v1.11</span>
+          Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v0.6.0</span>
         </div>
       </footer>
 

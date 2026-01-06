@@ -95,7 +95,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
 
       {viewMode === 'map' ? (
         <div className="relative flex flex-col gap-4">
-          <div className="glass rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-full max-w-5xl mx-auto border border-white/5 shadow-2xl bg-[#0f172a]">
+          <div className="glass rounded-none sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border-y sm:border border-white/5 shadow-2xl bg-[#0f172a]">
             <img 
               src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
               className="absolute inset-0 w-full h-full object-cover opacity-20 contrast-125 brightness-75 mix-blend-screen pointer-events-none"
@@ -120,8 +120,8 @@ const NowcastView: React.FC<Props> = ({ data }) => {
             {hoveredArea ? (
               <div className="w-full glass px-4 py-4 md:px-8 md:py-6 rounded-[24px] border border-blue-500/30 shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-row items-stretch gap-3 md:gap-6">
                 <div className="flex-1 flex flex-col justify-center text-left min-w-0">
-                  <span className="text-[6px] md:text-[9px] font-black text-blue-400/80 uppercase tracking-[0.2em] mb-1 truncate">Detailed Forecast</span>
-                  <h2 className="text-[14px] md:text-2xl font-black text-slate-100 uppercase tracking-tight leading-none truncate">{hoveredArea.area}</h2>
+                  <span className="text-[6px] md:text-[9px] font-black text-blue-400/80 uppercase tracking-[0.2em] mb-1">Detailed Forecast</span>
+                  <h2 className="text-[14px] md:text-2xl font-black text-slate-100 uppercase tracking-tight leading-tight">{hoveredArea.area}</h2>
                 </div>
                 
                 <div className="flex-1 flex items-center justify-center gap-2 md:gap-5 bg-slate-900/40 px-3 py-2 md:px-6 md:py-3 rounded-2xl border border-white/5 min-w-0">
