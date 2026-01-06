@@ -66,13 +66,13 @@ const App: React.FC = () => {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
           <i className="fas fa-triangle-exclamation text-red-500 text-5xl mb-4"></i>
-          <h2 className="text-xl font-bold mb-2 uppercase tracking-tighter">Sync Error</h2>
+          <h2 className="text-xl font-bold mb-2 uppercase tracking-tighter">Sync error</h2>
           <p className="text-slate-400 max-w-md text-sm">{state.error}</p>
           <button 
             onClick={loadData}
             className="mt-8 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold uppercase text-xs tracking-widest transition-all shadow-lg shadow-blue-500/20"
           >
-            Retry Connection
+            Retry connection
           </button>
         </div>
       );
@@ -109,17 +109,45 @@ const App: React.FC = () => {
         {renderContent()}
       </main>
 
-      <footer className="text-center text-slate-500 text-[9px] md:text-[10px] py-16 px-6 max-w-4xl mx-auto uppercase tracking-[0.15em] font-bold opacity-40 leading-relaxed flex flex-col items-center gap-6">
+      <footer className="mt-32 mb-6 px-6 flex flex-col items-center gap-6">
+        {/* Weather Legend Button moved outside the container */}
         <button 
           onClick={() => setShowLegend(true)}
-          className="bg-slate-800/40 hover:bg-slate-800/80 border border-white/5 px-6 py-2.5 rounded-full transition-all text-slate-400 hover:text-blue-400 flex items-center gap-2"
+          className="bg-slate-800/60 hover:bg-slate-800 border border-white/10 px-6 py-2.5 rounded-full transition-all text-slate-300 hover:text-blue-400 flex items-center gap-2 shadow-lg"
         >
-          <i className="fas fa-circle-info text-[10px]"></i>
-          <span className="text-[10px] font-black uppercase tracking-widest">Weather Legend</span>
+          <i className="fas fa-circle-info text-xs"></i>
+          <span className="text-[11px] font-bold tracking-wide uppercase">Weather legend</span>
         </button>
 
-        <div>
-          Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors underline decoration-slate-500/30 underline-offset-2">data.gov.sg</a>). Developed with vibe referring to modern web standards for the modern local weather experience. <span className="text-slate-400">v0.6.2</span>
+        <div className="max-w-4xl w-full glass border border-white/5 rounded-[32px] p-8 md:p-10 flex flex-col items-center gap-6 shadow-2xl relative overflow-hidden">
+          {/* Subtle accent line */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-blue-500/30 rounded-full"></div>
+          
+          <div className="flex flex-col items-center gap-6 text-center">
+            <div className="space-y-4 text-slate-400 text-[11px] md:text-xs font-medium leading-relaxed max-w-2xl">
+              <p>
+                Data provided by the National Environment Agency & PUB, Singapore via Singapore Open Data (<a href="https://data.gov.sg/open-data-licence" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">data.gov.sg</a>). 
+                The official weather site is available at <a href="https://www.weather.gov.sg/mobile/home/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">weather.gov.sg/mobile</a>.
+              </p>
+              <p>
+                Developed with vibe to create a modern local weather experience. <span className="text-slate-500">v0.6.3</span>
+              </p>
+            </div>
+
+            {/* Source Code Button moved below the credits */}
+            <a 
+              href="https://github.com/alfred1137/modern-weather-sg" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="bg-slate-800/40 hover:bg-slate-800/80 border border-white/5 px-6 py-3 rounded-2xl transition-all text-slate-400 hover:text-white flex items-center gap-3 group"
+            >
+              <i className="fab fa-github text-[18px] group-hover:scale-110 transition-transform"></i>
+              <div className="text-left">
+                <span className="block text-[10px] font-black uppercase tracking-widest leading-none">Source code</span>
+                <span className="block text-[8px] font-bold text-slate-500 group-hover:text-blue-400 transition-colors uppercase tracking-tighter mt-1">alfred1137 / modern-weather-sg</span>
+              </div>
+            </a>
+          </div>
         </div>
       </footer>
 
