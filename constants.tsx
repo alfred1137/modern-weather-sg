@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 // Enhanced mapping for all NEA forecast values
@@ -138,9 +137,9 @@ export const AREA_COORDINATES: Record<string, { x: number, y: number }> = {
 };
 
 export const SG_REGIONS = [
-  { id: 'north', name: 'North', x: '50%', y: '20%' },
-  { id: 'south', name: 'South', x: '50%', y: '80%' },
-  { id: 'east', name: 'East', x: '82%', y: '50%' },
-  { id: 'west', name: 'West', x: '18%', y: '50%' },
+  { id: 'north', name: 'North', x: '50%', y: '18%' },
+  { id: 'south', name: 'South', x: '50%', y: '82%' },
+  { id: 'east', name: 'East', x: '88%', y: '50%' },
+  { id: 'west', name: 'West', x: '12%', y: '50%' },
   { id: 'central', name: 'Central', x: '50%', y: '50%' }
 ];

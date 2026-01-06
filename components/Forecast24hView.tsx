@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Forecast24h } from '../types';
 import { getWeatherIcon, SG_REGIONS } from '../constants';
@@ -22,17 +23,17 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
   const currentPeriod = data.periods[activePeriodIdx];
 
   return (
-    <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
+    <div className="flex flex-col gap-6 md:gap-10 animate-fadeIn">
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
         <div className="flex flex-col gap-1">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase text-slate-100">24-Hour Forecast</h1>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-slate-100">24-Hour Forecast</h1>
           <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">Regional Outlook & Core Metrics</p>
         </div>
       </header>
 
-      {/* Map Section - Now at the Top */}
+      {/* Map Section */}
       <div className="flex flex-col gap-6">
-        <div className="glass overflow-hidden shadow-2xl rounded-none sm:rounded-[48px] border-x-0 sm:border-x border-y border-white/5 -mx-4 sm:mx-0">
+        <div className="glass overflow-hidden shadow-2xl rounded-[32px] sm:rounded-[48px] border border-white/5">
           <div className="flex flex-col">
             <div className="flex border-b border-white/5 bg-slate-800/30 overflow-x-auto no-scrollbar">
               {data.periods.map((period, idx) => (
@@ -53,7 +54,6 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
               ))}
             </div>
 
-            {/* Shorter Map aspect ratio, referencing the NowcastView map proportions */}
             <div className="relative w-full bg-[#0f172a] overflow-hidden aspect-[1.6/1] sm:aspect-[2.4/1]">
               <img 
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
@@ -64,11 +64,15 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                 {SG_REGIONS.map((region) => {
                    const forecast = currentPeriod.regions[region.id as keyof typeof currentPeriod.regions];
                    return (
-                     <div key={region.id} className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer" style={{ left: region.x, top: region.y }}>
-                        <div className="relative mb-1 sm:mb-2">
+                     <div 
+                       key={region.id} 
+                       className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.75] sm:scale-100 transition-transform" 
+                       style={{ left: region.x, top: region.y }}
+                     >
+                        <div className="relative mb-0.5 sm:mb-2">
                            <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-xl scale-0 group-hover:scale-150 transition-all duration-500"></div>
-                           <div className="bg-slate-800/80 p-1.5 md:p-3 rounded-full border border-white/10 shadow-2xl backdrop-blur-md group-hover:scale-110 transition-transform">
-                             <div className="scale-[0.7] md:scale-100">{getWeatherIcon(forecast as string)}</div>
+                           <div className="bg-slate-800/80 p-2 md:p-3 rounded-full border border-white/10 shadow-2xl backdrop-blur-md group-hover:scale-110 transition-transform">
+                             <div className="scale-[0.8] md:scale-100">{getWeatherIcon(forecast as string)}</div>
                            </div>
                         </div>
                         <div className="bg-slate-900/60 backdrop-blur-sm px-2 md:px-4 py-0.5 md:py-1.5 rounded-full border border-white/5 text-center">
@@ -84,42 +88,62 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         </div>
       </div>
 
-      {/* Metrics Grid - Now below the Map */}
-      <div className="grid grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-[10px] md:gap-4">
-        <div className="col-span-4 md:col-span-4 xl:col-span-4 glass p-8 rounded-[40px] flex flex-col justify-between border border-white/5">
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Temperature</span>
-            <i className="fas fa-temperature-half text-orange-400 opacity-50"></i>
+      {/* Metrics Grid - Stretched to match heights */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto w-full mb-12 items-stretch">
+        {/* Left Column Stack: Temperature & Humidity */}
+        <div className="flex flex-col gap-6 lg:col-span-3">
+          {/* Temperature Card - Uses flex-1 to grow/match height */}
+          <div className="bg-[#141e30]/90 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-white/5 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-orange-500/20 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Temperature</span>
+              <i className="fas fa-temperature-half text-orange-500 text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(249,115,22,0.3)]"></i>
+            </div>
+            <div className="flex items-center justify-center">
+              <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-100 flex items-center gap-4">
+                {data.general.temperature.low}° 
+                <span className="text-slate-600 font-bold opacity-40 text-2xl md:text-3xl lg:text-4xl">~</span> 
+                {data.general.temperature.high}°C
+              </span>
+            </div>
+            <div className="h-0 md:h-2"></div>
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-black tracking-tighter">{data.general.temperature.low}°</span>
-            <span className="text-slate-600 font-bold">~</span>
-            <span className="text-5xl font-black tracking-tighter">{data.general.temperature.high}°C</span>
+
+          {/* Humidity Card - Uses flex-1 to grow/match height */}
+          <div className="bg-[#141e30]/90 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-white/5 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-blue-500/20 shadow-xl">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Humidity</span>
+              <i className="fas fa-droplet text-blue-500 text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]"></i>
+            </div>
+            <div className="flex items-center justify-center">
+              <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-slate-100 flex items-center gap-4">
+                {data.general.relative_humidity.low}% 
+                <span className="text-slate-600 font-bold opacity-40 text-2xl md:text-3xl lg:text-4xl">-</span> 
+                {data.general.relative_humidity.high}%
+              </span>
+            </div>
+            <div className="h-0 md:h-2"></div>
           </div>
         </div>
 
-        <div className="col-span-4 md:col-span-4 xl:col-span-4 glass p-8 rounded-[40px] flex flex-col justify-between border border-white/5">
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Humidity</span>
-            <i className="fas fa-droplet text-blue-400 opacity-50"></i>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-black tracking-tighter">{data.general.relative_humidity.low}%</span>
-            <span className="text-slate-600 font-bold">-</span>
-            <span className="text-5xl font-black tracking-tighter">{data.general.relative_humidity.high}%</span>
-          </div>
-        </div>
+        {/* Right Column: Wind Dynamics - Stretches to match left stack height exactly */}
+        <div className="lg:col-span-2 flex">
+          <div className="bg-[#141e30]/90 backdrop-blur-xl p-10 md:p-12 rounded-[48px] border border-white/5 flex flex-col items-center justify-between w-full transition-all hover:border-teal-500/20 shadow-xl">
+            <div className="w-full text-left">
+              <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Wind Dynamics</span>
+            </div>
+            
+            <div className="flex-1 flex flex-col items-center justify-center gap-2 py-6">
+              <h2 className="text-7xl md:text-8xl lg:text-9xl font-black text-slate-100 tracking-tighter uppercase leading-none">
+                {data.general.wind.direction}
+              </h2>
+              <p className="text-slate-400 text-sm md:text-base font-black uppercase tracking-[0.25em] opacity-60">
+                {data.general.wind.speed.low} - {data.general.wind.speed.high} KM/H
+              </p>
+            </div>
 
-        <div className="col-span-4 md:col-span-8 xl:col-span-4 glass p-8 rounded-[40px] flex flex-col justify-between border border-white/5">
-          <div className="flex items-center justify-between mb-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Wind Dynamics</span>
-            <i className="fas fa-wind text-teal-400 opacity-50"></i>
-          </div>
-          <div>
-            <span className="text-2xl font-black uppercase tracking-tighter">{data.general.wind.direction}</span>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60">
-              {data.general.wind.speed.low} - {data.general.wind.speed.high} KM/H
-            </p>
+            <div className="flex justify-center pb-2">
+              <i className="fas fa-wind text-[#2dd4bf] text-6xl md:text-7xl lg:text-8xl opacity-80 drop-shadow-[0_0_25px_rgba(45,212,191,0.25)]"></i>
+            </div>
           </div>
         </div>
       </div>
