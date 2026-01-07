@@ -105,60 +105,64 @@ const RainAreasView: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
-      <header className="flex justify-between items-start gap-2">
-        <div className="flex flex-col gap-1 pr-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-none">Rain Areas</h1>
-            <div className="relative">
-              <span className="absolute inset-0 bg-blue-500/40 blur-md rounded"></span>
-              <span className="relative bg-blue-600 text-[9px] md:text-[10px] font-black uppercase px-2 py-1 rounded text-white tracking-widest shadow-lg shadow-blue-500/20 mb-1">Live</span>
+      {/* Header and Toggle Container - Synchronized with NowcastView */}
+      <div className="flex flex-col gap-4">
+        <header className="flex justify-between items-start gap-2">
+          <div className="flex flex-col gap-1 pr-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-none">Rain Areas</h1>
+              <div className="relative mt-1">
+                <span className="absolute inset-0 bg-blue-500/40 blur-md rounded"></span>
+                <span className="relative bg-blue-600 text-[8px] md:text-[10px] font-black uppercase px-2 py-0.5 md:py-1 rounded text-white tracking-widest shadow-lg shadow-blue-500/20">Live</span>
+              </div>
+            </div>
+            <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+              Latest observation: <span className="text-blue-400 font-bold">{currentItem?.label || '...'}</span>
+            </p>
+          </div>
+          
+          <div className="hidden sm:flex flex-col items-end shrink-0">
+            <div className="glass p-1 rounded-xl flex flex-row border border-white/5 w-auto">
+              <button
+                onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
+                className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                  mode === 'SG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <i className="fas fa-location-dot text-[10px]"></i> Singapore
+              </button>
+              <button
+                onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
+                className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                  mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <i className="fas fa-earth-asia text-[10px]"></i> Regional
+              </button>
             </div>
           </div>
-          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2">
-            Latest observation: <span className="text-blue-400 font-bold">{currentItem?.label || '...'}</span>
-          </p>
-        </div>
-        
-        <div className="hidden sm:flex flex-col items-end shrink-0">
-          <div className="glass p-1 rounded-xl flex flex-row border border-white/5 w-auto shadow-2xl">
+        </header>
+
+        {/* Mobile Toggle - Synchronized with NowcastView */}
+        <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
+          <div className="flex flex-row w-full gap-1">
             <button
               onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
-              className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                 mode === 'SG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              Singapore
+              <i className="fas fa-location-dot text-[8px]"></i> Singapore
             </button>
             <button
               onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
-              className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                 mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              Regional
+              <i className="fas fa-earth-asia text-[8px]"></i> Regional
             </button>
           </div>
-        </div>
-      </header>
-
-      <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
-        <div className="flex flex-row w-full gap-1">
-          <button
-            onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
-            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all ${
-              mode === 'SG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            Singapore
-          </button>
-          <button
-            onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
-            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all ${
-              mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            Regional
-          </button>
         </div>
       </div>
 

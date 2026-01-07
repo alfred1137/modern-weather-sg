@@ -32,8 +32,8 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
 
       <div className="flex flex-col gap-6">
         <div className="glass overflow-hidden shadow-2xl rounded-[32px] sm:rounded-[48px] border border-white/5">
-          <div className="flex flex-col">
-            <div className="flex border-b border-white/5 bg-slate-800/30 overflow-x-auto no-scrollbar">
+          <div className="flex flex-col-reverse sm:flex-col">
+            <div className="flex border-t sm:border-t-0 sm:border-b border-white/5 bg-slate-800/30 overflow-x-auto no-scrollbar">
               {data.periods.map((period, idx) => (
                 <button
                   key={idx}

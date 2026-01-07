@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppTab, WeatherUIState } from './types';
 import Navigation from './components/Navigation';
@@ -131,7 +130,7 @@ const App: React.FC = () => {
               </p>
               <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
-                <span className="text-slate-500">v0.6.8</span>
+                <span className="text-slate-500">v0.7.0</span>
               </p>
             </div>
 
