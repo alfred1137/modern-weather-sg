@@ -120,11 +120,12 @@ const RainAreasView: React.FC = () => {
           </p>
         </div>
         
-        <div className="flex flex-col items-end shrink-0">
-          <div className="glass p-1 rounded-xl flex flex-col sm:flex-row border border-white/5 w-auto shadow-2xl">
+        {/* Desktop Toggle (visible only on desktop/tablets) */}
+        <div className="hidden sm:flex flex-col items-end shrink-0">
+          <div className="glass p-1 rounded-xl flex flex-row border border-white/5 w-auto shadow-2xl">
             <button
               onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
-              className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                 mode === 'SG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
@@ -132,7 +133,7 @@ const RainAreasView: React.FC = () => {
             </button>
             <button
               onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
-              className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+              className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                 mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
@@ -141,6 +142,28 @@ const RainAreasView: React.FC = () => {
           </div>
         </div>
       </header>
+
+      {/* Mobile Toggle (visible only on small screens, between header and map) */}
+      <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
+        <div className="flex flex-row w-full gap-1">
+          <button
+            onClick={() => { setMode('SG'); setSelectedIndex(-1); setIsPlaying(false); }}
+            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all ${
+              mode === 'SG' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            Singapore
+          </button>
+          <button
+            onClick={() => { setMode('REGIONAL'); setSelectedIndex(-1); setIsPlaying(false); }}
+            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center transition-all ${
+              mode === 'REGIONAL' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            Regional
+          </button>
+        </div>
+      </div>
 
       {/* Map Container with Glow Border */}
       <div className="relative max-w-4xl -mx-4 sm:mx-auto w-auto sm:w-full group">

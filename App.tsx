@@ -130,7 +130,8 @@ const App: React.FC = () => {
                 The official weather site is available at <a href="https://www.weather.gov.sg/mobile/home/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">weather.gov.sg/mobile</a>.
               </p>
               <p>
-                Developed with vibe to create a modern local weather experience. <span className="text-slate-500">v0.6.3</span>
+                Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
+                <span className="text-slate-500">v0.6.4</span>
               </p>
             </div>
 

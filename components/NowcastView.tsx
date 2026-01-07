@@ -35,12 +35,14 @@ const NowcastView: React.FC<Props> = ({ data }) => {
         onMouseLeave={() => setHoveredArea(null)}
         onClick={() => setHoveredArea(item)}
       >
-        <div className={`relative flex items-center justify-center p-0.5 rounded-full transition-transform duration-300 ${isActive ? 'scale-150' : 'group-hover:scale-125'}`}>
+        {/* Scaling growth disabled on mobile (sm: prefix applied) */}
+        <div className={`relative flex items-center justify-center p-0.5 rounded-full transition-transform duration-300 ${isActive ? 'sm:scale-150' : 'sm:group-hover:scale-125'}`}>
           {isActive && (
-            <div className="absolute inset-0 bg-blue-500/30 rounded-full animate-ping"></div>
+            /* Reduced pulse radius using inset-1.5 for a tighter effect on mobile */
+            <div className="absolute inset-1.5 bg-blue-500/40 rounded-full animate-ping"></div>
           )}
           <div className="absolute inset-0 bg-blue-500/5 rounded-full hidden sm:block animate-ping group-hover:bg-blue-500/20"></div>
-          <div className={`transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'} scale-[0.32] sm:scale-75 md:scale-100 drop-shadow-xl`}>
+          <div className={`transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'} scale-[0.5] sm:scale-85 md:scale-100 drop-shadow-xl`}>
             {getWeatherIcon(item.forecast)}
           </div>
         </div>
@@ -59,26 +61,44 @@ const NowcastView: React.FC<Props> = ({ data }) => {
             </p>
           </div>
 
-          <div className="flex flex-col items-end shrink-0">
-            {/* View Toggle - Vertical on Mobile, Horizontal on Desktop */}
-            <div className="glass p-1 rounded-xl flex flex-col sm:flex-row border border-white/5 w-auto">
+          {/* Desktop View Toggle */}
+          <div className="hidden sm:flex flex-col items-end shrink-0">
+            <div className="glass p-1 rounded-xl flex flex-row border border-white/5 w-auto">
               <button 
                 onClick={() => setViewMode('map')}
-                className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
               >
-                <i className="fas fa-map text-[8px] sm:text-[10px]"></i> Map
+                <i className="fas fa-map text-[10px]"></i> Map
               </button>
               <button 
                 onClick={() => setViewMode('grid')}
-                className={`px-4 sm:px-8 py-2.5 rounded-lg text-[9px] sm:text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`px-8 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
               >
-                <i className="fas fa-grip text-[8px] sm:text-[10px]"></i> Grid
+                <i className="fas fa-grip text-[10px]"></i> Grid
               </button>
             </div>
           </div>
         </header>
 
-        {/* Search Bar - Full width on Mobile, extracted from toggle group */}
+        {/* Mobile View Toggle */}
+        <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
+          <div className="flex flex-row w-full gap-1">
+            <button 
+              onClick={() => setViewMode('map')}
+              className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'map' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <i className="fas fa-map text-[8px]"></i> Map
+            </button>
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <i className="fas fa-grip text-[8px]"></i> Grid
+            </button>
+          </div>
+        </div>
+
+        {/* Search Bar - Full width when Grid is active */}
         {viewMode === 'grid' && (
           <div className="relative group w-full animate-in slide-in-from-top-2 duration-300">
             <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 text-xs transition-colors"></i>
