@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Forecast24h } from '../types';
 import { getWeatherIcon, SG_REGIONS } from '../constants';
@@ -25,13 +24,12 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
   return (
     <div className="flex flex-col gap-6 md:gap-10 animate-fadeIn">
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl md:text-5xl font-black tracking-tighter uppercase text-slate-100">24-Hour Forecast</h1>
-          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">Regional Outlook & Core Metrics</p>
+        <div className="flex flex-col gap-1 pr-2">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-none">24-Hour Forecast</h1>
+          <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2">Regional Outlook & Core Metrics</p>
         </div>
       </header>
 
-      {/* Map Section */}
       <div className="flex flex-col gap-6">
         <div className="glass overflow-hidden shadow-2xl rounded-[32px] sm:rounded-[48px] border border-white/5">
           <div className="flex flex-col">
@@ -88,11 +86,8 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         </div>
       </div>
 
-      {/* Metrics Grid - Stretched to match heights */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto w-full mb-12 items-stretch">
-        {/* Left Column Stack: Temperature & Humidity */}
         <div className="flex flex-col gap-6 lg:col-span-3">
-          {/* Temperature Card - Uses flex-1 to grow/match height */}
           <div className="bg-[#141e30]/90 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-white/5 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-orange-500/20 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Temperature</span>
@@ -108,7 +103,6 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
             <div className="h-0 md:h-2"></div>
           </div>
 
-          {/* Humidity Card - Uses flex-1 to grow/match height */}
           <div className="bg-[#141e30]/90 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-white/5 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-blue-500/20 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-slate-500">Humidity</span>
@@ -125,7 +119,6 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
           </div>
         </div>
 
-        {/* Right Column: Wind Dynamics - Stretches to match left stack height exactly */}
         <div className="lg:col-span-2 flex">
           <div className="bg-[#141e30]/90 backdrop-blur-xl p-10 md:p-12 rounded-[48px] border border-white/5 flex flex-col items-center justify-between w-full transition-all hover:border-teal-500/20 shadow-xl">
             <div className="w-full text-left">

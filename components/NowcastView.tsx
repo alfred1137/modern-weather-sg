@@ -35,10 +35,8 @@ const NowcastView: React.FC<Props> = ({ data }) => {
         onMouseLeave={() => setHoveredArea(null)}
         onClick={() => setHoveredArea(item)}
       >
-        {/* Scaling growth disabled on mobile (sm: prefix applied) */}
         <div className={`relative flex items-center justify-center p-0.5 rounded-full transition-transform duration-300 ${isActive ? 'sm:scale-150' : 'sm:group-hover:scale-125'}`}>
           {isActive && (
-            /* Reduced pulse radius using inset-1.5 for a tighter effect on mobile */
             <div className="absolute inset-1.5 bg-blue-500/40 rounded-full animate-ping"></div>
           )}
           <div className="absolute inset-0 bg-blue-500/5 rounded-full hidden sm:block animate-ping group-hover:bg-blue-500/20"></div>
@@ -61,7 +59,6 @@ const NowcastView: React.FC<Props> = ({ data }) => {
             </p>
           </div>
 
-          {/* Desktop View Toggle */}
           <div className="hidden sm:flex flex-col items-end shrink-0">
             <div className="glass p-1 rounded-xl flex flex-row border border-white/5 w-auto">
               <button 
@@ -80,7 +77,6 @@ const NowcastView: React.FC<Props> = ({ data }) => {
           </div>
         </header>
 
-        {/* Mobile View Toggle */}
         <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
           <div className="flex flex-row w-full gap-1">
             <button 
@@ -98,7 +94,6 @@ const NowcastView: React.FC<Props> = ({ data }) => {
           </div>
         </div>
 
-        {/* Search Bar - Full width when Grid is active */}
         {viewMode === 'grid' && (
           <div className="relative group w-full animate-in slide-in-from-top-2 duration-300">
             <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-400 text-xs transition-colors"></i>

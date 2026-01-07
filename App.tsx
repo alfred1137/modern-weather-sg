@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppTab, WeatherUIState } from './types';
 import Navigation from './components/Navigation';
@@ -47,7 +46,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     loadData();
-    // Auto refresh every 5 minutes
     const interval = setInterval(loadData, 300000);
     return () => clearInterval(interval);
   }, [loadData]);
@@ -96,7 +94,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen pt-8 pb-32 md:pb-12 md:pt-24 lg:pt-36">
-      {/* Background Decor */}
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/5 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-indigo-600/5 rounded-full blur-[120px]"></div>
@@ -104,13 +101,11 @@ const App: React.FC = () => {
 
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       
-      {/* Container with specified margins: 16px Mobile, 32px Tablet, 138px Desktop */}
       <main className="mx-auto px-4 md:px-8 xl:px-[138px] w-full max-w-[1920px]">
         {renderContent()}
       </main>
 
       <footer className="mt-32 mb-6 px-6 flex flex-col items-center gap-6">
-        {/* Weather Legend Button moved outside the container */}
         <button 
           onClick={() => setShowLegend(true)}
           className="bg-slate-800/60 hover:bg-slate-800 border border-white/10 px-6 py-2.5 rounded-full transition-all text-slate-300 hover:text-blue-400 flex items-center gap-2 shadow-lg"
@@ -120,7 +115,6 @@ const App: React.FC = () => {
         </button>
 
         <div className="max-w-4xl w-full glass border border-white/5 rounded-[32px] p-8 md:p-10 flex flex-col items-center gap-6 shadow-2xl relative overflow-hidden">
-          {/* Subtle accent line */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-blue-500/30 rounded-full"></div>
           
           <div className="flex flex-col items-center gap-6 text-center">
@@ -131,11 +125,10 @@ const App: React.FC = () => {
               </p>
               <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
-                <span className="text-slate-500">v0.6.4</span>
+                <span className="text-slate-500">v0.6.5</span>
               </p>
             </div>
 
-            {/* Source Code Button moved below the credits */}
             <a 
               href="https://github.com/alfred1137/modern-weather-sg" 
               target="_blank" 

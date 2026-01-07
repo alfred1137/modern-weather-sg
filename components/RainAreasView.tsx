@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 type RadarMode = 'SG' | 'REGIONAL';
@@ -120,7 +119,6 @@ const RainAreasView: React.FC = () => {
           </p>
         </div>
         
-        {/* Desktop Toggle (visible only on desktop/tablets) */}
         <div className="hidden sm:flex flex-col items-end shrink-0">
           <div className="glass p-1 rounded-xl flex flex-row border border-white/5 w-auto shadow-2xl">
             <button
@@ -143,7 +141,6 @@ const RainAreasView: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Toggle (visible only on small screens, between header and map) */}
       <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
         <div className="flex flex-row w-full gap-1">
           <button
@@ -165,12 +162,10 @@ const RainAreasView: React.FC = () => {
         </div>
       </div>
 
-      {/* Map Container with Glow Border */}
       <div className="relative max-w-4xl -mx-4 sm:mx-auto w-auto sm:w-full group">
         <div className="absolute -inset-[2px] bg-blue-500/30 blur-sm rounded-none sm:rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
         <div className="glass rounded-none sm:rounded-[32px] overflow-hidden relative aspect-[853/562] bg-[#0b1221] border-y sm:border-[2px] border-blue-400/20 sm:border-blue-400/40 shadow-[0_0_30px_rgba(59,130,246,0.15)] transition-all duration-500">
           
-          {/* Zoom Wrapper: Apply scale on mobile for Singapore mode */}
           <div className={`absolute inset-0 transition-transform duration-700 ease-out origin-center ${isSgMode ? 'scale-[1.2] sm:scale-100' : 'scale-100'}`}>
             <img
               src={mode === 'SG' 
@@ -202,7 +197,6 @@ const RainAreasView: React.FC = () => {
         </div>
       </div>
 
-      {/* Playback Controls Wrapper */}
       <div className="glass p-5 md:p-6 rounded-[32px] border border-white/5 shadow-2xl mt-2 max-w-4xl mx-auto w-full bg-slate-900/40 backdrop-blur-xl">
         <div className="flex items-center gap-5 md:gap-8">
           <button
@@ -246,7 +240,6 @@ const RainAreasView: React.FC = () => {
         </div>
       </div>
 
-      {/* Intensity Legend */}
       <div className="mt-4 mb-2 max-w-4xl mx-auto w-full px-2">
         <div className="flex justify-between items-end mb-2.5 px-2">
           <div className="flex flex-col items-center">

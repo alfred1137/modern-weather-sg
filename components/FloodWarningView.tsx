@@ -22,9 +22,9 @@ const FloodWarningView: React.FC<Props> = ({ alerts }) => {
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase text-slate-100">Flood Alert</h1>
-        <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">Real-time alerts from PUB Singapore</p>
+      <header className="flex flex-col gap-1 pr-2">
+        <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-slate-100 leading-none">Flood Alert</h1>
+        <p className="text-slate-400 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2">Real-time alerts from PUB Singapore</p>
       </header>
 
       {activeAlerts.length === 0 ? (
