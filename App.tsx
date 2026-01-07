@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppTab, WeatherUIState } from './types';
 import Navigation from './components/Navigation';
@@ -20,6 +21,11 @@ const App: React.FC = () => {
     loading: true,
     error: null,
   });
+
+  // Automatically scroll to top when changing tabs
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
 
   const loadData = useCallback(async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
@@ -86,7 +92,7 @@ const App: React.FC = () => {
       case AppTab.FORECAST_24H:
         return <Forecast24hView data={state.forecast24h} />;
       case AppTab.FORECAST_4DAY:
-        return <Forecast4DayView data={state.forecast4d} />;
+        return <Forecast4DayView data={state.forecast4d} onNavigate={setActiveTab} />;
       default:
         return <NowcastView data={state.nowcast} />;
     }
@@ -125,7 +131,7 @@ const App: React.FC = () => {
               </p>
               <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
-                <span className="text-slate-500">v0.6.5</span>
+                <span className="text-slate-500">v0.6.8</span>
               </p>
             </div>
 

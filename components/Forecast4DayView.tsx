@@ -1,12 +1,14 @@
+
 import React from 'react';
-import { Forecast4Day } from '../types';
+import { Forecast4Day, AppTab } from '../types';
 import { getWeatherIcon } from '../constants';
 
 interface Props {
   data: Forecast4Day | null;
+  onNavigate: (tab: AppTab) => void;
 }
 
-const Forecast4DayView: React.FC<Props> = ({ data }) => {
+const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
   if (!data) return <div className="text-center p-8">Loading outlook...</div>;
 
   return (
@@ -34,7 +36,7 @@ const Forecast4DayView: React.FC<Props> = ({ data }) => {
             </div>
             
             <h3 className="text-lg font-black uppercase tracking-tighter mb-8 min-h-[3rem] flex items-center leading-tight text-slate-100">
-              {day.forecast}
+              {day.summary}
             </h3>
             
             <div className="w-full space-y-2">
@@ -57,7 +59,7 @@ const Forecast4DayView: React.FC<Props> = ({ data }) => {
         </h2>
         <div className="flex items-start gap-6">
             <p className="text-slate-400 text-xs font-medium leading-relaxed">
-                National Environment Agency (NEA) Meteorological Service Singapore (MSS) provides extended 4-day outlook, leveraging on advanced multi-model ensemble forecasting. In Singapore's tropical microclimate, localized heating can trigger isolated thundery showers. Consulting the <span className="text-slate-200">2-Hour Nowcast</span> for immediate, high-resolution precision before outdoor engagements is recommended.
+                National Environment Agency (NEA) Meteorological Service Singapore (MSS) provides extended 4-day outlook, leveraging on advanced multi-model ensemble forecasting. In Singapore's tropical microclimate, localized heating can trigger isolated thundery showers. Consulting the <button onClick={() => onNavigate(AppTab.NOWCAST)} className="text-slate-200 hover:text-blue-400 font-bold underline decoration-blue-500/30 underline-offset-4 transition-all decoration-2">2-Hour Nowcast</button> for immediate, high-resolution precision before outdoor engagements is recommended.
             </p>
         </div>
       </div>

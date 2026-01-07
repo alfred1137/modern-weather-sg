@@ -73,6 +73,7 @@ export const fetch4DayForecast = async (): Promise<Forecast4Day> => {
     items: record.forecasts.map((f: any) => ({
       date: f.timestamp,
       forecast: f.forecast.text,
+      summary: f.forecast.summary,
       relative_humidity: {
         low: f.relativeHumidity.low,
         high: f.relativeHumidity.high
