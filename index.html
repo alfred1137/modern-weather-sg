@@ -6,7 +6,7 @@
     <title>Modern Weather.sg</title>
     
     <!-- PWA Primary Meta Tags -->
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#24273a">
     <meta name="description" content="Modern view of Singapore weather nowcast, rain radar, and flood alerts.">
     
     <!-- Manifest: Using standard .json with explicit versioning -->
@@ -25,6 +25,45 @@
     <link rel="apple-touch-icon" href="./icon.svg">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              base: '#24273a',
+              mantle: '#1e2030',
+              crust: '#181926',
+              text: '#cad3f5',
+              subtext0: '#a5adcb',
+              subtext1: '#b8c0e0',
+              surface0: '#363a4f',
+              surface1: '#494d64',
+              surface2: '#5b6078',
+              overlay0: '#6e738d',
+              overlay1: '#8087a2',
+              overlay2: '#939ab7',
+              blue: '#8aadf4',
+              lavender: '#b7bdf8',
+              sapphire: '#7dc4e4',
+              sky: '#91d7e3',
+              teal: '#8bd5ca',
+              green: '#a6da95',
+              yellow: '#eed49f',
+              peach: '#f5a97f',
+              maroon: '#ee99a0',
+              red: '#ed8796',
+              mauve: '#c6a0f6',
+              pink: '#f5bde6',
+              flamingo: '#f0c6c6',
+              rosewater: '#f4dbd6',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,17 +71,17 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
+            background-color: #24273a;
+            color: #cad3f5;
             margin: 0;
             overflow-x: hidden;
             overscroll-behavior-y: contain;
         }
         .glass {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(30, 32, 48, 0.7); /* Mantle/Base mix with opacity */
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(184, 192, 224, 0.1); /* Subtext1 low opacity */
         }
         .weather-card {
             transition: transform 0.2s ease-in-out;
@@ -54,14 +93,14 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #1e293b;
+            background: #1e2030; /* Mantle */
         }
         ::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: #494d64; /* Surface1 */
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
+            background: #5b6078; /* Surface2 */
         }
     </style>
 <script type="importmap">

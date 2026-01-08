@@ -4,7 +4,7 @@ A modern web interface for Singapore's real-time weather data. This project reim
 
 > **Development Note**: This minisite was developed as a hobbyist project. Its creation was largely built with **vibe coding** with **Gemini 3 Preview** model within **Google AI Studio Build mode** for logic generation and UI styling. As the creator is not an experienced programmer, this project serves as a showcase of how AI tools can bridge the gap between creative ideas and functional code.
 
-**v0.7.4**
+**v0.8.0**
 
 ## 🌟 Features
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AppTab } from '../types';
 
@@ -19,14 +18,14 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   return (
     <>
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-white/5 px-4 pb-6 pt-3 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-surface1/20 px-4 pb-6 pt-3 md:hidden bg-mantle/80">
         <div className="flex justify-around items-center">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-col items-center gap-1 transition-all duration-300 ${
-                activeTab === tab.id ? 'text-blue-500' : 'text-slate-500'
+                activeTab === tab.id ? 'text-blue' : 'text-overlay1'
               }`}
             >
               <i className={`fas ${tab.icon} text-lg`}></i>
@@ -37,12 +36,12 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
       </nav>
 
       {/* Desktop Top Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 hidden md:flex justify-between items-center px-8 py-4 glass border-b border-white/5">
+      <nav className="fixed top-0 left-0 right-0 z-50 hidden md:flex justify-between items-center px-8 py-4 glass border-b border-surface1/20 bg-mantle/70">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <i className="fas fa-cloud-sun text-white text-xs"></i>
+          <div className="w-8 h-8 bg-blue rounded-lg flex items-center justify-center">
+            <i className="fas fa-cloud-sun text-mantle text-xs"></i>
           </div>
-          <span className="text-sm font-black tracking-tighter text-slate-100 uppercase">
+          <span className="text-sm font-black tracking-tighter text-text uppercase">
             Modern Weather.sg
           </span>
         </div>
@@ -54,8 +53,8 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
                 activeTab === tab.id
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                  ? 'bg-blue text-mantle shadow-lg shadow-blue/20'
+                  : 'text-overlay1 hover:text-text hover:bg-surface0'
               }`}
             >
               <i className={`fas ${tab.icon} text-sm`}></i>

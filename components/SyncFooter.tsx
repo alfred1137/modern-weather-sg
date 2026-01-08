@@ -16,10 +16,10 @@ const SyncFooter: React.FC<Props> = ({ timestamp, className = '' }) => {
 
   return (
     <div className={`flex justify-end items-center px-4 w-full mt-4 ${className}`}>
-      <div className="flex items-center gap-2 text-[10px] md:text-xs font-medium text-slate-500">
-        <i className="fas fa-circle-info text-blue-500/50 text-[10px]"></i>
+      <div className="flex items-center gap-2 text-[10px] md:text-xs font-medium text-overlay1">
+        <i className="fas fa-circle-info text-blue/50 text-[10px]"></i>
         <span>
-          Source data last updated at <span className="text-slate-300">{timeStr}</span>
+          Source data last updated at <span className="text-subtext0">{timeStr}</span>
         </span>
       </div>
     </div>
