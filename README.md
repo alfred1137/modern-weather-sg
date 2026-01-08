@@ -1,8 +1,10 @@
 # Modern Weather.sg
 
-A premium, modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
+A modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
 
 > **Development Note**: This minisite was developed as a hobbyist project. Its creation was largely built with **vibe coding** with **Gemini 3 Preview** model within **Google AI Studio Build mode** for logic generation and UI styling. As the creator is not an experienced programmer, this project serves as a showcase of how AI tools can bridge the gap between creative ideas and functional code.
+
+**v0.7.2**
 
 ## 🌟 Features
 
@@ -51,5 +53,3 @@ If the Action is green but the site is a 404:
 
 ## 📜 License
 This project is open-source and available under the MIT License. Data used within the app is subject to the [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).
-
-**v0.7.1**

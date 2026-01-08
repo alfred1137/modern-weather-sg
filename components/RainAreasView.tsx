@@ -97,13 +97,24 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
 
   const currentItem = history[selectedIndex];
 
+  // Corrected color scale matching official NEA/MSS radar legend
+  // Heavy (Pink/Purple) -> Moderate (Red/Orange/Yellow) -> Light (Green/Blue/Cyan)
   const intensityColors = [
-    '#ff00ff', '#f500f5', '#cc00cc', '#9b009b',
-    '#ff0000', '#ff3300', '#ff6600', '#ff9900',
-    '#ffcc00', '#ffff00', '#ccff00', '#99ff00',
-    '#33ff00', '#00ff00', '#00ff33', '#00ff66',
-    '#00ff99', '#00ffcc', '#00ffff', '#00ccff',
-    '#0099ff', '#0066ff', '#0033ff', '#1a00ff'
+    '#FF00FF', // Pink (Heavy)
+    '#D000D0',
+    '#A000A0', 
+    '#800000', // Deep Red
+    '#FF0000', // Red
+    '#FF4500', // Orange Red
+    '#FF8000', // Orange
+    '#FFC000', // Golden Yellow
+    '#FFFF00', // Yellow
+    '#C0FF00', // Lime Yellow
+    '#00FF00', // Lime Green
+    '#00C000', // Green
+    '#008060', // Teal Green
+    '#00FFFF', // Cyan
+    '#00BFFF', // Deep Sky Blue (Light)
   ];
 
   const isSgMode = mode === 'SG';
