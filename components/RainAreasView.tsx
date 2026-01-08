@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import SyncFooter from './SyncFooter';
 
@@ -118,6 +119,12 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
   ];
 
   const isSgMode = mode === 'SG';
+
+  // Use the latest history item's date for the footer timestamp to match the visual radar data,
+  // falling back to the API sync timestamp if radar data isn't ready.
+  const radarTimestamp = history.length > 0 
+    ? history[history.length - 1].date.toISOString() 
+    : syncTimestamp;
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
@@ -284,7 +291,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
         </div>
       </div>
 
-      <SyncFooter timestamp={syncTimestamp} className="max-w-4xl mx-auto" />
+      <SyncFooter timestamp={radarTimestamp} className="max-w-4xl mx-auto" />
     </div>
   );
 };

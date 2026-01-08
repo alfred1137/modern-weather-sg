@@ -130,7 +130,7 @@ const App: React.FC = () => {
               </p>
               <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
-                <span className="text-slate-500">v0.7.2</span>
+                <span className="text-slate-500">v0.7.3</span>
               </p>
             </div>
 
