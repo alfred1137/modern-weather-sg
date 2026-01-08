@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import SyncFooter from './SyncFooter';
 
 type RadarMode = 'SG' | 'REGIONAL';
 
@@ -8,7 +9,11 @@ interface HistoryItem {
   date: Date;
 }
 
-const RainAreasView: React.FC = () => {
+interface Props {
+  syncTimestamp?: string;
+}
+
+const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
   const [mode, setMode] = useState<RadarMode>('SG');
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
@@ -105,7 +110,7 @@ const RainAreasView: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
-      {/* Header and Toggle Container - Synchronized with NowcastView */}
+      {/* Header and Toggle Container */}
       <div className="flex flex-col gap-4">
         <header className="flex justify-between items-start gap-2">
           <div className="flex flex-col gap-1 pr-2">
@@ -143,7 +148,7 @@ const RainAreasView: React.FC = () => {
           </div>
         </header>
 
-        {/* Mobile Toggle - Synchronized with NowcastView */}
+        {/* Mobile Toggle */}
         <div className="sm:hidden w-full glass p-1 rounded-xl border border-white/5 shadow-2xl overflow-hidden">
           <div className="flex flex-row w-full gap-1">
             <button
@@ -267,6 +272,8 @@ const RainAreasView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <SyncFooter timestamp={syncTimestamp} className="max-w-4xl mx-auto" />
     </div>
   );
 };

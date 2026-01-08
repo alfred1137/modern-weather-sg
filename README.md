@@ -51,3 +51,5 @@ If the Action is green but the site is a 404:
 
 ## 📜 License
 This project is open-source and available under the MIT License. Data used within the app is subject to the [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).
+
+**v0.7.1**

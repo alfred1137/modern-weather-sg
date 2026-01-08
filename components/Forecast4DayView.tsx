@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Forecast4Day, AppTab } from '../types';
 import { getWeatherIcon } from '../constants';
+import SyncFooter from './SyncFooter';
 
 interface Props {
   data: Forecast4Day | null;
@@ -63,6 +63,8 @@ const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
             </p>
         </div>
       </div>
+      
+      <SyncFooter timestamp={data.updateTimestamp} />
     </div>
   );
 };

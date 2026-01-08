@@ -1,14 +1,19 @@
 import React from 'react';
 import { FloodAlert } from '../types';
+import SyncFooter from './SyncFooter';
 
 interface Props {
   alerts: FloodAlert[] | null;
+  syncTimestamp?: string;
 }
 
-const FloodWarningView: React.FC<Props> = ({ alerts }) => {
+const FloodWarningView: React.FC<Props> = ({ alerts, syncTimestamp }) => {
   if (!alerts) return <div className="text-center p-8">Loading alerts...</div>;
 
   const activeAlerts = alerts.filter(a => a.msgType === 'Alert');
+  
+  // Use passed timestamp or fallback to the one from alerts if available
+  const displayTimestamp = syncTimestamp || (alerts.length > 0 ? alerts[0].updatedTimestamp : undefined);
 
   const getSeverityColor = (severity: string) => {
     switch (severity.toLowerCase()) {
@@ -86,6 +91,8 @@ const FloodWarningView: React.FC<Props> = ({ alerts }) => {
           Users are advised to exercise caution and avoid affected areas during heavy rainfall.
         </p>
       </div>
+
+      <SyncFooter timestamp={displayTimestamp} />
     </div>
   );
 };

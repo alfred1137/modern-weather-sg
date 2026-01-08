@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Forecast24h } from '../types';
 import { getWeatherIcon, SG_REGIONS } from '../constants';
+import SyncFooter from './SyncFooter';
 
 interface Props {
   data: Forecast24h | null;
@@ -86,7 +87,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto w-full mb-12 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto w-full items-stretch">
         <div className="flex flex-col gap-6 lg:col-span-3">
           <div className="bg-[#141e30]/90 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-white/5 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-orange-500/20 shadow-xl">
             <div className="flex items-center justify-between">
@@ -140,6 +141,8 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
           </div>
         </div>
       </div>
+      
+      <SyncFooter timestamp={data.updateTimestamp} className="max-w-6xl mx-auto mb-12" />
     </div>
   );
 };

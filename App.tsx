@@ -85,9 +85,9 @@ const App: React.FC = () => {
       case AppTab.NOWCAST:
         return <NowcastView data={state.nowcast} />;
       case AppTab.RAIN_AREAS:
-        return <RainAreasView />;
+        return <RainAreasView syncTimestamp={state.nowcast?.updateTimestamp} />;
       case AppTab.FLOOD_WARNING:
-        return <FloodWarningView alerts={state.floodAlerts} />;
+        return <FloodWarningView alerts={state.floodAlerts} syncTimestamp={state.nowcast?.updateTimestamp} />;
       case AppTab.FORECAST_24H:
         return <Forecast24hView data={state.forecast24h} />;
       case AppTab.FORECAST_4DAY:
@@ -130,7 +130,7 @@ const App: React.FC = () => {
               </p>
               <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
-                <span className="text-slate-500">v0.7.0</span>
+                <span className="text-slate-500">v0.7.1</span>
               </p>
             </div>
 

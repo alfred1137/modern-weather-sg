@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NowcastData, NowcastArea } from '../types';
 import { getWeatherIcon, AREA_COORDINATES } from '../constants';
+import SyncFooter from './SyncFooter';
 
 interface Props {
   data: NowcastData | null;
@@ -110,7 +111,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
 
       {viewMode === 'map' ? (
         <div className="relative flex flex-col gap-4">
-          <div className="glass rounded-none sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border-y sm:border border-white/5 shadow-2xl bg-[#0f172a]">
+          <div className="glass rounded-[24px] sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-white/5 shadow-2xl bg-[#0f172a]">
             <img 
               src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
               className="absolute inset-0 w-full h-full object-cover opacity-20 contrast-125 brightness-75 mix-blend-screen pointer-events-none"
@@ -124,8 +125,8 @@ const NowcastView: React.FC<Props> = ({ data }) => {
             </div>
 
             <div className="absolute bottom-4 right-4 pointer-events-none z-20">
-               <div className="bg-slate-900/80 backdrop-blur-md px-3 py-1.5 md:px-5 md:py-2 rounded-full border border-white/10 text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 shadow-xl">
-                 <i className="fas fa-hand-pointer text-blue-500"></i>
+               <div className="bg-slate-900/80 backdrop-blur-md px-3 py-1.5 md:px-5 md:py-2 rounded-full border border-blue-500/30 text-[8px] md:text-[10px] font-black text-slate-100 uppercase tracking-widest flex items-center gap-2 shadow-xl ring-1 ring-blue-500/20">
+                 <i className="fas fa-hand-pointer text-blue-400"></i>
                  <span>Tap Icons</span>
                </div>
             </div>
@@ -149,36 +150,31 @@ const NowcastView: React.FC<Props> = ({ data }) => {
                 </div>
               </div>
             ) : (
-              <div className="w-full py-6 text-center border border-dashed border-slate-800/50 rounded-[24px]">
-                 <p className="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em]">Select an area on the map</p>
+              <div className="w-full py-8 text-center border border-dashed border-slate-800/80 rounded-[24px]">
+                 <p className="text-[9px] md:text-[11px] font-black text-slate-500 uppercase tracking-[0.4em]">Select an area on the map</p>
               </div>
             )}
           </div>
           
-          <div className="flex justify-between items-center px-4 max-w-5xl mx-auto w-full">
-             <div className="flex items-center gap-2 text-[8px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest">
-               <i className="fas fa-circle-info text-blue-500/40"></i>
-               Real-time Data
-             </div>
-             <p className="text-[8px] md:text-[10px] font-black text-slate-600 uppercase tracking-widest">
-               Sync: {new Date(data.updateTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-             </p>
-          </div>
+          <SyncFooter timestamp={data.updateTimestamp} className="max-w-5xl mx-auto" />
         </div>
       ) : (
-        <div className="grid grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-[10px] md:gap-4 animate-fadeIn">
-          {filtered.map((item, idx) => (
-            <div 
-              key={idx} 
-              className="col-span-2 md:col-span-2 xl:col-span-3 glass p-4 md:p-5 rounded-2xl flex flex-col items-center text-center justify-center weather-card border border-white/5 hover:border-blue-500/30 transition-all"
-            >
-              <div className="mb-2 md:mb-3 opacity-90 scale-90 md:scale-100">
-                {getWeatherIcon(item.forecast)}
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-4 md:grid-cols-8 xl:grid-cols-12 gap-[10px] md:gap-4 animate-fadeIn">
+            {filtered.map((item, idx) => (
+              <div 
+                key={idx} 
+                className="col-span-2 md:col-span-2 xl:col-span-3 glass p-4 md:p-5 rounded-2xl flex flex-col items-center text-center justify-center weather-card border border-white/5 hover:border-blue-500/30 transition-all"
+              >
+                <div className="mb-2 md:mb-3 opacity-90 scale-90 md:scale-100">
+                  {getWeatherIcon(item.forecast)}
+                </div>
+                <h3 className="font-black text-slate-100 text-[10px] md:text-[11px] uppercase tracking-tighter mb-0.5 md:mb-1 leading-tight">{item.area}</h3>
+                <p className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase opacity-60">{item.forecast}</p>
               </div>
-              <h3 className="font-black text-slate-100 text-[10px] md:text-[11px] uppercase tracking-tighter mb-0.5 md:mb-1 leading-tight">{item.area}</h3>
-              <p className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase opacity-60">{item.forecast}</p>
-            </div>
-          ))}
+            ))}
+          </div>
+          <SyncFooter timestamp={data.updateTimestamp} />
         </div>
       )}
     </div>
