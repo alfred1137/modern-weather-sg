@@ -111,7 +111,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
 
       {viewMode === 'map' ? (
         <div className="relative flex flex-col gap-4">
-          <div className="glass rounded-[24px] sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-2xl bg-base">
+          <div className="glass rounded-none sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-2xl bg-base">
             <img 
               src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
               className="absolute inset-0 w-full h-full object-cover opacity-20 contrast-125 brightness-75 mix-blend-screen pointer-events-none grayscale"
