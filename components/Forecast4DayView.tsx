@@ -35,9 +35,11 @@ const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
               {getWeatherIcon(day.forecast)}
             </div>
             
-            <h3 className="text-lg font-black uppercase tracking-tighter mb-8 min-h-[3rem] flex items-center leading-tight text-text">
-              {day.summary}
-            </h3>
+            <div className="flex-1 flex items-center justify-center min-h-[4rem] mb-8">
+              <h3 className="text-lg md:text-xl font-black uppercase tracking-tight text-blue leading-tight text-center drop-shadow-[0_0_15px_rgba(138,173,244,0.4)]">
+                {day.summary}
+              </h3>
+            </div>
             
             <div className="w-full space-y-2">
               <div className="flex justify-between items-center px-4 py-3 bg-mantle/40 rounded-2xl border border-surface1/20">

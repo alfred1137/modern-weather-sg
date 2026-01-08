@@ -65,18 +65,20 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                    return (
                      <div 
                        key={region.id} 
-                       className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.75] sm:scale-100 transition-transform" 
+                       className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.65] sm:scale-100 transition-transform" 
                        style={{ left: region.x, top: region.y }}
                      >
-                        <div className="relative mb-0.5 sm:mb-2">
+                        <div className="relative mb-1 sm:mb-2">
                            <div className="absolute inset-0 bg-blue/10 rounded-full blur-xl scale-0 group-hover:scale-150 transition-all duration-500"></div>
-                           <div className="bg-mantle/80 p-2 md:p-3 rounded-full border border-surface1/20 shadow-2xl backdrop-blur-md group-hover:scale-110 transition-transform">
-                             <div className="scale-[0.8] md:scale-100">{getWeatherIcon(forecast as string)}</div>
+                           <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-2xl backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center">
+                             <div className="scale-[0.7] md:scale-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">{getWeatherIcon(forecast as string)}</div>
                            </div>
                         </div>
-                        <div className="bg-crust/60 backdrop-blur-sm px-2 md:px-4 py-0.5 md:py-1.5 rounded-full border border-surface1/10 text-center">
-                           <span className="text-[7px] md:text-[9px] font-black text-overlay1 uppercase tracking-widest block mb-0.5">{region.name}</span>
-                           <span className="text-[8px] md:text-[10px] text-blue font-black uppercase tracking-tighter block whitespace-nowrap">{forecast}</span>
+                        <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-2xl border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
+                           <span className="text-[7px] md:text-[9px] font-black text-overlay2 uppercase tracking-[0.3em] block mb-0.5">{region.name}</span>
+                           <span className="text-[9px] md:text-xs text-blue font-black uppercase tracking-tight block whitespace-normal leading-tight drop-shadow-[0_0_10px_rgba(138,173,244,0.5)]">
+                             {forecast}
+                           </span>
                         </div>
                      </div>
                    );

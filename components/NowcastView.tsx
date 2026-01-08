@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NowcastData, NowcastArea } from '../types';
+import { NowcastArea, NowcastData } from '../types';
 import { getWeatherIcon, AREA_COORDINATES } from '../constants';
 import SyncFooter from './SyncFooter';
 
@@ -137,14 +137,14 @@ const NowcastView: React.FC<Props> = ({ data }) => {
               <div className="w-full glass px-4 py-4 md:px-8 md:py-6 rounded-[24px] border border-blue/30 shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-row items-stretch gap-3 md:gap-6 bg-surface0/30">
                 <div className="flex-1 flex flex-col justify-center text-left min-w-0">
                   <span className="text-[6px] md:text-[9px] font-black text-blue/80 uppercase tracking-[0.2em] mb-1">Detailed Forecast</span>
-                  <h2 className="text-[14px] md:text-2xl font-black text-text uppercase tracking-tight leading-tight">{hoveredArea.area}</h2>
+                  <h2 className="text-[14px] md:text-2xl font-black text-text uppercase tracking-tight leading-tight truncate">{hoveredArea.area}</h2>
                 </div>
                 
-                <div className="flex-1 flex items-center justify-center gap-2 md:gap-5 bg-mantle/40 px-3 py-2 md:px-6 md:py-3 rounded-2xl border border-surface1/20 min-w-0">
-                  <div className="scale-[0.55] sm:scale-75 md:scale-110 flex-shrink-0 origin-center">
+                <div className="flex-1 flex items-center justify-center gap-2 md:gap-5 bg-surface2/20 px-3 py-2 md:px-6 md:py-3 rounded-2xl border border-surface1/20 min-w-0">
+                  <div className="scale-[0.55] sm:scale-75 md:scale-110 flex-shrink-0 origin-center drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                     {getWeatherIcon(hoveredArea.forecast)}
                   </div>
-                  <span className="text-[9px] md:text-base font-black text-text uppercase tracking-tight whitespace-normal leading-tight text-center">
+                  <span className="text-[10px] md:text-lg font-black text-blue uppercase tracking-tight whitespace-normal leading-tight text-center drop-shadow-[0_0_15px_rgba(138,173,244,0.4)]">
                     {hoveredArea.forecast}
                   </span>
                 </div>
