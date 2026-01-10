@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import SyncFooter from './SyncFooter';
+import { useTheme } from '../context/ThemeContext';
 
 type RadarMode = 'SG' | 'REGIONAL';
 
@@ -19,6 +20,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [isPlaying, setIsPlaying] = useState(false);
   const playbackTimerRef = useRef<number | null>(null);
+  const { theme } = useTheme();
 
   const generateHistory = useCallback(() => {
     const now = new Date();
@@ -125,6 +127,15 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
     ? history[history.length - 1].date.toISOString() 
     : syncTimestamp;
 
+  // Determine Map Filters based on theme
+  const baseMapStyle = theme === 'latte' 
+    ? { filter: 'opacity(0.8)', mixBlendMode: 'multiply' as const } // Light theme: Dark lines on light bg
+    : { filter: 'invert(1) brightness(2.5) contrast(1.2) opacity(0.35)', mixBlendMode: 'screen' as const }; // Dark theme: Light lines on dark bg
+
+  const radarLayerStyle = theme === 'latte'
+    ? { mixBlendMode: 'multiply' as const, opacity: 0.9 }
+    : { mixBlendMode: 'screen' as const, opacity: 1 };
+
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
       {/* Header and Toggle Container */}
@@ -190,7 +201,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
 
       <div className="relative max-w-4xl -mx-4 sm:mx-auto w-auto sm:w-full group">
         <div className="absolute -inset-[2px] bg-blue/30 blur-sm rounded-none sm:rounded-[32px] opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-        <div className="glass rounded-none sm:rounded-[32px] overflow-hidden relative aspect-[853/562] bg-[#0b1221] border-y sm:border-[2px] border-blue/20 sm:border-blue/40 shadow-[0_0_30px_rgba(138,173,244,0.15)] transition-all duration-500">
+        <div className="glass rounded-none sm:rounded-[32px] overflow-hidden relative aspect-[853/562] bg-base border-y sm:border-[2px] border-blue/20 sm:border-blue/40 shadow-[0_0_30px_rgba(var(--blue-rgb),0.15)] transition-all duration-500">
           
           <div className={`absolute inset-0 transition-transform duration-700 ease-out origin-center ${isSgMode ? 'scale-[1.2] sm:scale-100' : 'scale-100'}`}>
             <img
@@ -198,14 +209,15 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                 ? 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/base-853.png'
                 : 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/240km-v2.png'
               }
-              style={{ filter: 'invert(1) brightness(2.5) contrast(1.2) opacity(0.35)', mixBlendMode: 'screen' }}
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+              style={baseMapStyle}
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-all duration-500"
               alt="Base Map"
             />
             {currentItem && (
               <img
                 src={getRadarUrl(currentItem)}
-                className="absolute inset-0 w-full h-full object-contain mix-blend-screen opacity-100 z-10"
+                style={radarLayerStyle}
+                className="absolute inset-0 w-full h-full object-contain z-10 transition-all duration-300"
                 alt="Rain Overlay"
                 onError={handleImageError}
                 key={`${mode}-${currentItem.value}`}
@@ -214,8 +226,13 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
             {mode === 'SG' && (
               <img
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/MRT.png"
-                style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))', opacity: 0.8 }}
-                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20"
+                style={{ 
+                  filter: theme === 'latte' 
+                    ? 'hue-rotate(180deg) brightness(0.8) drop-shadow(0 0 2px rgba(255,255,255,0.8))' 
+                    : 'invert(1) hue-rotate(180deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))', 
+                  opacity: 0.8 
+                }}
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20 transition-all duration-500"
                 alt="MRT Overlay"
               />
             )}
@@ -229,7 +246,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
             onClick={() => setIsPlaying(!isPlaying)}
             className={`w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full transition-all shrink-0 ${
               isPlaying 
-                ? 'bg-blue/20 text-blue border border-blue/30 shadow-[0_0_15px_rgba(138,173,244,0.2)]' 
+                ? 'bg-blue/20 text-blue border border-blue/30 shadow-[0_0_15px_rgba(var(--blue-rgb),0.2)]' 
                 : 'bg-blue text-mantle shadow-xl shadow-blue/20'
             }`}
           >
@@ -259,7 +276,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                   [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:bg-transparent
                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 
                   [&::-webkit-slider-thumb]:bg-blue [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:mt-[-10px]
-                  [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(138,173,244,0.5)] [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-mantle"
+                  [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(var(--blue-rgb),0.5)] [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:border-mantle"
               />
             </div>
           </div>
@@ -281,7 +298,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
         </div>
-        <div className="relative p-[1px] bg-white/5 rounded-sm shadow-2xl">
+        <div className="relative p-[1px] bg-surface0/5 rounded-sm shadow-2xl">
           <div className="flex h-4 w-full rounded-[1px] overflow-hidden">
             {intensityColors.map((color, idx) => (
               <div key={idx} className="flex-1" style={{ backgroundColor: color }} />

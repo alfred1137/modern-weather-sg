@@ -8,8 +8,10 @@ import Forecast24hView from './components/Forecast24hView';
 import Forecast4DayView from './components/Forecast4DayView';
 import LegendModal from './components/LegendModal';
 import { fetchNowcast, fetch24hForecast, fetch4DayForecast, fetchFloodAlerts } from './services/weatherService';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<AppTab>(AppTab.NOWCAST);
   const [showLegend, setShowLegend] = useState(false);
   const [state, setState] = useState<WeatherUIState>({
@@ -98,7 +100,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-8 pb-32 md:pb-12 md:pt-24 lg:pt-36 bg-base">
+    <div className="min-h-screen pt-8 pb-32 md:pb-12 md:pt-24 lg:pt-36 bg-base transition-colors duration-300">
       <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue/5 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-mauve/5 rounded-full blur-[120px]"></div>
@@ -130,7 +132,7 @@ const App: React.FC = () => {
               </p>
               <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for those in Singapore.<br />
-                <span className="text-overlay0">v0.8.3</span>
+                <span className="text-overlay0">v0.9.0</span>
               </p>
             </div>
 
@@ -151,7 +153,16 @@ const App: React.FC = () => {
       </footer>
 
       <LegendModal isOpen={showLegend} onClose={() => setShowLegend(false)} />
+      <ThemeToggle />
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 };
 

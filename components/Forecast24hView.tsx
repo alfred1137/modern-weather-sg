@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Forecast24h } from '../types';
 import { getWeatherIcon, SG_REGIONS } from '../constants';
 import SyncFooter from './SyncFooter';
+import { useTheme } from '../context/ThemeContext';
 
 interface Props {
   data: Forecast24h | null;
@@ -9,6 +10,7 @@ interface Props {
 
 const Forecast24hView: React.FC<Props> = ({ data }) => {
   const [activePeriodIdx, setActivePeriodIdx] = useState(0);
+  const { theme } = useTheme();
 
   if (!data) return <div className="text-center p-8 text-xs font-bold uppercase opacity-50 tracking-widest text-text">Synchronizing Forecast...</div>;
 
@@ -21,6 +23,10 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
   };
 
   const currentPeriod = data.periods[activePeriodIdx];
+
+  const mapImageStyle = theme === 'latte'
+    ? { opacity: 0.6, filter: 'contrast(0.4) brightness(1.5) grayscale(1)', mixBlendMode: 'multiply' as const }
+    : { opacity: 0.2, filter: 'contrast(1.25) brightness(1.0) grayscale(1)', mixBlendMode: 'screen' as const };
 
   return (
     <div className="flex flex-col gap-6 md:gap-10 animate-fadeIn">
@@ -47,16 +53,17 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                     {getPeriodLabel(period.time.start)}
                   </span>
                   {activePeriodIdx === idx && (
-                    <div className="absolute bottom-0 left-1/4 w-1/2 h-1 bg-blue rounded-full shadow-[0_-2px_15px_rgba(138,173,244,0.6)]"></div>
+                    <div className="absolute bottom-0 left-1/4 w-1/2 h-1 bg-blue rounded-full shadow-[0_-2px_15px_rgba(var(--blue-rgb),0.6)]"></div>
                   )}
                 </button>
               ))}
             </div>
 
-            <div className="relative w-full bg-base overflow-hidden aspect-[1.6/1] sm:aspect-[2.4/1]">
+            <div className="relative w-full bg-base overflow-hidden aspect-[1.6/1] sm:aspect-[2.4/1] transition-colors duration-300">
               <img 
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
-                className="absolute inset-0 w-full h-full object-cover opacity-20 contrast-125 brightness-100 mix-blend-screen pointer-events-none grayscale"
+                style={mapImageStyle}
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-all duration-300"
                 alt="Singapore Background"
               />
               <div className="absolute inset-0 z-10">
@@ -76,7 +83,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                         </div>
                         <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-2xl border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
                            <span className="text-[7px] md:text-[9px] font-black text-overlay2 uppercase tracking-[0.3em] block mb-0.5">{region.name}</span>
-                           <span className="text-[9px] md:text-xs text-blue font-black uppercase tracking-tight block whitespace-normal leading-tight drop-shadow-[0_0_10px_rgba(138,173,244,0.5)]">
+                           <span className="text-[9px] md:text-xs text-blue font-black uppercase tracking-tight block whitespace-normal leading-tight drop-shadow-[0_0_10px_rgba(var(--blue-rgb),0.5)]">
                              {forecast}
                            </span>
                         </div>
@@ -94,7 +101,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
           <div className="bg-surface0/20 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-peach/20 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-overlay1">Temperature</span>
-              <i className="fas fa-temperature-half text-peach text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(245,169,127,0.3)]"></i>
+              <i className="fas fa-temperature-half text-peach text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(var(--peach-rgb),0.3)]"></i>
             </div>
             <div className="flex items-center justify-center">
               <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-text flex items-center gap-4">
@@ -109,7 +116,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
           <div className="bg-surface0/20 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-blue/20 shadow-xl">
             <div className="flex items-center justify-between">
               <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-overlay1">Humidity</span>
-              <i className="fas fa-droplet text-blue text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(138,173,244,0.3)]"></i>
+              <i className="fas fa-droplet text-blue text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(var(--blue-rgb),0.3)]"></i>
             </div>
             <div className="flex items-center justify-center">
               <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-text flex items-center gap-4">
@@ -138,7 +145,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
             </div>
 
             <div className="flex justify-center pb-2">
-              <i className="fas fa-wind text-teal text-6xl md:text-7xl lg:text-8xl opacity-80 drop-shadow-[0_0_25px_rgba(139,213,202,0.25)]"></i>
+              <i className="fas fa-wind text-teal text-6xl md:text-7xl lg:text-8xl opacity-80 drop-shadow-[0_0_25px_rgba(var(--teal-rgb),0.25)]"></i>
             </div>
           </div>
         </div>

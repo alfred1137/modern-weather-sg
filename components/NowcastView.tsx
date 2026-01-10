@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NowcastArea, NowcastData } from '../types';
 import { getWeatherIcon, AREA_COORDINATES } from '../constants';
 import SyncFooter from './SyncFooter';
+import { useTheme } from '../context/ThemeContext';
 
 interface Props {
   data: NowcastData | null;
@@ -11,6 +12,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('map');
   const [hoveredArea, setHoveredArea] = useState<NowcastArea | null>(null);
+  const { theme } = useTheme();
 
   if (!data) return <div className="text-center p-8 text-overlay1">Loading nowcast...</div>;
 
@@ -48,6 +50,11 @@ const NowcastView: React.FC<Props> = ({ data }) => {
       </div>
     );
   };
+
+  // Theme-aware styles for the map image
+  const mapImageStyle = theme === 'latte' 
+    ? { opacity: 0.6, filter: 'contrast(0.4) brightness(1.5) grayscale(1)', mixBlendMode: 'multiply' as const } 
+    : { opacity: 0.2, filter: 'contrast(1.25) brightness(0.75) grayscale(1)', mixBlendMode: 'screen' as const };
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
@@ -111,10 +118,11 @@ const NowcastView: React.FC<Props> = ({ data }) => {
 
       {viewMode === 'map' ? (
         <div className="relative flex flex-col gap-4">
-          <div className="glass rounded-none sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-2xl bg-base">
+          <div className="glass rounded-none sm:rounded-[32px] md:rounded-[40px] overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-2xl bg-base transition-colors duration-300">
             <img 
               src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
-              className="absolute inset-0 w-full h-full object-cover opacity-20 contrast-125 brightness-75 mix-blend-screen pointer-events-none grayscale"
+              style={mapImageStyle}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-all duration-300"
               alt="Singapore Background"
             />
             
@@ -144,7 +152,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
                   <div className="scale-[0.55] sm:scale-75 md:scale-110 flex-shrink-0 origin-center drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                     {getWeatherIcon(hoveredArea.forecast)}
                   </div>
-                  <span className="text-[10px] md:text-lg font-black text-blue uppercase tracking-tight whitespace-normal leading-tight text-center drop-shadow-[0_0_15px_rgba(138,173,244,0.4)]">
+                  <span className="text-[10px] md:text-lg font-black text-blue uppercase tracking-tight whitespace-normal leading-tight text-center drop-shadow-[0_0_15px_rgba(var(--blue-rgb),0.4)]">
                     {hoveredArea.forecast}
                   </span>
                 </div>
