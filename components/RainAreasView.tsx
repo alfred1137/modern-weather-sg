@@ -228,8 +228,8 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/MRT.png"
                 style={{ 
                   filter: theme === 'latte' 
-                    ? 'hue-rotate(180deg) brightness(0.8) drop-shadow(0 0 2px rgba(255,255,255,0.8))' 
-                    : 'invert(1) hue-rotate(180deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))', 
+                    ? 'brightness(0.8) drop-shadow(0 0 2px rgba(255,255,255,0.8))' 
+                    : 'invert(1) hue-rotate(190deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))', 
                   opacity: 0.8 
                 }}
                 className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20 transition-all duration-500"
