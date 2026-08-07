@@ -1,0 +1,560 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Real-time API weather services",
+    "description": "Real-time API documentation of weather services",
+    "contact": {
+      "email": "feedback@data.gov.sg"
+    },
+    "version": "1.0.11"
+  },
+  "servers": [
+    {
+      "url": "https://api-open.data.gov.sg/v2/real-time/api"
+    }
+  ],
+  "paths": {
+    "/twenty-four-hr-forecast": {
+      "get": {
+        "summary": "Retrieve the latest 24 hour weather forecast",
+        "description": "**[https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast](https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast)**\n\n<br/>\n\n- Updated multiple times throughout the day\n\n<br/>\n\n- Filter for specific date or date-time by providing `date` in query parameter.\n  - use YYYY-MM-DD format to retrieve all of the readings for that day\n  - use YYYY-MM-DDTHH:mm:ss to retrieve the latest readings at that moment in time\n  - example: `?date=2024-07-16` or `?date=2024-07-16T23:59:00`\n  - Forecasts are valid for twenty four hours, for example, the validity perior of the forecast at 1st Jan 1pm is from 1st Jan 1pm to 2nd Jan 1pm\n\n<br/>\n\n- If `date` is not provided in query parameter, API will return the latest reading\n\n<br/>\n\n- Possible values for forecast include:\n  - Fair\n  - Fair (Day)\n  - Fair (Night)\n  - Fair and Warm\n  - Partly Cloudy\n  - Partly Cloudy (Day)\n  - Partly Cloudy (Night)\n  - Cloudy\n  - Hazy\n  - Slightly Hazy\n  - Windy\n  - Mist\n  - Fog\n  - Light Rain\n  - Moderate Rain\n  - Heavy Rain\n  - Passing Showers\n  - Light Showers\n  - Showers\n  - Heavy Showers\n  - Thundery Showers\n  - Heavy Thundery Showers\n  - Heavy Thundery Showers with Gusty Winds\n\n<br/>\n\n- Weather forecast definitions can be found here: https://www.weather.gov.sg/forecasting-2/\n\n<br/>\n\n- Area metadata\n  - The `area_metadata` field in the response provides longitude/latitude information for the areas. You can use that to place the forecasts on a map.\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date",
+            "description": "SGT date (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS). Example: 2024-07-16 or 2024-07-16T23:59:00",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "paginationToken",
+            "description": "Pagination token for retrieving subsequent data pages (only exists when there is a next page available for requests with date filters)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+    "name": "x-api-key",
+    "in": "header",
+    "description": "API key for higher rate limits (optional)",
+    "required": false,
+    "schema": {
+      "type": "string"
+    }
+  }
+        ],
+        "responses": {
+          "200": {
+            "description": "24 Hour Weather Forecast",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "description": "Response status code (always 0 for success)"
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "description": "Error message (empty string for success)",
+                      "example": null
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "area_metadata": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Name of the area",
+                                "example": "Ang Mo Kio"
+                              },
+                              "label_location": {
+                                "type": "object",
+                                "description": "Provides longitude and latitude for placing readings on a map",
+                                "properties": {
+                                  "latitude": {
+                                    "type": "number",
+                                    "example": 1.375
+                                  },
+                                  "longitude": {
+                                    "type": "number",
+                                    "example": 103.839
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "example": "2024-07-15T00:00:00.000Z"
+                              },
+                              "updatedTimestamp": {
+                                "type": "string",
+                                "description": "Time of acquisition of data from NEA",
+                                "example": "2024-07-15T15:04:00.000Z"
+                              },
+                              "timestamp": {
+                                "type": "string",
+                                "description": "Time forecast was issued by NEA",
+                                "example": "2024-07-15T15:04:00.000Z"
+                              },
+                              "general": {
+                                "type": "object",
+                                "description": "A general weather forecast for the 24 hour period",
+                                "properties": {
+                                  "validPeriod": {
+                                    "type": "object",
+                                    "description": "Period of time the forecast is valid for",
+                                    "properties": {
+                                      "start": {
+                                        "type": "string",
+                                        "example": "2024-07-16T16:30:00.000Z"
+                                      },
+                                      "end": {
+                                        "type": "string",
+                                        "example": "2024-07-16T18:30:00.000Z"
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "example": "12.30 am to 2.30 am"
+                                      }
+                                    }
+                                  },
+                                  "temperature": {
+                                    "type": "object",
+                                    "description": "Unit of measure - Degrees Celsius",
+                                    "properties": {
+                                      "low": {
+                                        "type": "number",
+                                        "example": 26
+                                      },
+                                      "high": {
+                                        "type": "number",
+                                        "example": 36
+                                      },
+                                      "unit": {
+                                        "type": "string",
+                                        "example": "Degrees Celsius"
+                                      }
+                                    }
+                                  },
+                                  "relativeHumidity": {
+                                    "type": "object",
+                                    "description": "Unit of measure - Percentage",
+                                    "properties": {
+                                      "low": {
+                                        "type": "number",
+                                        "example": 55
+                                      },
+                                      "high": {
+                                        "type": "number",
+                                        "example": 90
+                                      },
+                                      "unit": {
+                                        "type": "string",
+                                        "example": "Percentage"
+                                      }
+                                    }
+                                  },
+                                  "forecast": {
+                                    "type": "object",
+                                    "properties": {
+                                      "code": {
+                                        "type": "string"
+                                      },
+                                      "text": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Fair",
+                                          "Fair (Day)",
+                                          "Fair (Night)",
+                                          "Fair and Warm",
+                                          "Partly Cloudy",
+                                          "Partly Cloudy (Day)",
+                                          "Partly Cloudy (Night)",
+                                          "Cloudy",
+                                          "Hazy",
+                                          "Slightly Hazy",
+                                          "Windy",
+                                          "Mist",
+                                          "Fog",
+                                          "Light Rain",
+                                          "Moderate Rain",
+                                          "Heavy Rain",
+                                          "Passing Showers",
+                                          "Light Showers",
+                                          "Showers",
+                                          "Heavy Showers",
+                                          "Thundery Showers",
+                                          "Heavy Thundery Showers",
+                                          "Heavy Thundery Showers with Gusty Winds"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "wind": {
+                                    "type": "object",
+                                    "properties": {
+                                      "speed": {
+                                        "type": "object",
+                                        "description": "Unit of measure - Kilometeres per hour",
+                                        "properties": {
+                                          "low": {
+                                            "type": "number",
+                                            "example": 15
+                                          },
+                                          "high": {
+                                            "type": "number",
+                                            "example": 30
+                                          }
+                                        }
+                                      },
+                                      "direction": {
+                                        "type": "string",
+                                        "example": "SSE"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "periods": {
+                                "type": "array",
+                                "description": "Forecasts for various areas in Singapore",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "timePeriod": {
+                                      "type": "object",
+                                      "description": "Period of time the forecast is valid for",
+                                      "properties": {
+                                        "start": {
+                                          "type": "string",
+                                          "example": "2024-07-16T16:30:00.000Z"
+                                        },
+                                        "end": {
+                                          "type": "string",
+                                          "example": "2024-07-16T18:30:00.000Z"
+                                        },
+                                        "text": {
+                                          "type": "string",
+                                          "example": "12.30 am to 2.30 am"
+                                        }
+                                      }
+                                    },
+                                    "regions": {
+                                      "type": "object",
+                                      "properties": {
+                                        "west": {
+                                          "type": "object",
+                                          "properties": {
+                                            "code": {
+                                              "type": "string"
+                                            },
+                                            "text": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Fair",
+                                                "Fair (Day)",
+                                                "Fair (Night)",
+                                                "Fair and Warm",
+                                                "Partly Cloudy",
+                                                "Partly Cloudy (Day)",
+                                                "Partly Cloudy (Night)",
+                                                "Cloudy",
+                                                "Hazy",
+                                                "Slightly Hazy",
+                                                "Windy",
+                                                "Mist",
+                                                "Fog",
+                                                "Light Rain",
+                                                "Moderate Rain",
+                                                "Heavy Rain",
+                                                "Passing Showers",
+                                                "Light Showers",
+                                                "Showers",
+                                                "Heavy Showers",
+                                                "Thundery Showers",
+                                                "Heavy Thundery Showers",
+                                                "Heavy Thundery Showers with Gusty Winds"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "east": {
+                                          "type": "object",
+                                          "properties": {
+                                            "code": {
+                                              "type": "string"
+                                            },
+                                            "text": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Fair",
+                                                "Fair (Day)",
+                                                "Fair (Night)",
+                                                "Fair and Warm",
+                                                "Partly Cloudy",
+                                                "Partly Cloudy (Day)",
+                                                "Partly Cloudy (Night)",
+                                                "Cloudy",
+                                                "Hazy",
+                                                "Slightly Hazy",
+                                                "Windy",
+                                                "Mist",
+                                                "Fog",
+                                                "Light Rain",
+                                                "Moderate Rain",
+                                                "Heavy Rain",
+                                                "Passing Showers",
+                                                "Light Showers",
+                                                "Showers",
+                                                "Heavy Showers",
+                                                "Thundery Showers",
+                                                "Heavy Thundery Showers",
+                                                "Heavy Thundery Showers with Gusty Winds"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "central": {
+                                          "type": "object",
+                                          "properties": {
+                                            "code": {
+                                              "type": "string"
+                                            },
+                                            "text": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Fair",
+                                                "Fair (Day)",
+                                                "Fair (Night)",
+                                                "Fair and Warm",
+                                                "Partly Cloudy",
+                                                "Partly Cloudy (Day)",
+                                                "Partly Cloudy (Night)",
+                                                "Cloudy",
+                                                "Hazy",
+                                                "Slightly Hazy",
+                                                "Windy",
+                                                "Mist",
+                                                "Fog",
+                                                "Light Rain",
+                                                "Moderate Rain",
+                                                "Heavy Rain",
+                                                "Passing Showers",
+                                                "Light Showers",
+                                                "Showers",
+                                                "Heavy Showers",
+                                                "Thundery Showers",
+                                                "Heavy Thundery Showers",
+                                                "Heavy Thundery Showers with Gusty Winds"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "north": {
+                                          "type": "object",
+                                          "properties": {
+                                            "code": {
+                                              "type": "string"
+                                            },
+                                            "text": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Fair",
+                                                "Fair (Day)",
+                                                "Fair (Night)",
+                                                "Fair and Warm",
+                                                "Partly Cloudy",
+                                                "Partly Cloudy (Day)",
+                                                "Partly Cloudy (Night)",
+                                                "Cloudy",
+                                                "Hazy",
+                                                "Slightly Hazy",
+                                                "Windy",
+                                                "Mist",
+                                                "Fog",
+                                                "Light Rain",
+                                                "Moderate Rain",
+                                                "Heavy Rain",
+                                                "Passing Showers",
+                                                "Light Showers",
+                                                "Showers",
+                                                "Heavy Showers",
+                                                "Thundery Showers",
+                                                "Heavy Thundery Showers",
+                                                "Heavy Thundery Showers with Gusty Winds"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "south": {
+                                          "type": "object",
+                                          "properties": {
+                                            "code": {
+                                              "type": "string"
+                                            },
+                                            "text": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Fair",
+                                                "Fair (Day)",
+                                                "Fair (Night)",
+                                                "Fair and Warm",
+                                                "Partly Cloudy",
+                                                "Partly Cloudy (Day)",
+                                                "Partly Cloudy (Night)",
+                                                "Cloudy",
+                                                "Hazy",
+                                                "Slightly Hazy",
+                                                "Windy",
+                                                "Mist",
+                                                "Fog",
+                                                "Light Rain",
+                                                "Moderate Rain",
+                                                "Heavy Rain",
+                                                "Passing Showers",
+                                                "Light Showers",
+                                                "Showers",
+                                                "Heavy Showers",
+                                                "Thundery Showers",
+                                                "Heavy Thundery Showers",
+                                                "Heavy Thundery Showers with Gusty Winds"
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "paginationToken": {
+                          "type": "string",
+                          "description": "Token to retrieve next page if exists",
+                          "example": "b2Zmc2V0PTEwMA== (you will see this token only if next page exists)"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid HTTP request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 4
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "ERROR_PARAMS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "enum": [
+                        "Invalid date format. Date format must be YYYY-MM-DD (2024-06-01) or YYYY-MM-DDTHH:mm:ss (2024-06-01T08:30:00).",
+                        "Invalid pagination token."
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Weather data not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 17
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "REAL_TIME_API_DATA_NOT_FOUND"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "example": "Data not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 24
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "TOO_MANY_REQUESTS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "example": "Rate limit exceeded"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    }
+  }
+}

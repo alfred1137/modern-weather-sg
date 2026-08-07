@@ -1,6 +1,7 @@
 <a id="readme-top"></a>
 
 <!-- PROJECT SHIELDS -->
+
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
@@ -27,7 +28,7 @@
     <br />
     <a href="https://alfred1137.github.io/modern-weather-sg/"><strong>Try the Demo »</strong></a>
     <br />
-    <img src="https://img.shields.io/badge/version-v0.9.1-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.0.0-blue" alt="Version">
     <br />
     <br />
     <a href="https://github.com/alfred1137/modern-weather-sg/issues">Report Bug</a>
@@ -60,7 +61,9 @@
 </details>
 
 <!-- OVERVIEW -->
+
 <a id="overview"></a>
+
 ## 📖 Overview
 
 Modern Weather.sg is a modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
@@ -72,37 +75,42 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- FEATURES -->
+
 <a id="features"></a>
+
 ## ✨ Features
 
-*   **2-Hour Nowcast**: Interactive map and grid views of 2-hour weather forecasts across Singapore's 47 weather areas.
-*   **Rain Radar**: High-resolution playback of rain areas (50km and 240km regional views) with an optimized dark-mode interface.
-*   **Flood Warnings**: Live alerts synchronized with PUB (Singapore's National Water Agency) including severity levels and instructions.
-*   **24-Hour Forecast**: Regional outlooks (North, South, East, West, Central) with temperature, humidity, and wind data.
-*   **4-Day Outlook**: Extended weather planning with high-fidelity icons and trend insights.
-*   **Fully Responsive**: Optimized for everything from mobile devices to high-resolution desktop monitors.
-*   **Progressive Web App (PWA)**: Installable on iOS and Android for a native-like experience with offline asset caching.
-*   **Automatic Sync**: Data refreshes automatically every 5 minutes from official sources.
-
+- **2-Hour Nowcast**: Interactive map and grid views of 2-hour weather forecasts across Singapore's 47 weather areas.
+- **Rain Radar**: High-resolution playback of rain areas (50km and 240km regional views) with an optimized dark-mode interface.
+- **Flood Warnings**: Live alerts synchronized with PUB (Singapore's National Water Agency) including severity levels and instructions.
+- **24-Hour Forecast**: Regional outlooks (North, South, East, West, Central) with temperature, humidity, and wind data.
+- **4-Day Outlook**: Extended weather planning with high-fidelity icons and trend insights.
+- **Fully Responsive**: Optimized for everything from mobile devices to high-resolution desktop monitors.
+- **Progressive Web App (PWA)**: Installable on iOS and Android for a native-like experience with offline asset caching.
+- **Automatic Sync**: Data refreshes automatically every 5 minutes from official sources.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- TECHNOLOGIES -->
+
 <a id="technologies"></a>
+
 ## 📦 Technologies
 
-*   **Framework**: [React 19](https://react.dev/)
-*   **Styling**: [Tailwind CSS](https://tailwindcss.com/) (via CDN with Catppuccin theme)
-*   **Build Tool**: [Vite 6](https://vitejs.dev/)
-*   **Language**: [TypeScript](https://www.typescriptlang.org/)
-*   **Icons**: [FontAwesome 6](https://fontawesome.com/)
-*   **API**: [Data.gov.sg APIs](https://data.gov.sg/) (NEA & PUB)
-*   **AI-Assisted Development**: [Google Gemini 3 (AI Studio)](https://aistudio.google.com/)
+- **Framework**: [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (via CDN with Catppuccin theme)
+- **Build Tool**: [Vite 6](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Icons**: [FontAwesome 6](https://fontawesome.com/)
+- **API**: [Data.gov.sg APIs](https://data.gov.sg/) (NEA & PUB), proxied through a [Cloudflare Worker](https://workers.cloudflare.com/) that injects the API key and caches responses
+- **AI-Assisted Development**: [Google Gemini 3 (AI Studio)](https://aistudio.google.com/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
+
 <a id="getting-started"></a>
+
 ## 🚀 Getting Started
 
 The easiest way to start using this modern weather app is to use the demo version hosted as github page [here](https://alfred1137.github.io/modern-weather-sg/).
@@ -114,14 +122,16 @@ On mobile, you can install it as PWA by going to your browser menu (three dots),
 To get a local copy up and running, follow these steps.
 
 <a id="prerequisites"></a>
+
 ### Prerequisites
 
-*   npm
-    ```sh
-    npm install npm@latest -g
-    ```
+- npm
+  ```sh
+  npm install npm@latest -g
+  ```
 
 <a id="installation"></a>
+
 ### Installation
 
 1.  Clone the repo
@@ -140,7 +150,9 @@ To get a local copy up and running, follow these steps.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- REPOSITORY STRUCTURE -->
+
 <a id="repository-structure"></a>
+
 ## 🗂️ Repository Structure
 
 ```
@@ -149,6 +161,7 @@ To get a local copy up and running, follow these steps.
 ├── context/              # Context providers (ThemeContext)
 ├── services/             # API service layers (weatherService)
 ├── public/               # Static assets, manifest, and service worker
+├── workers/              # Cloudflare Worker proxy (API key + 5-min cache)
 ├── App.tsx               # Main application container
 ├── index.tsx             # Entry point
 ├── types.ts              # TypeScript interfaces
@@ -158,7 +171,9 @@ To get a local copy up and running, follow these steps.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- DEPLOYMENT -->
+
 <a id="deployment"></a>
+
 ## 🚢 Deployment
 
 This project is set up with **GitHub Actions** for automatic deployment to GitHub Pages.
@@ -167,10 +182,29 @@ This project is set up with **GitHub Actions** for automatic deployment to GitHu
 2.  **GitHub Actions**: The "Deploy to GitHub Pages" workflow will run automatically.
 3.  **Check Settings**: Ensure **Settings > Pages** is set to "Deploy from a branch" using the `gh-pages` branch.
 
+### Weather API proxy (Cloudflare Worker)
+
+The app does **not** call data.gov.sg directly. All weather requests route through the
+`sgw-proxy` Cloudflare Worker (`workers/`), which holds the data.gov.sg API key as a
+Worker secret (`WEATHER_API_KEY`) and caches each endpoint for 5 minutes — so a burst
+of visitors costs one upstream call per 5-minute window instead of one per visitor
+(prevents the anonymous quota from being exhausted).
+
+To deploy/update the worker:
+
+```sh
+cd workers
+npx wrangler login
+npx wrangler secret put WEATHER_API_KEY   # your data.gov.sg key
+npx wrangler deploy
+```
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
+
 <a id="contributing"></a>
+
 ## 🤝 Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -184,7 +218,9 @@ Contributions are what make the open source community such an amazing place to l
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
+
 <a id="license"></a>
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information. Data used within the app is subject to the [Singapore Open Data Licence](https://data.gov.sg/open-data-licence).
@@ -192,7 +228,9 @@ Distributed under the MIT License. See `LICENSE` for more information. Data used
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
+
 <a id="contact"></a>
+
 ## Contact
 
 Alfred TANG - [GitHub](https://github.com/alfred1137)
@@ -202,19 +240,22 @@ Project Link: [https://github.com/alfred1137/modern-weather-sg](https://github.c
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
+
 <a id="acknowledgments"></a>
+
 ## ❤️ Acknowledgments
 
-*   [National Environment Agency (NEA)](https://www.nea.gov.sg/)
-*   [PUB, Singapore's National Water Agency](https://www.pub.gov.sg/)
-*   [Meteorological Service Singapore (MSS)](http://www.weather.gov.sg/)
-*   [Data.gov.sg](https://data.gov.sg/)
-*   [Catppuccin Theme](https://github.com/catppuccin/catppuccin)
-*   [Font Awesome](https://fontawesome.com)
+- [National Environment Agency (NEA)](https://www.nea.gov.sg/)
+- [PUB, Singapore's National Water Agency](https://www.pub.gov.sg/)
+- [Meteorological Service Singapore (MSS)](http://www.weather.gov.sg/)
+- [Data.gov.sg](https://data.gov.sg/)
+- [Catppuccin Theme](https://github.com/catppuccin/catppuccin)
+- [Font Awesome](https://fontawesome.com)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
+
 [contributors-shield]: https://img.shields.io/github/contributors/alfred1137/modern-weather-sg.svg?style=for-the-badge
 [contributors-url]: https://github.com/alfred1137/modern-weather-sg/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/alfred1137/modern-weather-sg.svg?style=for-the-badge

@@ -1,0 +1,327 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Data.gov.sg APIs",
+    "description": "\"APIs for People\"",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api-open.data.gov.sg/v2"
+    }
+  ],
+  "paths": {
+    "/real-time/api/weather/flood-alerts": {
+      "get": {
+        "summary": "Get flood alert information across Singapore",
+        "description": "**[https://api-open.data.gov.sg/v2/real-time/api/weather/flood-alerts](https://api-open.data.gov.sg/v2/real-time/api/weather/flood-alerts)**\n\n<br/>\n\n- Get the latest flood alert information across singapore.\n- Use the `date` parameter to retrieve the latest available data.\n- All created flood alerts will have a corresponding `Cancel` alert to indicate the flood has subsided.\n",
+        "tags": ["Environment"],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date or date-time should be in the ISO 8601 format (`YYYY-MM-DD` or `YYYY-MM-DDTHH:MM:SS`). If only a date is provided, then the alerts issued for the specific date will be returned. If a date and time are provided, then the alerts issued for the date until the specific time will be returned.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "paginationToken",
+            "in": "query",
+            "description": "Pagination token for retrieving subsequent data pages",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "description": "API key for higher rate limits (optional)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "datetime": {
+                                "type": "string",
+                                "description": "Date and Time the flood observation was issued by PUB",
+                                "example": "2025-05-22T09:55:00+08:00"
+                              },
+                              "item": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "description": "Type of the weather information (`observation` or `forecast`). Flood alert is always `observation`.",
+                                    "example": "observation"
+                                  },
+                                  "identifier": {
+                                    "type": "string",
+                                    "description": "A number or string uniquely identifying this observation, assigned by the sender.",
+                                    "example": "2.49.0.0.702.2-BCM-17586121561884-DYOONG"
+                                  },
+                                  "isStationData": {
+                                    "type": "boolean",
+                                    "description": "Indicates whether the weather information includes station information.",
+                                    "example": false
+                                  },
+                                  "msgType": {
+                                    "type": "string",
+                                    "description": "Code denoting the nature of the alert message. Possible Code Values: “Alert” - Initial information requiring attention by targeted recipients, “Cancel” - Cancels the earlier message(s) identified in 'references'",
+                                    "example": "Alert"
+                                  },
+                                  "references": {
+                                    "type": "string",
+                                    "description": "The group listing identifying earlier message(s) referenced by the alert message. The string will be in the form of sender,identifier,sentTime",
+                                    "example": "pub_joint_ops_ctr@pub.gov.sg, 2.49.0.0.702.2-BCM-17586117885024-DYOONG, 2025-09-23T15:16:28+08:00"
+                                  },
+                                  "sender": {
+                                    "type": "string",
+                                    "description": "Identifier of the sender of the alert message.",
+                                    "example": "pub_joint_ops_ctr@pub.gov.sg"
+                                  },
+                                  "scope": {
+                                    "type": "string",
+                                    "description": "Code denoting the intended distribution of the alert message. Default Code Value: “Public” - For general dissemination to unrestricted audiences.",
+                                    "example": "Public"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "description": "Code denoting the appropriate handling of the alert message. Default Code Value: “Actual” - Actionable by all targeted recipients",
+                                    "example": "Actual"
+                                  },
+                                  "readings": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "area": {
+                                          "type": "object",
+                                          "properties": {
+                                            "areaDesc": {
+                                              "type": "string",
+                                              "description": "Area description",
+                                              "example": "at <street name1> from <street name2> to <street name3>"
+                                            },
+                                            "circle": {
+                                              "type": "array",
+                                              "items": {
+                                                "type": "number"
+                                              },
+                                              "description": "lat/lng and radius in kilometers. The radius refers to the broadcasting radius of the specific alert, it is NOT indicative of the extent of the flooding.",
+                                              "example": [1.33201, 103.87015, 1]
+                                            }
+                                          }
+                                        },
+                                        "category": {
+                                          "type": "string",
+                                          "description": "Observation category. Code denoting the category of the subject event of the alert message. Default Code Values: Met- Meteorological (inc flood).",
+                                          "example": "Met"
+                                        },
+                                        "certainty": {
+                                          "type": "string",
+                                          "description": "Observation certainty. Code denoting the certainty of the subject event of the alert message. Code Values: 'Observed' - Determined to have occurred or to be ongoing.",
+                                          "example": "Observed"
+                                        },
+                                        "description": {
+                                          "type": "string",
+                                          "description": "Location of Flood. Text describing the subject event of the alert message",
+                                          "example": "Flash flood at Bt Timah Rd from Wilby Rd to Blackmore Dr. Please avoid the area. Issued 1705 hrs."
+                                        },
+                                        "event": {
+                                          "type": "string",
+                                          "description": "Text denoting the type of the subject event of the alert message. Event will always be 'Flood'",
+                                          "example": "Flood"
+                                        },
+                                        "eventCode": {
+                                          "type": "object",
+                                          "properties": {
+                                            "value": {
+                                              "type": "string",
+                                              "description": "Event code. A system-specific code identifying the event type of the alert message. Default Event Code: OET-081 - flood.",
+                                              "example": "OET-081"
+                                            },
+                                            "valueName": {
+                                              "type": "string",
+                                              "description": "Event code name. valueName will always be 'OET:v1.2'",
+                                              "example": "OET:v1.2"
+                                            }
+                                          }
+                                        },
+                                        "headline": {
+                                          "type": "string",
+                                          "description": "Text headline of the alert message'",
+                                          "example": "Flash Flood Alert"
+                                        },
+                                        "instruction": {
+                                          "type": "string",
+                                          "description": "Text describing the recommended action to be taken by recipients of the alert message",
+                                          "example": "Please avoid this area for the next one (1) hour."
+                                        },
+                                        "responseType": {
+                                          "type": "string",
+                                          "description": "Alert response type. Code denoting the type of action recommended for the target audience. Default Code Value: 'Avoid'",
+                                          "example": "Avoid"
+                                        },
+                                        "senderName": {
+                                          "type": "string",
+                                          "description": "Text naming the originator of the alert message. senderName will always be 'PUB'",
+                                          "example": "PUB"
+                                        },
+                                        "severity": {
+                                          "type": "string",
+                                          "description": "Code denoting the severity of the subject event of the alert message. Possible Code Values: 'Extreme' - Extraordinary threat to life or property, 'Severe' - Significant threat to life or property, 'Moderate' - Possible threat to life or property, 'Minor' – Minimal to no known threat to life or property.",
+                                          "example": "Minor"
+                                        },
+                                        "urgency": {
+                                          "type": "string",
+                                          "description": "Code denoting the severity of the subject event of the alert message. Default Code Value: 'Immediate' - Responsive action SHOULD be taken immediately.",
+                                          "example": "Immediate"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "updatedTimestamp": {
+                                "type": "string",
+                                "description": "Time the alert is received in ISO timestamp (`YYYY-MM-DDTHH:MM:SS`)",
+                                "example": "2025-05-22T10:03:18+08:00"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "example": ""
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid HTTP request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 4
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "ERROR_PARAMS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "enum": [
+                        "Invalid date format. Date format must be YYYY-MM-DD (2024-06-01) or YYYY-MM-DDTHH:mm:ss (2024-06-01T08:30:00).",
+                        "Invalid pagination token."
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Data not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 17
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "REAL_TIME_API_DATA_NOT_FOUND"
+                    },
+                    "data": {
+                      "type": "object"
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "example": "Data not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "number",
+                      "example": 24
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "TOO_MANY_REQUESTS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": null
+                    },
+                    "errorMsg": {
+                      "type": "string",
+                      "example": "Rate limit exceeded"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    }
+  }
+}
