@@ -1,31 +1,31 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { AppTab, WeatherUIState } from "./types";
-import Navigation from "./components/Navigation";
-import NowcastView from "./components/NowcastView";
-import RainAreasView from "./components/RainAreasView";
-import FloodWarningView from "./components/FloodWarningView";
-import Forecast24hView from "./components/Forecast24hView";
-import Forecast4DayView from "./components/Forecast4DayView";
-import LegendModal from "./components/LegendModal";
+import React, { useState, useEffect, useCallback } from 'react'
+import { AppTab, WeatherUIState } from './types'
+import Navigation from './components/Navigation'
+import NowcastView from './components/NowcastView'
+import RainAreasView from './components/RainAreasView'
+import FloodWarningView from './components/FloodWarningView'
+import Forecast24hView from './components/Forecast24hView'
+import Forecast4DayView from './components/Forecast4DayView'
+import LegendModal from './components/LegendModal'
 import {
   fetchNowcast,
   fetch24hForecast,
   fetch4DayForecast,
   fetchFloodAlerts,
-} from "./services/weatherService";
-import { ThemeProvider } from "./context/ThemeContext";
-import ThemeToggle from "./components/ThemeToggle";
+} from './services/weatherService'
+import { ThemeProvider } from './context/ThemeContext'
+import ThemeToggle from './components/ThemeToggle'
 
 // Last-known-good weather data persisted locally so a failed refresh (upstream
 // 429, worker hiccup, offline) shows stale data instead of a blank error screen.
-const CACHE_KEY = "sg-weather-cache-v1";
+const CACHE_KEY = 'sg-weather-cache-v1'
 
 const loadCachedState = (): WeatherUIState | null => {
   try {
-    const raw = localStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return null;
+    const raw = localStorage.getItem(CACHE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object') return null
     return {
       nowcast: parsed.nowcast ?? null,
       forecast24h: parsed.forecast24h ?? null,
@@ -33,15 +33,15 @@ const loadCachedState = (): WeatherUIState | null => {
       floodAlerts: parsed.floodAlerts ?? null,
       loading: false,
       error: null,
-    };
+    }
   } catch {
-    return null;
+    return null
   }
-};
+}
 
 const AppContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<AppTab>(AppTab.NOWCAST);
-  const [showLegend, setShowLegend] = useState(false);
+  const [activeTab, setActiveTab] = useState<AppTab>(AppTab.NOWCAST)
+  const [showLegend, setShowLegend] = useState(false)
   const [state, setState] = useState<WeatherUIState>(
     () =>
       loadCachedState() ?? {
@@ -52,22 +52,22 @@ const AppContent: React.FC = () => {
         loading: true,
         error: null,
       },
-  );
+  )
 
   // Automatically scroll to top when changing tabs
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [activeTab]);
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [activeTab])
 
   const loadData = useCallback(async () => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }))
     try {
       const [nowcast, f24h, f4d, flood] = await Promise.all([
         fetchNowcast(),
         fetch24hForecast(),
         fetch4DayForecast(),
         fetchFloodAlerts(),
-      ]);
+      ])
       setState({
         nowcast,
         forecast24h: f24h,
@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
         floodAlerts: flood,
         loading: false,
         error: null,
-      });
+      })
       try {
         localStorage.setItem(
           CACHE_KEY,
@@ -85,50 +85,43 @@ const AppContent: React.FC = () => {
             forecast4d: f4d,
             floodAlerts: flood,
           }),
-        );
+        )
       } catch (persistErr: any) {
-        console.warn("Failed to persist weather cache", persistErr);
+        console.warn('Failed to persist weather cache', persistErr)
       }
     } catch (err: any) {
-      console.error(err);
+      console.error(err)
       setState((prev) => {
         // If we have any data (from cache or an earlier success), keep showing
         // it instead of blanking to the error screen. Data is at most 5 minutes
         // stale, which matches the app's normal refresh cadence anyway.
-        if (
-          prev.nowcast ||
-          prev.forecast24h ||
-          prev.forecast4d ||
-          prev.floodAlerts
-        ) {
-          return { ...prev, loading: false, error: null };
+        if (prev.nowcast || prev.forecast24h || prev.forecast4d || prev.floodAlerts) {
+          return { ...prev, loading: false, error: null }
         }
         return {
           ...prev,
           loading: false,
           error:
-            "Failed to synchronize with NEA/PUB weather services. Please check your connection.",
-        };
-      });
+            'Failed to synchronize with NEA/PUB weather services. Please check your connection.',
+        }
+      })
     }
-  }, []);
+  }, [])
 
   useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 300000);
-    return () => clearInterval(interval);
-  }, [loadData]);
+    loadData()
+    const interval = setInterval(loadData, 300000)
+    return () => clearInterval(interval)
+  }, [loadData])
 
   const renderContent = () => {
     if (state.loading && !state.nowcast) {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <div className="w-12 h-12 border-4 border-blue border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-overlay1 font-medium">
-            Fetching real-time data...
-          </p>
+          <p className="text-overlay1 font-medium">Fetching real-time data...</p>
         </div>
-      );
+      )
     }
 
     if (state.error && !state.nowcast) {
@@ -146,31 +139,29 @@ const AppContent: React.FC = () => {
             Retry connection
           </button>
         </div>
-      );
+      )
     }
 
     switch (activeTab) {
       case AppTab.NOWCAST:
-        return <NowcastView data={state.nowcast} />;
+        return <NowcastView data={state.nowcast} />
       case AppTab.RAIN_AREAS:
-        return <RainAreasView syncTimestamp={state.nowcast?.updateTimestamp} />;
+        return <RainAreasView syncTimestamp={state.nowcast?.updateTimestamp} />
       case AppTab.FLOOD_WARNING:
         return (
           <FloodWarningView
             alerts={state.floodAlerts}
             syncTimestamp={state.nowcast?.updateTimestamp}
           />
-        );
+        )
       case AppTab.FORECAST_24H:
-        return <Forecast24hView data={state.forecast24h} />;
+        return <Forecast24hView data={state.forecast24h} />
       case AppTab.FORECAST_4DAY:
-        return (
-          <Forecast4DayView data={state.forecast4d} onNavigate={setActiveTab} />
-        );
+        return <Forecast4DayView data={state.forecast4d} onNavigate={setActiveTab} />
       default:
-        return <NowcastView data={state.nowcast} />;
+        return <NowcastView data={state.nowcast} />
     }
-  };
+  }
 
   return (
     <div className="min-h-screen pt-8 pb-32 md:pb-12 md:pt-24 lg:pt-36 bg-base transition-colors duration-300">
@@ -191,9 +182,7 @@ const AppContent: React.FC = () => {
           className="bg-surface0/60 hover:bg-surface0 border border-surface1/10 px-6 py-2.5 rounded-full transition-all text-subtext0 hover:text-blue flex items-center gap-2 shadow-lg"
         >
           <i className="fas fa-circle-info text-xs"></i>
-          <span className="text-[11px] font-bold tracking-wide uppercase">
-            Weather legend
-          </span>
+          <span className="text-[11px] font-bold tracking-wide uppercase">Weather legend</span>
         </button>
 
         <div className="max-w-4xl w-full glass border border-surface1/5 rounded-[32px] p-8 md:p-10 flex flex-col items-center gap-6 shadow-2xl relative overflow-hidden bg-surface0/20">
@@ -202,8 +191,8 @@ const AppContent: React.FC = () => {
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="space-y-4 text-overlay1 text-[11px] md:text-xs font-medium leading-relaxed max-w-2xl">
               <p>
-                Data provided by the National Environment Agency & PUB,
-                Singapore via Singapore Open Data (
+                Data provided by the National Environment Agency & PUB, Singapore via Singapore Open
+                Data (
                 <a
                   href="https://data.gov.sg/open-data-licence"
                   target="_blank"
@@ -212,7 +201,7 @@ const AppContent: React.FC = () => {
                 >
                   data.gov.sg
                 </a>
-                ). The official weather site is available at{" "}
+                ). The official weather site is available at{' '}
                 <a
                   href="https://www.weather.gov.sg/mobile/home/"
                   target="_blank"
@@ -224,10 +213,10 @@ const AppContent: React.FC = () => {
                 .
               </p>
               <p>
-                Developed with vibe to create a clear and modern weather
-                forecasting experience for those in Singapore.
+                Developed with vibe to create a clear and modern weather forecasting experience for
+                those in Singapore.
                 <br />
-                <span className="text-overlay0">v1.0.0</span>
+                <span className="text-overlay0">v1.1.0</span>
               </p>
             </div>
 
@@ -254,15 +243,15 @@ const AppContent: React.FC = () => {
       <LegendModal isOpen={showLegend} onClose={() => setShowLegend(false)} />
       <ThemeToggle />
     </div>
-  );
-};
+  )
+}
 
 const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AppContent />
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default App;
+export default App
