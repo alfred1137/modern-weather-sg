@@ -1,4 +1,4 @@
-const CACHE_NAME = "sg-weather-v15";
+const CACHE_NAME = "sg-weather-v16";
 const ASSETS_TO_CACHE = ["./", "./index.html", "./manifest.json", "./icon.svg"];
 
 async function openCache() {
@@ -76,7 +76,8 @@ self.addEventListener("fetch", (event) => {
           url.includes("cdnjs.cloudflare.com") ||
           url.includes("fonts.googleapis.com") ||
           url.includes("fonts.gstatic.com") ||
-          url.includes("esm.sh");
+          url.includes("esm.sh") ||
+          url.includes("weather.gov.sg");
 
         if (networkResponse && networkResponse.ok && (isOrigin || isCdn)) {
           const contentType = networkResponse.headers.get("content-type");
