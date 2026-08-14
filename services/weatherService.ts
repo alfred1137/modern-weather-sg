@@ -1,12 +1,12 @@
-import { NowcastData, Forecast24h, Forecast4Day, FloodAlert } from "../types";
+import { NowcastData, Forecast24h, Forecast4Day } from '../types'
 
-const BASE_URL = "https://sgw-proxy.alfred1137.workers.dev/api";
+const BASE_URL = 'https://sgw-proxy.alfred1137.workers.dev/api'
 
 export const fetchNowcast = async (): Promise<NowcastData> => {
-  const res = await fetch(`${BASE_URL}/two-hr-forecast`);
-  if (!res.ok) throw new Error("Failed to fetch nowcast");
-  const json = await res.json();
-  const item = json.data.items[0];
+  const res = await fetch(`${BASE_URL}/two-hr-forecast`)
+  if (!res.ok) throw new Error('Failed to fetch nowcast')
+  const json = await res.json()
+  const item = json.data.items[0]
   return {
     updateTimestamp: item.update_timestamp,
     validPeriod: {
@@ -14,14 +14,14 @@ export const fetchNowcast = async (): Promise<NowcastData> => {
       end: item.valid_period.end,
     },
     items: item.forecasts,
-  };
-};
+  }
+}
 
 export const fetch24hForecast = async (): Promise<Forecast24h> => {
-  const res = await fetch(`${BASE_URL}/twenty-four-hr-forecast`);
-  if (!res.ok) throw new Error("Failed to fetch 24h forecast");
-  const json = await res.json();
-  const record = json.data.records[0];
+  const res = await fetch(`${BASE_URL}/twenty-four-hr-forecast`)
+  if (!res.ok) throw new Error('Failed to fetch 24h forecast')
+  const json = await res.json()
+  const record = json.data.records[0]
   return {
     updateTimestamp: record.updatedTimestamp,
     validPeriod: {
@@ -59,14 +59,14 @@ export const fetch24hForecast = async (): Promise<Forecast24h> => {
         north: p.regions.north.text,
       },
     })),
-  };
-};
+  }
+}
 
 export const fetch4DayForecast = async (): Promise<Forecast4Day> => {
-  const res = await fetch(`${BASE_URL}/four-day-outlook`);
-  if (!res.ok) throw new Error("Failed to fetch 4-day forecast");
-  const json = await res.json();
-  const record = json.data.records[0];
+  const res = await fetch(`${BASE_URL}/four-day-outlook`)
+  if (!res.ok) throw new Error('Failed to fetch 4-day forecast')
+  const json = await res.json()
+  const record = json.data.records[0]
   return {
     updateTimestamp: record.updatedTimestamp,
     items: record.forecasts.map((f: any) => ({
@@ -89,33 +89,5 @@ export const fetch4DayForecast = async (): Promise<Forecast4Day> => {
         direction: f.wind.direction,
       },
     })),
-  };
-};
-
-export const fetchFloodAlerts = async (): Promise<FloodAlert[]> => {
-  const res = await fetch(`${BASE_URL}/weather/flood-alerts`);
-  if (!res.ok) throw new Error("Failed to fetch flood alerts");
-  const json = await res.json();
-  const alerts: FloodAlert[] = [];
-
-  if (json.data && json.data.records) {
-    json.data.records.forEach((record: any) => {
-      const { datetime, updatedTimestamp, item } = record;
-      if (item && item.readings) {
-        item.readings.forEach((reading: any) => {
-          alerts.push({
-            datetime,
-            updatedTimestamp,
-            msgType: item.msgType,
-            headline: reading.headline,
-            description: reading.description,
-            instruction: reading.instruction,
-            severity: reading.severity,
-            areaDesc: reading.area?.areaDesc || "",
-          });
-        });
-      }
-    });
   }
-  return alerts;
-};
+}
