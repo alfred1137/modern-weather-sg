@@ -1,19 +1,19 @@
-import React from 'react';
-import { AppTab } from '../types';
+import React from 'react'
+import { AppTab } from '../types'
 
 interface NavProps {
-  activeTab: AppTab;
-  setActiveTab: (tab: AppTab) => void;
+  activeTab: AppTab
+  setActiveTab: (tab: AppTab) => void
 }
 
 const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { id: AppTab.NOWCAST, label: 'Nowcast', icon: 'fa-location-dot' },
     { id: AppTab.RAIN_AREAS, label: 'Rain Areas', icon: 'fa-cloud-showers-heavy' },
-    { id: AppTab.FLOOD_WARNING, label: 'Flood Alert', icon: 'fa-triangle-exclamation' },
+    { id: AppTab.FLOOD_WARNING, label: 'Flood Alert (Soon)', icon: 'fa-triangle-exclamation' },
     { id: AppTab.FORECAST_24H, label: '24-Hour', icon: 'fa-clock' },
     { id: AppTab.FORECAST_4DAY, label: '4-Day', icon: 'fa-calendar-days' },
-  ];
+  ]
 
   return (
     <>
@@ -29,7 +29,9 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
               }`}
             >
               <i className={`fas ${tab.icon} text-lg`}></i>
-              <span className="text-[9px] font-bold uppercase tracking-tighter">{tab.label.split(' ')[0]}</span>
+              <span className="text-[9px] font-bold uppercase tracking-tighter">
+                {tab.label.split(' ')[0]}
+              </span>
             </button>
           ))}
         </div>
@@ -45,7 +47,6 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
             Modern Weather.sg
           </span>
         </div>
-
         <div className="flex gap-2">
           {tabs.map((tab) => (
             <button
@@ -62,11 +63,10 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
             </button>
           ))}
         </div>
-
         <div className="w-24"></div> {/* Spacer for balance */}
       </nav>
     </>
-  );
-};
+  )
+}
 
-export default Navigation;
+export default Navigation
