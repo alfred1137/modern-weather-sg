@@ -10,7 +10,7 @@
     <meta name="description" content="Modern view of Singapore weather nowcast, rain radar, and forecasts.">
     
     <!-- Manifest: Using standard .json with explicit versioning -->
-    <link rel="manifest" href="./manifest.json?v=16">
+    <link rel="manifest" href="./manifest.json?v=17">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -262,9 +262,9 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           // The 't' param forces the browser to request a fresh copy of sw.js from the server
-          navigator.serviceWorker.register('./sw.js?v=16&t=' + Date.now())
+          navigator.serviceWorker.register('./sw.js?v=17&t=' + Date.now())
             .then(reg => {
-              console.log('PWA: Service Worker active (v16)');
+              console.log('PWA: Service Worker active (v17)');
               // Check for updates periodically
               setInterval(() => {
                 reg.update();
