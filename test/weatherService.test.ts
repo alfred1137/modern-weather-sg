@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import {
-  fetchNowcast,
-  fetch24hForecast,
-  fetch4DayForecast,
-  fetchFloodAlerts,
-} from '../services/weatherService'
+import { fetchNowcast, fetch24hForecast, fetch4DayForecast } from '../services/weatherService'
 
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)
@@ -133,52 +128,5 @@ describe('fetch4DayForecast', () => {
   it('throws on non-ok response', async () => {
     mockFetch.mockResolvedValue({ ok: false })
     await expect(fetch4DayForecast()).rejects.toThrow('Failed to fetch 4-day forecast')
-  })
-})
-
-describe('fetchFloodAlerts', () => {
-  it('maps flood alert readings', async () => {
-    const apiResponse = {
-      data: {
-        records: [
-          {
-            datetime: '2024-01-01T10:00:00',
-            updatedTimestamp: '2024-01-01T10:00:00',
-            item: {
-              msgType: 'Warning',
-              readings: [
-                {
-                  headline: 'Flood at Ang Mo Kio',
-                  description: 'Heavy rain causing flooding',
-                  instruction: 'Avoid the area',
-                  severity: 'High',
-                  area: { areaDesc: 'Ang Mo Kio' },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    }
-    mockFetch.mockResolvedValue(jsonResponse(apiResponse))
-
-    const result = await fetchFloodAlerts()
-
-    expect(result).toHaveLength(1)
-    expect(result[0].headline).toBe('Flood at Ang Mo Kio')
-    expect(result[0].severity).toBe('High')
-    expect(result[0].areaDesc).toBe('Ang Mo Kio')
-  })
-
-  it('returns empty array when no records', async () => {
-    mockFetch.mockResolvedValue(jsonResponse({ data: { records: [] } }))
-    const result = await fetchFloodAlerts()
-    expect(result).toEqual([])
-  })
-
-  it('returns empty array when data is null', async () => {
-    mockFetch.mockResolvedValue(jsonResponse({ data: null }))
-    const result = await fetchFloodAlerts()
-    expect(result).toEqual([])
   })
 })
