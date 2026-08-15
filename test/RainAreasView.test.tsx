@@ -10,6 +10,7 @@ function renderWithTheme(ui: React.ReactNode) {
 
 beforeEach(() => {
   localStorage.clear()
+  document.documentElement.removeAttribute('data-theme')
 })
 
 afterEach(() => {

@@ -125,8 +125,31 @@ hobby scale; leave as an explicit manual check for now.
   empty filler and removed) differ. Verify a subline carries data before
   deleting it.
 
+## Test session (2026-08, 1.4.5–1.4.6)
+
+- **`data-theme` attribute leaks across tests** — `ThemeProvider` reads BOTH
+  `localStorage['catppuccin-theme']` AND `documentElement[data-theme]` on
+  mount. `cleanup()` resets the DOM tree but not `<html>` attributes, so a
+  toggle in test N makes test N+2 start in latte. Fix: `beforeEach` must also
+  `document.documentElement.removeAttribute('data-theme')`.
+- **Vitest does not inherit the Vite `define`** — `vitest.config.ts` is a
+  separate config. Without mirroring `__APP_VERSION__`, the footer renders
+  `v{undefined}`... actually a ReferenceError (token never replaced) and the
+  whole App root suite fails. Keep both configs' `define` in sync.
+- **`vi.mock` paths are test-file-relative** — mocking
+  `'./services/weatherService'` from `test/` silently mocks a non-existent
+  module; the real fetchers run (live network in tests). Must be
+  `'../services/weatherService'`.
+- **`rg` is not installed** — content searches must use the grep tool /
+  `Select-String`. Shell pipelines with `rg` fail on this machine.
+
 ## Files that encode these gotchas (update when you act)
 
-- `.agents/skills/version-bump/SKILL.md` — 4-spot SW constraint, CDN cache.
+- `.agents/skills/version-bump/SKILL.md` — two-track single-source versioning
+  (package.json define + sw.js CACHE_NAME), CDN cache verify.
 - `.agents/skills/sg-api-key-rotation/SKILL.md` — secret name, TTL, silent
   "Sync error" failure mode, CORS-wildcard rationale.
+- `.agents/skills/component-tests/SKILL.md` — ThemeProvider/data-theme reset,
+  vi.mock paths, fixtures, duplicate-text and map-mode gotchas.
+- `.agents/skills/ship-milestone/SKILL.md` — gate → bump → commit → push →
+  verify-deploy loop for every milestone.

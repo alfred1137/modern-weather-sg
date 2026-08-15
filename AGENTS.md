@@ -1,18 +1,23 @@
 # AGENTS.md — modern-weather-sg
 
 Hobbyist React PWA (Vite + TypeScript) reimagining Singapore weather data.
-**No tests, no lint, no formatter.** `npm run build` is the only quality gate
-(`tsc` typecheck with `noEmit: true`, then `vite build` → `dist/`).
+Quality gates: `npm run build` (tsc typecheck with `noEmit: true` + `vite build`
+→ `dist/`), `npm run lint` (eslint — must stay at 0 warnings), `npm run test`
+(vitest + testing-library, 50 tests across 12 suites). No formatter in the
+gate; `npm run format` exists for manual prettier runs.
 
 ## Commands
 
-| Command           | What                                                                                        |
-| ----------------- | ------------------------------------------------------------------------------------------- |
-| `npm install`     | Install deps. **No lockfile is checked in** → resolves fresh each time (CI relies on this). |
-| `npm run dev`     | Vite dev server with HMR.                                                                   |
-| `npm run build`   | `tsc && vite build` — typecheck + bundle → `dist/`. **This is the gate.**                   |
-| `npm run preview` | Serve `dist/` locally.                                                                      |
-| `npm run deploy`  | `gh-pages -d dist` — manual deploy to `gh-pages` branch.                                    |
+| Command           | What                                                                                                                         |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `npm install`     | Install deps. **No lockfile is checked in** (`package-lock.json` gitignored) → resolves fresh each time (CI relies on this). |
+| `npm run dev`     | Vite dev server with HMR.                                                                                                    |
+| `npm run build`   | `tsc && vite build` — typecheck + bundle → `dist/`. **Primary gate.**                                                        |
+| `npm run lint`    | `eslint .` — **gate**, must be clean.                                                                                        |
+| `npm run test`    | `vitest run` — **gate**, must pass (50 tests / 12 suites).                                                                   |
+| `npm run format`  | `prettier --write .` — manual only, not part of the gate.                                                                    |
+| `npm run preview` | Serve `dist/` locally.                                                                                                       |
+| `npm run deploy`  | `gh-pages -d dist` — manual deploy to `gh-pages` branch.                                                                     |
 
 Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 (`npm install` → `npm run build` → deploys `dist/` via `JamesIves/github-pages-deploy-action`).
@@ -61,6 +66,14 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   `vite` to `esm.sh` CDN URLs. This is vestigial — Vite intercepts bare imports
   in dev and bundles in build, so it has no runtime effect. Leave it unless you are
   removing it intentionally.
+- **`rg` is not installed on the dev machine.** Use the grep tool (or
+  `Select-String`) for content searches; shell pipelines with `rg` will fail.
+- **`vitest.config.ts` mirrors the Vite `define`** (`__APP_VERSION__` from
+  `package.json`) so tests see the real footer version. Keep both configs in
+  sync when the define changes.
+- **Component test conventions** (ThemeProvider wrapper, `data-theme` reset,
+  `vi.mock` paths, fixtures) are documented in the `component-tests` skill —
+  load it before writing or modifying tests.
 
 ## Conventions
 
@@ -73,5 +86,12 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 
 ## Verification
 
-- Type-level: `npx tsc --noEmit` (same as the `tsc` step in `npm run build`).
-- Build: `npm run build` then `npm run preview` to sanity-check the served output.
+- Gates (all three must pass before commit): `npm run build`, `npm run lint`,
+  `npm run test`.
+- Version bumps: grep for stale strings after editing (`vX.Y.Z`, `vN`,
+  `sg-weather-vN`) — see the `version-bump` skill.
+- Deploy: pushing to `main` triggers CI. GitHub Pages CDN caches HTML at
+  `max-age=600` (~10 min), so verify via the raw `gh-pages` branch, not the
+  live URL:
+  `https://raw.githubusercontent.com/alfred1137/modern-weather-sg/gh-pages/index.html`
+- Manual deploy fallback: `npm run deploy` (builds first via `predeploy`).
