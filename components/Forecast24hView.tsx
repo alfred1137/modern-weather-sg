@@ -74,7 +74,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
               <img
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
                 style={mapImageStyle}
-                className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-all duration-300"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
                 alt="Singapore Background"
               />
               <div className="absolute inset-0 z-10">

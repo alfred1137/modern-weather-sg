@@ -204,7 +204,7 @@ const AppContent: React.FC = () => {
                 Developed with vibe to create a clear and modern weather forecasting experience for
                 those in Singapore.
                 <br />
-                <span className="text-overlay0">v1.4.3</span>
+                <span className="text-overlay0">v1.4.4</span>
               </p>
             </div>
 

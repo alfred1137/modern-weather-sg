@@ -39,7 +39,7 @@ const LegendModal: React.FC<Props> = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="glass bg-base w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col rounded-2xl border border-surface1/10 shadow-xl animate-in zoom-in-95 duration-300"
+        className="glass bg-base w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col rounded-2xl border border-surface1/10 shadow-lg animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

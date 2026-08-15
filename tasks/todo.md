@@ -107,8 +107,8 @@ Versioning: two tracks bumped every milestone — app SemVer `1.4.0`→`1.4.6`
       ensemble forecasting…"), bump (1.4.2, v21), push.
 - [x] M1.4.3 — Dead `@google/genai` dep: already removed from package.json; cleared
       stale AGENTS.md/lessons.md references, bump (1.4.3, v22), push.
-- [ ] M1.4.4 — Residual scan micro-cleanup (LegendModal shadow-xl, image
-      transition-all, stray gap-4), bump (1.4.4, v23), push.
+- [x] M1.4.4 — Residual scan micro-cleanup (LegendModal shadow-xl → shadow-lg,
+      map-image `transition-all` → `transition-opacity`), bump (1.4.4, v23), push.
 - [ ] M1.4.5 — Expand test coverage (PSIView, RainAreasView, F4D/F24h,
       LegendModal, SyncFooter, ThemeToggle, App root), bump (1.4.5, v24), push.
 - [ ] M1.4.6 — Release hygiene: footer version via Vite define, SW version

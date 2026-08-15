@@ -235,14 +235,14 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                   : 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/240km-v2.png'
               }
               style={baseMapStyle}
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-all duration-500"
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-500"
               alt="Base Map"
             />
             {currentItem && (
               <img
                 src={getRadarUrl(currentItem)}
                 style={radarLayerStyle}
-                className="absolute inset-0 w-full h-full object-contain z-10 transition-all duration-300"
+                className="absolute inset-0 w-full h-full object-contain z-10 transition-opacity duration-300"
                 alt="Rain Overlay"
                 onError={handleImageError}
                 key={`${mode}-${currentItem.value}`}
@@ -258,7 +258,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                       : 'invert(1) hue-rotate(190deg) brightness(1.2) drop-shadow(0 0 2px rgba(0,0,0,0.8))',
                   opacity: 0.8,
                 }}
-                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20 transition-all duration-500"
+                className="absolute inset-0 w-full h-full object-contain pointer-events-none z-20 transition-opacity duration-500"
                 alt="MRT Overlay"
               />
             )}
