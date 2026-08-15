@@ -1,7 +1,7 @@
 {
   "name": "Modern Weather.SG",
   "short_name": "Weather.sg",
-  "description": "Modern view of Singapore weather nowcast, rain radar, and forecasts.",
+  "description": "Modern view of Singapore weather nowcast, rain radar, air quality, and forecasts.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
