@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Dependency lockfile: deliberately NOT tracked. Deps resolve fresh on each
+# install (CI relies on this); keeping the lockfile out avoids accidental
+# reproducibility drift being committed.
+package-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

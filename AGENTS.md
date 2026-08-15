@@ -43,10 +43,13 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   persisted in `localStorage` key **`catppuccin-theme`**. Logic in
   `context/ThemeContext.tsx`; the 48 color RGB vars are in `index.html <style>`.
   Radar/map image filters differ per theme (see `RainAreasView`/`NowcastView`).
-- **PWA/SW version string** — the version number in `index.html` appears in 3
-  spots and **must be bumped together**: the manifest link `?v=N`, the SW register
-  `./sw.js?v=N&t=...`, and the console log `Service Worker active (vN)`. Source
-  assets are `public/sw.js` and `public/manifest.json`.
+- **Versioning is single-source (two tracks).** App version: `package.json`
+  `"version"` only — `vite.config.ts` `define`s `__APP_VERSION__` into the
+  `App.tsx` footer, so never hand-edit the footer. The README badge is the only
+  other place the app version appears. SW cache version: `public/sw.js`
+  `CACHE_NAME` only (bump it whenever the bundle changes). `index.html` carries
+  no version strings — the SW register uses only `t=Date.now()` to bypass HTTP
+  caching, and the manifest link is unversioned.
 - **External images are not in the repo.** Radar base map, rain overlays, MRT map,
   and the Singapore background map load from `weather.gov.sg`. A broken image is
   an upstream outage, not a code bug.

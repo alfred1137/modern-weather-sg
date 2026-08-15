@@ -31,14 +31,11 @@ Today the integer is hand-echoed into `index.html` (manifest `?v=`, SW register
 
 Improvement: one constant drives all of them.
 
-- Put the SW version in a build-time define and inject into `index.html` via
-  the Vite template (not the current inline-JS string concat).
-- Have `sw.js` read the same define.
-- Candidate tool: `vite-plugin-pwa` / `vite-plugin-workbox` to generate `sw.js`
-  from a `src/` entry — removes the standalone `public/sw.js` and the 4 spots.
-- Trade-off to weigh: `public/sw.js` is plain browser JS with zero config
-  (current). Switching to a generated SW adds a plugin dep + a tiny build
-  pipeline. Keep simple for a hobby PWA, but the drift class is real.
+**RESOLVED (1.4.6):** SW version single-sourced to `public/sw.js`
+`CACHE_NAME` only. `index.html` dropped the manifest `?v=N`, the register
+`?v=N` (the `t=Date.now()` param already bypasses HTTP caching for `sw.js`),
+and the versioned console log. Remaining drift class: 1 spot instead of 4.
+Generated-SW plugins (vite-plugin-pwa) still overkill for this hobby PWA.
 
 ### 2. Derive the footer version from package.json (kills footer/package drift)
 
@@ -46,6 +43,14 @@ Improvement: one constant drives all of them.
 `define: { 'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version) }`
 so the footer reads `v${import.meta.env.VITE_APP_VERSION}` and can never drift
 from `package.json`.
+
+**RESOLVED (1.4.6):** `vite.config.ts` `define: { __APP_VERSION__:
+JSON.stringify(pkg.version) }` with `vite-env.d.ts` declaring the global;
+footer renders `v{__APP_VERSION__}`. App version touchpoints now: package.json
+
+- README badge (footer auto). Note: vitest.config.ts does NOT inherit the
+  Vite `define`, so tests assert the footer shape (`/v1\.4\./`), never an exact
+  version.
 
 ### 3. Scripted version bump (kills the 7-edit release)
 
@@ -56,6 +61,10 @@ A `scripts/bump-version.mjs` taking `<appVersion> <swVersion>` args, rewriting
 - Must still leave the human to run `npm run build` and push — the script just
   removes transcription errors.
 - Watch out: auto-formatter churn on edited lines is cosmetic noise only.
+
+**RESOLVED (1.4.6):** release shrank to 3 manual edits (package.json, README
+badge, sw.js CACHE_NAME) + `npm run build` gate. Script not worth the
+pipeline; keep manual per the version-bump SKILL.md.
 
 ### 4. API-key expiry tracking (currently manual)
 

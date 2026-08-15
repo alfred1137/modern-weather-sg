@@ -96,8 +96,8 @@ Series objective: strip AI-slop residue, humanize voice, and harden
 build/release hygiene so the app reads hand-crafted, not vibe-coded.
 
 Versioning: two tracks bumped every milestone — app SemVer `1.4.0`→`1.4.6`
-(package.json, App.tsx footer, README badge) and SW cache integer `v19`→`v25`
-(index.html x3 + public/sw.js).
+(package.json single source → Vite-define footer, README badge) and SW cache
+integer `v19`→`v25` (public/sw.js CACHE_NAME single source).
 
 ## Milestones
 
@@ -109,15 +109,18 @@ Versioning: two tracks bumped every milestone — app SemVer `1.4.0`→`1.4.6`
       stale AGENTS.md/lessons.md references, bump (1.4.3, v22), push.
 - [x] M1.4.4 — Residual scan micro-cleanup (LegendModal shadow-xl → shadow-lg,
       map-image `transition-all` → `transition-opacity`), bump (1.4.4, v23), push.
-- [ ] M1.4.5 — Expand test coverage (PSIView, RainAreasView, F4D/F24h,
+- [x] M1.4.5 — Expand test coverage (PSIView, RainAreasView, F4D/F24h,
       LegendModal, SyncFooter, ThemeToggle, App root), bump (1.4.5, v24), push.
-- [ ] M1.4.6 — Release hygiene: footer version via Vite define, SW version
-      single-source, lockfile decision, bump (1.4.6, v25), push.
+- [x] M1.4.6 — Release hygiene: footer version via Vite define (single source
+      package.json), SW version single-source (public/sw.js CACHE_NAME only,
+      index.html version strings dropped), lockfile gitignored, bump (1.4.6,
+      v25), push.
 
 ## Per-milestone procedure
 
 1. Implement work item.
-2. Bump app version + SW integer (7 edits: 3 app + 4 SW).
+2. Bump app version + SW integer (3 edits: package.json, README badge,
+   public/sw.js CACHE_NAME — footer is Vite-define-injected).
 3. Gate: `npm run build`, `npm run lint`, `npm run test`.
 4. Grep: no old `vX.Y.Z` / `vN` strings remain.
 5. Stage explicitly (never `git add -A`; exclude untracked `package-lock.json`),
