@@ -60,21 +60,21 @@ const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
 
       <div className="bg-surface0/60 p-6 md:p-8 rounded-2xl border border-surface1/20">
         <h2 className="text-sm font-bold text-blue mb-3 flex items-center gap-2">
-          <i className="fas fa-circle-info"></i> Meteorological Insights
+          <i className="fas fa-circle-info"></i> About this forecast
         </h2>
         <div className="flex items-start gap-6">
           <p className="text-overlay1 text-xs font-medium leading-relaxed">
-            National Environment Agency (NEA) Meteorological Service Singapore (MSS) provides
-            extended 4-day outlook, leveraging on advanced multi-model ensemble forecasting. In
-            Singapore's tropical microclimate, localized heating can trigger isolated thundery
-            showers. Consulting the{' '}
+            The 4-day outlook is published by the National Environment Agency (NEA) and
+            Meteorological Service Singapore (MSS), based on multi-model weather forecasts. In
+            Singapore's tropical climate, localized heating can trigger sudden thundery showers. For
+            what's happening right now, check the{' '}
             <button
               onClick={() => onNavigate(AppTab.NOWCAST)}
               className="text-text hover:text-blue font-bold underline underline-offset-4 transition-colors"
             >
               2-Hour Nowcast
             </button>{' '}
-            for immediate, high-resolution precision before outdoor engagements is recommended.
+            before heading out.
           </p>
         </div>
       </div>
