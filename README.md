@@ -28,7 +28,7 @@
     <br />
     <a href="https://alfred1137.github.io/modern-weather-sg/"><strong>Try the Demo »</strong></a>
     <br />
-    <img src="https://img.shields.io/badge/version-v1.3.0-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.4.0-blue" alt="Version">
     <br />
     <br />
     <a href="https://github.com/alfred1137/modern-weather-sg/issues">Report Bug</a>
@@ -41,22 +41,22 @@
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li><a href="#overview">📖 Overview</a></li>
-    <li><a href="#features">✨ Features</a></li>
-    <li><a href="#technologies">📦 Technologies</a></li>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#technologies">Technologies</a></li>
     <li>
-      <a href="#getting-started">🚀 Getting Started</a>
+      <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#repository-structure">🗂️ Repository Structure</a></li>
-    <li><a href="#deployment">🚢 Deployment</a></li>
-    <li><a href="#contributing">🤝 Contributing</a></li>
+    <li><a href="#repository-structure">Repository Structure</a></li>
+    <li><a href="#deployment">Deployment</a></li>
+    <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">❤️ Acknowledgments</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -64,7 +64,7 @@
 
 <a id="overview"></a>
 
-## 📖 Overview
+## Overview
 
 Modern Weather.sg is a modern web interface for Singapore's real-time weather data. This project reimagines the [NEA Mobile Weather site](https://www.weather.gov.sg/mobile) with a focus on high-end UI/UX, responsive design, and performance using the latest React ecosystem.
 
@@ -78,7 +78,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 
 <a id="features"></a>
 
-## ✨ Features
+## Features
 
 - **2-Hour Nowcast**: Interactive map and grid views of 2-hour weather forecasts across Singapore's 47 weather areas.
 - **Rain Radar**: High-resolution playback of rain areas (50km and 240km regional views) with an optimized dark-mode interface.
@@ -95,7 +95,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 
 <a id="technologies"></a>
 
-## 📦 Technologies
+## Technologies
 
 - **Framework**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) (via CDN with Catppuccin theme)
@@ -111,7 +111,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 
 <a id="getting-started"></a>
 
-## 🚀 Getting Started
+## Getting Started
 
 The easiest way to start using this modern weather app is to use the demo version hosted as github page [here](https://alfred1137.github.io/modern-weather-sg/).
 
@@ -153,7 +153,7 @@ To get a local copy up and running, follow these steps.
 
 <a id="repository-structure"></a>
 
-## 🗂️ Repository Structure
+## Repository Structure
 
 ```
 .
@@ -174,7 +174,7 @@ To get a local copy up and running, follow these steps.
 
 <a id="deployment"></a>
 
-## 🚢 Deployment
+## Deployment
 
 This project is set up with **GitHub Actions** for automatic deployment to GitHub Pages.
 
@@ -205,7 +205,7 @@ npx wrangler deploy
 
 <a id="contributing"></a>
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -243,7 +243,7 @@ Project Link: [https://github.com/alfred1137/modern-weather-sg](https://github.c
 
 <a id="acknowledgments"></a>
 
-## ❤️ Acknowledgments
+## Acknowledgments
 
 - [National Environment Agency (NEA)](https://www.nea.gov.sg/)
 - [PUB, Singapore's National Water Agency](https://www.pub.gov.sg/)

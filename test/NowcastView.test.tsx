@@ -26,7 +26,7 @@ describe('NowcastView', () => {
 
   it('renders map view by default', () => {
     renderWithTheme(<NowcastView data={mockData} />)
-    expect(screen.getByText('Tap Icons')).toBeInTheDocument()
+    expect(screen.getByText('Tap icons')).toBeInTheDocument()
   })
 
   it('switches to grid view on button click', () => {
@@ -35,7 +35,7 @@ describe('NowcastView', () => {
     const gridButtons = screen.getAllByText('Grid')
     fireEvent.click(gridButtons[0])
 
-    expect(screen.getByPlaceholderText('SEARCH AREA...')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search area...')).toBeInTheDocument()
   })
 
   it('filters areas in grid view by search', () => {
@@ -44,7 +44,7 @@ describe('NowcastView', () => {
     const gridButtons = screen.getAllByText('Grid')
     fireEvent.click(gridButtons[0])
 
-    const searchInput = screen.getByPlaceholderText('SEARCH AREA...')
+    const searchInput = screen.getByPlaceholderText('Search area...')
     fireEvent.change(searchInput, { target: { value: 'Bedok' } })
 
     expect(screen.getByText('Bedok')).toBeInTheDocument()

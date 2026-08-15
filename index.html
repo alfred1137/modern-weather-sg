@@ -10,7 +10,7 @@
     <meta name="description" content="Modern view of Singapore weather nowcast, rain radar, air quality, and forecasts.">
     
     <!-- Manifest: Using standard .json with explicit versioning -->
-    <link rel="manifest" href="./manifest.json?v=18">
+    <link rel="manifest" href="./manifest.json?v=19">
     
     <!-- Android / Chrome Support -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -76,7 +76,7 @@
               rosewater: 'rgb(var(--rosewater-rgb) / <alpha-value>)',
             },
             fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+              sans: ['Onest', 'sans-serif'],
             }
           }
         }
@@ -85,7 +85,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* Catppuccin Macchiato & Latte Variables */
         :root {
@@ -205,7 +205,7 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Onest', sans-serif;
             background-color: rgb(var(--base-rgb));
             color: rgb(var(--text-rgb));
             margin: 0;
@@ -262,9 +262,9 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           // The 't' param forces the browser to request a fresh copy of sw.js from the server
-          navigator.serviceWorker.register('./sw.js?v=18&t=' + Date.now())
+          navigator.serviceWorker.register('./sw.js?v=19&t=' + Date.now())
             .then(reg => {
-              console.log('PWA: Service Worker active (v18)');
+              console.log('PWA: Service Worker active (v19)');
               // Check for updates periodically
               setInterval(() => {
                 reg.update();

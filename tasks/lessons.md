@@ -97,6 +97,27 @@ could add a small playwright/`@openfga` script that loads the deployed page in
 a fresh context and asserts no pre-bump cache entries remain. Overkill for
 hobby scale; leave as an explicit manual check for now.
 
+## De-slop session (2026-08) — caught during the kill-ai-slop pass
+
+- **Editor save-hook reformats on every save** — this repo's workspace runs
+  prettier on save (semicolon stripping, quote normalization, line wrapping).
+  Editing a file twice with `edit` breaks on the second oldString because the
+  hook rewrote the file between saves. Fix: write the FULL file in one pass
+  (`write`), in prettier-canonical style, instead of many small edits. Expect
+  the hook's normalization in the diff — it is repo-style, not damage.
+- **Tests assert on UI copy** — `test/NowcastView.test.tsx` matches exact
+  strings ("Tap Icons", "SEARCH AREA..."). Changing copy without updating
+  tests fails CI. When de-slopping copy, grep `test/` for the old string.
+- **Catppuccin is the design system here, not slop** — `rounded-2xl`, `bg-blue`
+  accent, `.glass` on chrome, and the signature `font-black uppercase` h1s are
+  deliberate app identity. The kill-ai-slop scanner still flags them; triage
+  with the taxonomy (functional circle = fine; decorative glow = kill) instead
+  of mechanically applying the skill.
+- **Data sublines are semantic, not kickers** — "2-hour nowcast: 14:00 ~ 16:00",
+  "Latest observation: …", and the PSI/F4D kicker lines (the latter two were
+  empty filler and removed) differ. Verify a subline carries data before
+  deleting it.
+
 ## Files that encode these gotchas (update when you act)
 
 - `.agents/skills/version-bump/SKILL.md` — 4-spot SW constraint, CDN cache.

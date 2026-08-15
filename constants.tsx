@@ -1,77 +1,43 @@
 import React from 'react'
 
-// Enhanced mapping for all NEA forecast values
-// Using FontAwesome 6 classes and Tailwind for a premium feel
-// Updated to Catppuccin Macchiato Palette with RGB variable shadows for theming
+// Mapping for all NEA forecast values. Icons are flat: color encodes the
+// weather type (Catppuccin palette), opacity encodes intensity. No glows,
+// no animation — decoration would fight the data.
 export const WeatherIconMap: Record<string, React.ReactNode> = {
   // Fair & Sunny
-  'Fair (Day)': (
-    <i className="fas fa-sun text-yellow text-3xl drop-shadow-[0_0_10px_rgba(var(--yellow-rgb),0.5)]"></i>
-  ),
-  'Fair (Night)': (
-    <i className="fas fa-moon text-blue text-3xl drop-shadow-[0_0_10px_rgba(var(--blue-rgb),0.4)]"></i>
-  ),
-  Fair: (
-    <i className="fas fa-sun text-yellow text-3xl drop-shadow-[0_0_10px_rgba(var(--yellow-rgb),0.5)]"></i>
-  ),
-  'Fair and Warm': (
-    <i className="fas fa-sun text-peach text-3xl drop-shadow-[0_0_12px_rgba(var(--peach-rgb),0.6)]"></i>
-  ),
-  Sunny: (
-    <i className="fas fa-sun text-yellow text-3xl drop-shadow-[0_0_10px_rgba(var(--yellow-rgb),0.5)]"></i>
-  ),
+  'Fair (Day)': <i className="fas fa-sun text-yellow text-3xl"></i>,
+  'Fair (Night)': <i className="fas fa-moon text-blue text-3xl"></i>,
+  Fair: <i className="fas fa-sun text-yellow text-3xl"></i>,
+  'Fair and Warm': <i className="fas fa-sun text-peach text-3xl"></i>,
+  Sunny: <i className="fas fa-sun text-yellow text-3xl"></i>,
 
   // Cloudy variants
-  'Partly Cloudy (Day)': (
-    <i className="fas fa-cloud-sun text-subtext0 text-3xl drop-shadow-[0_0_8px_rgba(var(--subtext0-rgb),0.4)]"></i>
-  ),
-  'Partly Cloudy (Night)': (
-    <i className="fas fa-cloud-moon text-overlay2 text-3xl drop-shadow-[0_0_8px_rgba(var(--overlay2-rgb),0.3)]"></i>
-  ),
-  'Partly Cloudy': (
-    <i className="fas fa-cloud-sun text-subtext0 text-3xl drop-shadow-[0_0_8px_rgba(var(--subtext0-rgb),0.3)]"></i>
-  ),
-  Cloudy: (
-    <i className="fas fa-cloud text-overlay1 text-3xl drop-shadow-[0_0_8px_rgba(var(--overlay1-rgb),0.3)]"></i>
-  ),
+  'Partly Cloudy (Day)': <i className="fas fa-cloud-sun text-subtext0 text-3xl"></i>,
+  'Partly Cloudy (Night)': <i className="fas fa-cloud-moon text-overlay2 text-3xl"></i>,
+  'Partly Cloudy': <i className="fas fa-cloud-sun text-subtext0 text-3xl"></i>,
+  Cloudy: <i className="fas fa-cloud text-overlay1 text-3xl"></i>,
 
   // Atmospheric
   Hazy: <i className="fas fa-smog text-overlay0 text-3xl opacity-80"></i>,
   'Slightly Hazy': <i className="fas fa-smog text-overlay0 text-3xl opacity-60"></i>,
-  Windy: (
-    <i className="fas fa-wind text-teal text-3xl drop-shadow-[0_0_8px_rgba(var(--teal-rgb),0.4)]"></i>
-  ),
+  Windy: <i className="fas fa-wind text-teal text-3xl"></i>,
   Mist: <i className="fas fa-water text-sapphire text-3xl opacity-70"></i>,
   Fog: <i className="fas fa-smog text-overlay1 text-3xl opacity-90"></i>,
 
   // Rain & Showers
-  'Light Rain': (
-    <i className="fas fa-cloud-rain text-sky text-3xl drop-shadow-[0_0_8px_rgba(var(--sky-rgb),0.4)]"></i>
-  ),
-  'Moderate Rain': (
-    <i className="fas fa-cloud-showers-heavy text-blue text-3xl drop-shadow-[0_0_10px_rgba(var(--blue-rgb),0.5)]"></i>
-  ),
-  'Heavy Rain': (
-    <i className="fas fa-cloud-showers-water text-sapphire text-3xl drop-shadow-[0_0_12px_rgba(var(--sapphire-rgb),0.6)]"></i>
-  ),
+  'Light Rain': <i className="fas fa-cloud-rain text-sky text-3xl"></i>,
+  'Moderate Rain': <i className="fas fa-cloud-showers-heavy text-blue text-3xl"></i>,
+  'Heavy Rain': <i className="fas fa-cloud-showers-water text-sapphire text-3xl"></i>,
   'Passing Showers': <i className="fas fa-cloud-sun-rain text-sky text-3xl opacity-90"></i>,
   'Light Showers': <i className="fas fa-cloud-rain text-sky text-3xl opacity-80"></i>,
-  Showers: (
-    <i className="fas fa-cloud-showers-heavy text-blue text-3xl drop-shadow-[0_0_8px_rgba(var(--blue-rgb),0.4)]"></i>
-  ),
-  'Heavy Showers': (
-    <i className="fas fa-cloud-showers-water text-sapphire text-3xl drop-shadow-[0_0_10px_rgba(var(--sapphire-rgb),0.5)]"></i>
-  ),
+  Showers: <i className="fas fa-cloud-showers-heavy text-blue text-3xl"></i>,
+  'Heavy Showers': <i className="fas fa-cloud-showers-water text-sapphire text-3xl"></i>,
 
   // Thundery
-  'Thundery Showers': (
-    <i className="fas fa-cloud-bolt text-mauve text-3xl drop-shadow-[0_0_15px_rgba(var(--mauve-rgb),0.6)]"></i>
-  ),
-  'Heavy Thundery Showers': (
-    <i className="fas fa-cloud-bolt text-pink text-3xl drop-shadow-[0_0_20px_rgba(var(--pink-rgb),0.7)] animate-pulse"></i>
-  ),
+  'Thundery Showers': <i className="fas fa-cloud-bolt text-mauve text-3xl"></i>,
+  'Heavy Thundery Showers': <i className="fas fa-cloud-bolt text-pink text-3xl"></i>,
   'Heavy Thundery Showers with Gusty Winds': (
-    <i className="fas fa-cloud-bolt text-flamingo text-3xl drop-shadow-[0_0_25px_rgba(var(--flamingo-rgb),0.8)] animate-bounce"></i>
+    <i className="fas fa-cloud-bolt text-flamingo text-3xl"></i>
   ),
 
   default: <i className="fas fa-cloud text-overlay0 text-3xl"></i>,

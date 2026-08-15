@@ -24,14 +24,12 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center gap-1 transition-all duration-300 ${
+              className={`flex flex-col items-center gap-1 transition-colors duration-300 ${
                 activeTab === tab.id ? 'text-blue' : 'text-overlay1'
               }`}
             >
               <i className={`fas ${tab.icon} text-lg`}></i>
-              <span className="text-[9px] font-bold uppercase tracking-tighter">
-                {tab.label.split(' ')[0]}
-              </span>
+              <span className="text-[10px] font-semibold">{tab.label.split(' ')[0]}</span>
             </button>
           ))}
         </div>
@@ -43,23 +41,21 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
           <div className="w-8 h-8 bg-blue rounded-lg flex items-center justify-center">
             <i className="fas fa-cloud-sun text-mantle text-xs"></i>
           </div>
-          <span className="text-sm font-black tracking-tighter text-text uppercase">
-            Modern Weather.sg
-          </span>
+          <span className="text-sm font-bold text-text">Modern Weather.sg</span>
         </div>
         <div className="flex gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-blue text-mantle shadow-lg shadow-blue/20'
+                  ? 'bg-blue text-mantle'
                   : 'text-overlay1 hover:text-text hover:bg-surface0'
               }`}
             >
               <i className={`fas ${tab.icon} text-sm`}></i>
-              <span className="text-xs font-bold uppercase tracking-wider">{tab.label}</span>
+              <span className="text-sm font-medium">{tab.label}</span>
             </button>
           ))}
         </div>

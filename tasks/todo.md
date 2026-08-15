@@ -38,3 +38,87 @@ per key per 5 min regardless of viewer count).
   anonymous quota exhausted under traffic → 429 → "Sync error".
 - After: all viewers hit the worker; the worker fetches upstream once per 5 min
   with the key (higher quota), caches, and serves cached JSON to everyone.
+
+---
+
+# De-slop pass (kill-ai-slop skill) — DONE
+
+Goal: strip AI-default decoration from the UI while keeping Catppuccin theming,
+data semantics, and functionality intact. Scope: plan groups A1–A6, B1–B3.
+
+## What changed
+
+- **A1** README.md — emojis stripped from ToC + section headings.
+- **A2** Deleted AI-style kicker sublines: App, F24h, F4D, PSIView.
+- **A3** Hover transforms removed (ThemeToggle, LegendModal, App legend
+  button, github link); `transition-all` → `transition-colors` on ~25
+  color-only spots.
+- **A4** Killed glows/pings: Nowcast pings (x2), RainAreas "Live" halo,
+  F24h active-tab glow + marker halo + icon/text drop-shadows, F4D icon/text
+  glows, PSI marker halo + value glow.
+- **A5** App background blobs removed; LegendModal icon-tile gradient removed.
+- **A6** `constants.tsx` — all ~20 weather icons flattened (no drop-shadow /
+  animate-pulse / animate-bounce).
+- **B1** Glass→solid + radius/shadow scale-down on data cards (F4D, Nowcast
+  grid/detail, PSI map/bands, RainAreas controls/legend, LegendModal items);
+  kept `glass` on chrome (nav bars, segmented toggles, map containers, modal
+  panel).
+- **B2** Sentence-case micro-labels/buttons ("Search area...", "Tap icons",
+  "2-hour nowcast:", "Past 6 hours", toggle labels).
+- **B3** `index.html` — font Inter → **Onest** (Google Fonts link, Tailwind
+  `fontFamily.sans`, body rule). Version string untouched.
+- Tests updated: `test/NowcastView.test.tsx` copy assertions
+  ("Tap icons", "Search area...").
+
+## Verification
+
+- `npm run build` — green (tsc + vite).
+- `npm run lint` — 0 errors, 4 pre-existing `any` warnings (untouched).
+- `npm run test` — 21/21 pass.
+- `node scripts/scan.mjs` — 12 groups/220 hits → 9 groups/88 hits; remainder
+  are intentional keeps (signature `font-black uppercase` h1s, functional
+  marker circles/pills, map-image crossfade transitions).
+
+## Notes
+
+- Editor save-hook prettier-normalized edited component files (semicolons
+  stripped) — cosmetic diff noise, consistent with repo style. F24h was
+  auto-reformatted mid-session before the rest were handled.
+- Untouched by design: h1s stay `font-black uppercase`, weather-icon colors/
+  opacity stay semantic, marker scale hovers stay functional, data sublines
+  (nowcast period, latest observation) stay, `weather-card` lift stays.
+
+---
+
+# 1.4.Z — Refinement Series
+
+Series objective: strip AI-slop residue, humanize voice, and harden
+build/release hygiene so the app reads hand-crafted, not vibe-coded.
+
+Versioning: two tracks bumped every milestone — app SemVer `1.4.0`→`1.4.6`
+(package.json, App.tsx footer, README badge) and SW cache integer `v19`→`v25`
+(index.html x3 + public/sw.js).
+
+## Milestones
+
+- [x] M1.4.0 — Commit current de-slop pass (15 files) + bump (app 1.4.0, SW v19), push.
+- [ ] M1.4.1 — Fix 4 `any` lint warnings (App.tsx:89,92; weatherService.ts:58,81), bump (1.4.1, v20), push.
+- [ ] M1.4.2 — Humanize F4D insights copy ("leveraging on advanced multi-model
+      ensemble forecasting…"), bump (1.4.2, v21), push.
+- [ ] M1.4.3 — Remove dead `@google/genai` dep, bump (1.4.3, v22), push.
+- [ ] M1.4.4 — Residual scan micro-cleanup (LegendModal shadow-xl, image
+      transition-all, stray gap-4), bump (1.4.4, v23), push.
+- [ ] M1.4.5 — Expand test coverage (PSIView, RainAreasView, F4D/F24h,
+      LegendModal, SyncFooter, ThemeToggle, App root), bump (1.4.5, v24), push.
+- [ ] M1.4.6 — Release hygiene: footer version via Vite define, SW version
+      single-source, lockfile decision, bump (1.4.6, v25), push.
+
+## Per-milestone procedure
+
+1. Implement work item.
+2. Bump app version + SW integer (7 edits: 3 app + 4 SW).
+3. Gate: `npm run build`, `npm run lint`, `npm run test`.
+4. Grep: no old `vX.Y.Z` / `vN` strings remain.
+5. Stage explicitly (never `git add -A`; exclude untracked `package-lock.json`),
+   commit folded work+bump, push (CI deploys; verify via raw `gh-pages` branch,
+   HTML CDN cache 10 min).

@@ -134,7 +134,7 @@ const AppContent: React.FC = () => {
           <p className="text-overlay1 max-w-md text-sm">{state.error}</p>
           <button
             onClick={loadData}
-            className="mt-8 bg-blue hover:bg-sky text-mantle px-8 py-3 rounded-xl font-bold uppercase text-xs tracking-widest transition-all shadow-lg shadow-blue/20"
+            className="mt-8 bg-blue hover:bg-sky text-mantle px-6 py-3 rounded-xl font-bold text-sm transition-colors"
           >
             Retry connection
           </button>
@@ -160,11 +160,6 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen pt-8 pb-32 md:pb-12 md:pt-24 lg:pt-36 bg-base transition-colors duration-300">
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue/5 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[10%] right-[-10%] w-[50%] h-[50%] bg-mauve/5 rounded-full blur-[120px]"></div>
-      </div>
-
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="mx-auto px-4 md:px-8 xl:px-[138px] w-full max-w-[1920px]">
@@ -174,15 +169,13 @@ const AppContent: React.FC = () => {
       <footer className="mt-32 mb-6 px-6 flex flex-col items-center gap-6">
         <button
           onClick={() => setShowLegend(true)}
-          className="bg-surface0/60 hover:bg-surface0 border border-surface1/10 px-6 py-2.5 rounded-full transition-all text-subtext0 hover:text-blue flex items-center gap-2 shadow-lg"
+          className="bg-surface0/60 hover:bg-surface0 border border-surface1/10 px-6 py-2.5 rounded-full transition-colors text-subtext0 hover:text-blue flex items-center gap-2"
         >
           <i className="fas fa-circle-info text-xs"></i>
-          <span className="text-[11px] font-bold tracking-wide uppercase">Weather legend</span>
+          <span className="text-sm font-semibold">Weather legend</span>
         </button>
 
-        <div className="max-w-4xl w-full glass border border-surface1/5 rounded-[32px] p-8 md:p-10 flex flex-col items-center gap-6 shadow-2xl relative overflow-hidden bg-surface0/20">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-1 bg-blue/30 rounded-full"></div>
-
+        <div className="max-w-4xl w-full bg-surface0/60 border border-surface1/10 rounded-2xl p-8 md:p-10 flex flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="space-y-4 text-overlay1 text-[11px] md:text-xs font-medium leading-relaxed max-w-2xl">
               <p>
@@ -211,7 +204,7 @@ const AppContent: React.FC = () => {
                 Developed with vibe to create a clear and modern weather forecasting experience for
                 those in Singapore.
                 <br />
-                <span className="text-overlay0">v1.3.0</span>
+                <span className="text-overlay0">v1.4.0</span>
               </p>
             </div>
 
@@ -219,17 +212,10 @@ const AppContent: React.FC = () => {
               href="https://github.com/alfred1137/modern-weather-sg"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-surface0/40 hover:bg-surface0/80 border border-surface1/5 px-6 py-3 rounded-2xl transition-all text-overlay1 hover:text-text flex items-center gap-3 group"
+              className="bg-surface0/40 hover:bg-surface0/80 border border-surface1/5 px-6 py-3 rounded-2xl transition-colors text-overlay1 hover:text-text flex items-center gap-3"
             >
-              <i className="fab fa-github text-[18px] group-hover:scale-110 transition-transform"></i>
-              <div className="text-left">
-                <span className="block text-[10px] font-black uppercase tracking-widest leading-none">
-                  Source code
-                </span>
-                <span className="block text-[8px] font-bold text-overlay0 group-hover:text-blue transition-colors uppercase tracking-tighter mt-1">
-                  alfred1137 / modern-weather-sg
-                </span>
-              </div>
+              <i className="fab fa-github text-lg"></i>
+              <span className="text-sm font-semibold">alfred1137 / modern-weather-sg</span>
             </a>
           </div>
         </div>

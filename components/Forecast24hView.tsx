@@ -1,51 +1,62 @@
-import React, { useState } from 'react';
-import { Forecast24h } from '../types';
-import { getWeatherIcon, SG_REGIONS } from '../constants';
-import SyncFooter from './SyncFooter';
-import { useTheme } from '../context/ThemeContext';
+import React, { useState } from 'react'
+import { Forecast24h } from '../types'
+import { getWeatherIcon, SG_REGIONS } from '../constants'
+import SyncFooter from './SyncFooter'
+import { useTheme } from '../context/ThemeContext'
 
 interface Props {
-  data: Forecast24h | null;
+  data: Forecast24h | null
 }
 
 const Forecast24hView: React.FC<Props> = ({ data }) => {
-  const [activePeriodIdx, setActivePeriodIdx] = useState(0);
-  const { theme } = useTheme();
+  const [activePeriodIdx, setActivePeriodIdx] = useState(0)
+  const { theme } = useTheme()
 
-  if (!data) return <div className="text-center p-8 text-xs font-bold uppercase opacity-50 tracking-widest text-text">Synchronizing Forecast...</div>;
+  if (!data)
+    return <div className="text-center p-8 text-sm text-overlay1">Synchronizing forecast...</div>
 
   const getPeriodLabel = (startStr: string) => {
-    const hour = new Date(startStr).getHours();
-    if (hour >= 5 && hour < 12) return 'Morning';
-    if (hour >= 12 && hour < 18) return 'Afternoon';
-    if (hour >= 18 && hour < 23) return 'Evening';
-    return 'Night';
-  };
+    const hour = new Date(startStr).getHours()
+    if (hour >= 5 && hour < 12) return 'Morning'
+    if (hour >= 12 && hour < 18) return 'Afternoon'
+    if (hour >= 18 && hour < 23) return 'Evening'
+    return 'Night'
+  }
 
-  const currentPeriod = data.periods[activePeriodIdx];
+  const currentPeriod = data.periods[activePeriodIdx]
 
-  const mapImageStyle = theme === 'latte'
-    ? { opacity: 0.6, filter: 'contrast(0.4) brightness(1.5) grayscale(1)', mixBlendMode: 'multiply' as const }
-    : { opacity: 0.2, filter: 'contrast(1.25) brightness(1.0) grayscale(1)', mixBlendMode: 'screen' as const };
+  const mapImageStyle =
+    theme === 'latte'
+      ? {
+          opacity: 0.6,
+          filter: 'contrast(0.4) brightness(1.5) grayscale(1)',
+          mixBlendMode: 'multiply' as const,
+        }
+      : {
+          opacity: 0.2,
+          filter: 'contrast(1.25) brightness(1.0) grayscale(1)',
+          mixBlendMode: 'screen' as const,
+        }
 
   return (
     <div className="flex flex-col gap-6 md:gap-10 animate-fadeIn">
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
         <div className="flex flex-col gap-1 pr-2">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">24-Hour Forecast</h1>
-          <p className="text-overlay1 text-[10px] md:text-xs font-black uppercase tracking-[0.2em] mt-2">Regional Outlook & Core Metrics</p>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">
+            24-Hour Forecast
+          </h1>
         </div>
       </header>
 
       <div className="flex flex-col gap-6">
-        <div className="glass overflow-hidden shadow-2xl rounded-[32px] sm:rounded-[48px] border border-surface1/20 bg-surface0/20">
+        <div className="glass overflow-hidden shadow-md rounded-2xl sm:rounded-3xl border border-surface1/20">
           <div className="flex flex-col-reverse sm:flex-col">
             <div className="flex border-t sm:border-t-0 sm:border-b border-surface1/20 bg-mantle/30 overflow-x-auto no-scrollbar">
               {data.periods.map((period, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActivePeriodIdx(idx)}
-                  className={`flex-1 min-w-[120px] py-5 md:py-6 text-center transition-all relative ${
+                  className={`flex-1 min-w-[120px] py-5 md:py-6 text-center transition-colors relative ${
                     activePeriodIdx === idx ? 'text-text' : 'text-overlay1 hover:text-subtext0'
                   }`}
                 >
@@ -53,14 +64,14 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                     {getPeriodLabel(period.time.start)}
                   </span>
                   {activePeriodIdx === idx && (
-                    <div className="absolute bottom-0 left-1/4 w-1/2 h-1 bg-blue rounded-full shadow-[0_-2px_15px_rgba(var(--blue-rgb),0.6)]"></div>
+                    <div className="absolute bottom-0 left-1/4 w-1/2 h-1 bg-blue rounded-full"></div>
                   )}
                 </button>
               ))}
             </div>
 
             <div className="relative w-full bg-base overflow-hidden aspect-[1.6/1] sm:aspect-[2.4/1] transition-colors duration-300">
-              <img 
+              <img
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
                 style={mapImageStyle}
                 className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-all duration-300"
@@ -68,27 +79,31 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
               />
               <div className="absolute inset-0 z-10">
                 {SG_REGIONS.map((region) => {
-                   const forecast = currentPeriod.regions[region.id as keyof typeof currentPeriod.regions];
-                   return (
-                     <div 
-                       key={region.id} 
-                       className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.65] sm:scale-100 transition-transform" 
-                       style={{ left: region.x, top: region.y }}
-                     >
-                        <div className="relative mb-1 sm:mb-2">
-                           <div className="absolute inset-0 bg-blue/10 rounded-full blur-xl scale-0 group-hover:scale-150 transition-all duration-500"></div>
-                           <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-2xl backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center">
-                             <div className="scale-[0.7] md:scale-100 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">{getWeatherIcon(forecast as string)}</div>
-                           </div>
+                  const forecast =
+                    currentPeriod.regions[region.id as keyof typeof currentPeriod.regions]
+                  return (
+                    <div
+                      key={region.id}
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.65] sm:scale-100 transition-transform"
+                      style={{ left: region.x, top: region.y }}
+                    >
+                      <div className="relative mb-1 sm:mb-2">
+                        <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center shadow-sm">
+                          <div className="scale-[0.7] md:scale-100">
+                            {getWeatherIcon(forecast as string)}
+                          </div>
                         </div>
-                        <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-2xl border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
-                           <span className="text-[7px] md:text-[9px] font-black text-overlay2 uppercase tracking-[0.3em] block mb-0.5">{region.name}</span>
-                           <span className="text-[9px] md:text-xs text-blue font-black uppercase tracking-tight block whitespace-normal leading-tight drop-shadow-[0_0_10px_rgba(var(--blue-rgb),0.5)]">
-                             {forecast}
-                           </span>
-                        </div>
-                     </div>
-                   );
+                      </div>
+                      <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
+                        <span className="text-[9px] md:text-[11px] font-semibold text-overlay2 block mb-0.5">
+                          {region.name}
+                        </span>
+                        <span className="text-[10px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
+                          {forecast}
+                        </span>
+                      </div>
+                    </div>
+                  )
                 })}
               </div>
             </div>
@@ -98,30 +113,34 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto w-full items-stretch">
         <div className="flex flex-col gap-6 lg:col-span-3">
-          <div className="bg-surface0/20 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-peach/20 shadow-xl">
+          <div className="bg-surface0/60 px-6 md:px-8 py-5 md:py-6 rounded-2xl border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-colors hover:border-peach/20 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-overlay1">Temperature</span>
-              <i className="fas fa-temperature-half text-peach text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(var(--peach-rgb),0.3)]"></i>
+              <span className="text-xs md:text-sm font-semibold text-overlay1">Temperature</span>
+              <i className="fas fa-temperature-half text-peach text-xl md:text-2xl"></i>
             </div>
             <div className="flex items-center justify-center">
               <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-text flex items-center gap-4">
-                {data.general.temperature.low}° 
-                <span className="text-overlay0 font-bold opacity-40 text-2xl md:text-3xl lg:text-4xl">~</span> 
+                {data.general.temperature.low}°
+                <span className="text-overlay0 font-bold opacity-40 text-2xl md:text-3xl lg:text-4xl">
+                  ~
+                </span>
                 {data.general.temperature.high}°C
               </span>
             </div>
             <div className="h-0 md:h-2"></div>
           </div>
 
-          <div className="bg-surface0/20 backdrop-blur-xl px-10 md:px-12 py-6 md:py-8 rounded-[48px] border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-all hover:border-blue/20 shadow-xl">
+          <div className="bg-surface0/60 px-6 md:px-8 py-5 md:py-6 rounded-2xl border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-colors hover:border-blue/20 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-overlay1">Humidity</span>
-              <i className="fas fa-droplet text-blue text-xl md:text-2xl drop-shadow-[0_0_8px_rgba(var(--blue-rgb),0.3)]"></i>
+              <span className="text-xs md:text-sm font-semibold text-overlay1">Humidity</span>
+              <i className="fas fa-droplet text-blue text-xl md:text-2xl"></i>
             </div>
             <div className="flex items-center justify-center">
               <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-text flex items-center gap-4">
-                {data.general.relative_humidity.low}% 
-                <span className="text-overlay0 font-bold opacity-40 text-2xl md:text-3xl lg:text-4xl">-</span> 
+                {data.general.relative_humidity.low}%
+                <span className="text-overlay0 font-bold opacity-40 text-2xl md:text-3xl lg:text-4xl">
+                  -
+                </span>
                 {data.general.relative_humidity.high}%
               </span>
             </div>
@@ -130,30 +149,26 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         </div>
 
         <div className="lg:col-span-2 flex">
-          <div className="bg-surface0/20 backdrop-blur-xl p-10 md:p-12 rounded-[48px] border border-surface1/20 flex flex-col items-center justify-between w-full transition-all hover:border-teal/20 shadow-xl">
+          <div className="bg-surface0/60 p-6 md:p-8 rounded-2xl border border-surface1/20 flex flex-col items-center justify-between w-full transition-colors hover:border-teal/20 shadow-sm">
             <div className="w-full text-left">
-              <span className="text-[11px] md:text-[12px] font-black uppercase tracking-[0.3em] text-overlay1">Wind Dynamics</span>
-            </div>
-            
-            <div className="flex-1 flex flex-col items-center justify-center gap-2 py-6">
-              <h2 className="text-7xl md:text-8xl lg:text-9xl font-black text-text tracking-tighter uppercase leading-none">
-                {data.general.wind.direction}
-              </h2>
-              <p className="text-overlay1 text-sm md:text-base font-black uppercase tracking-[0.25em] opacity-60">
-                {data.general.wind.speed.low} - {data.general.wind.speed.high} KM/H
-              </p>
+              <span className="text-xs md:text-sm font-semibold text-overlay1">Wind</span>
             </div>
 
-            <div className="flex justify-center pb-2">
-              <i className="fas fa-wind text-teal text-6xl md:text-7xl lg:text-8xl opacity-80 drop-shadow-[0_0_25px_rgba(var(--teal-rgb),0.25)]"></i>
+            <div className="flex-1 flex flex-col items-center justify-center gap-2 py-6">
+              <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-text tracking-tighter uppercase leading-none">
+                {data.general.wind.direction}
+              </h2>
+              <p className="text-overlay1 text-xs md:text-sm font-semibold">
+                {data.general.wind.speed.low} - {data.general.wind.speed.high} km/h
+              </p>
             </div>
           </div>
         </div>
       </div>
-      
+
       <SyncFooter timestamp={data.updateTimestamp} className="max-w-6xl mx-auto mb-12" />
     </div>
-  );
-};
+  )
+}
 
-export default Forecast24hView;
+export default Forecast24hView
