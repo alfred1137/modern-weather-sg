@@ -81,14 +81,12 @@ Workspace auto-formats (quote style, trailing commas) on each edit, producing
 noisy diffs. Add `.editorconfig` + a formatter config so version-bump script
 edits match house style in one pass. Low priority.
 
-### 7. Remove the dead `@google/genai` dependency
+### 7. Dead `@google/genai` dependency — RESOLVED in 1.4.3
 
-`@google/genai` (package.json line 9, pinned to `"latest"`) is **never imported**
-anywhere in `src/` — confirmed via grep. It is vestigial from the early
-AI-fuse experiment. Future session: `npm uninstall @google/genai` and rebuild.
-Risk: `"latest"` is a moving target (major bumps publish without notice), so it
-silently pulls unrelated package versions into CI installs. Low lift, worth
-doing.
+`@google/genai` was **never imported** and was a vestigial `"latest"` moving-target
+dependency. Confirmed gone from `package.json` at 1.4.3 (only stale docs mentioned
+it) — removed those references. Lesson: lessons.md can outlive the code; grep
+before trusting a documented issue.
 
 ### 8. Automated SW cache-purge verification (optional)
 

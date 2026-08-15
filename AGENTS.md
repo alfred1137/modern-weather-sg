@@ -54,8 +54,6 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   Do not change it to a root path.
 - **Data refresh timing**: `App.tsx` refetches all data every `300000` ms (5 min);
   `RainAreasView` regenerates the radar history grid every `60000` ms (60 s).
-- **Dead dependency**: `@google/genai` is in `package.json` but never imported.
-  Ignore it; it is harmless.
 - **`index.html` has an `<script type="importmap">`** mapping `react`/`react-dom`/
   `vite` to `esm.sh` CDN URLs. This is vestigial — Vite intercepts bare imports
   in dev and bundles in build, so it has no runtime effect. Leave it unless you are

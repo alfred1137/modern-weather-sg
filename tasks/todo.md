@@ -105,7 +105,8 @@ Versioning: two tracks bumped every milestone — app SemVer `1.4.0`→`1.4.6`
 - [x] M1.4.1 — Fix 4 `any` lint warnings (App.tsx:89,92; weatherService.ts:58,81), bump (1.4.1, v20), push.
 - [x] M1.4.2 — Humanize F4D insights copy ("leveraging on advanced multi-model
       ensemble forecasting…"), bump (1.4.2, v21), push.
-- [ ] M1.4.3 — Remove dead `@google/genai` dep, bump (1.4.3, v22), push.
+- [x] M1.4.3 — Dead `@google/genai` dep: already removed from package.json; cleared
+      stale AGENTS.md/lessons.md references, bump (1.4.3, v22), push.
 - [ ] M1.4.4 — Residual scan micro-cleanup (LegendModal shadow-xl, image
       transition-all, stray gap-4), bump (1.4.4, v23), push.
 - [ ] M1.4.5 — Expand test coverage (PSIView, RainAreasView, F4D/F24h,
