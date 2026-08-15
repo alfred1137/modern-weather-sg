@@ -86,10 +86,10 @@ const AppContent: React.FC = () => {
             airQuality,
           }),
         )
-      } catch (persistErr: any) {
+      } catch (persistErr) {
         console.warn('Failed to persist weather cache', persistErr)
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(err)
       setState((prev) => {
         // If we have any data (from cache or an earlier success), keep showing
@@ -204,7 +204,7 @@ const AppContent: React.FC = () => {
                 Developed with vibe to create a clear and modern weather forecasting experience for
                 those in Singapore.
                 <br />
-                <span className="text-overlay0">v1.4.0</span>
+                <span className="text-overlay0">v1.4.1</span>
               </p>
             </div>
 

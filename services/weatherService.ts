@@ -11,6 +11,27 @@ const BASE_URL = 'https://sgw-proxy.alfred1137.workers.dev/api'
 
 const REGIONS: RegionKey[] = ['west', 'east', 'central', 'south', 'north']
 
+// Minimal shapes of the data.gov.sg API records consumed below (the full API
+// payload is large; only the fields the app uses are typed).
+interface Api24hPeriod {
+  timePeriod: { start: string; end: string }
+  regions: {
+    west: { text: string }
+    east: { text: string }
+    central: { text: string }
+    south: { text: string }
+    north: { text: string }
+  }
+}
+
+interface Api4DayForecast {
+  timestamp: string
+  forecast: { text: string; summary: string }
+  relativeHumidity: { low: number; high: number }
+  temperature: { low: number; high: number }
+  wind: { speed: { low: number; high: number }; direction: string }
+}
+
 export const fetchNowcast = async (): Promise<NowcastData> => {
   const res = await fetch(`${BASE_URL}/two-hr-forecast`)
   if (!res.ok) throw new Error('Failed to fetch nowcast')
@@ -55,7 +76,7 @@ export const fetch24hForecast = async (): Promise<Forecast24h> => {
         direction: record.general.wind.direction,
       },
     },
-    periods: record.periods.map((p: any) => ({
+    periods: record.periods.map((p: Api24hPeriod) => ({
       time: {
         start: p.timePeriod.start,
         end: p.timePeriod.end,
@@ -78,7 +99,7 @@ export const fetch4DayForecast = async (): Promise<Forecast4Day> => {
   const record = json.data.records[0]
   return {
     updateTimestamp: record.updatedTimestamp,
-    items: record.forecasts.map((f: any) => ({
+    items: record.forecasts.map((f: Api4DayForecast) => ({
       date: f.timestamp,
       forecast: f.forecast.text,
       summary: f.forecast.summary,
