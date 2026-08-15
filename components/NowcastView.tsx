@@ -14,7 +14,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
   const [hoveredArea, setHoveredArea] = useState<NowcastArea | null>(null)
   const { theme } = useTheme()
 
-  if (!data) return <div className="text-center p-8 text-overlay1">Loading nowcast...</div>
+  if (!data) return <div className="text-center p-8 text-subtext0">Loading nowcast...</div>
 
   const filtered = data.items.filter((i) => i.area.toLowerCase().includes(search.toLowerCase()))
 
@@ -75,7 +75,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">
               Nowcast
             </h1>
-            <p className="text-overlay1 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+            <p className="text-subtext0 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
               2-hour nowcast:{' '}
               <span className="text-subtext1 font-semibold">
                 {formatTime(data.validPeriod.start)} ~ {formatTime(data.validPeriod.end)}
@@ -179,7 +179,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
               </div>
             ) : (
               <div className="w-full py-8 text-center border border-dashed border-surface1/50 rounded-xl">
-                <p className="text-xs md:text-sm font-medium text-overlay1">
+                <p className="text-xs md:text-sm font-medium text-subtext0">
                   Select an area on the map
                 </p>
               </div>
@@ -200,7 +200,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
                   {getWeatherIcon(item.forecast)}
                 </div>
                 <h3 className="font-bold text-text text-xs mb-1 leading-tight">{item.area}</h3>
-                <p className="text-overlay1 text-xs opacity-60">{item.forecast}</p>
+                <p className="text-subtext0 text-xs">{item.forecast}</p>
               </div>
             ))}
           </div>

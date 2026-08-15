@@ -13,7 +13,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
   const { theme } = useTheme()
 
   if (!data)
-    return <div className="text-center p-8 text-sm text-overlay1">Synchronizing forecast...</div>
+    return <div className="text-center p-8 text-sm text-subtext0">Synchronizing forecast...</div>
 
   const getPeriodLabel = (startStr: string) => {
     const hour = new Date(startStr).getHours()
@@ -57,7 +57,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                   key={idx}
                   onClick={() => setActivePeriodIdx(idx)}
                   className={`flex-1 min-w-[120px] py-5 md:py-6 text-center transition-colors relative ${
-                    activePeriodIdx === idx ? 'text-text' : 'text-overlay1 hover:text-subtext0'
+                    activePeriodIdx === idx ? 'text-text' : 'text-subtext0 hover:text-text'
                   }`}
                 >
                   <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
@@ -95,7 +95,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                         </div>
                       </div>
                       <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
-                        <span className="text-[9px] md:text-[11px] font-semibold text-overlay2 block mb-0.5">
+                        <span className="text-[11px] md:text-xs font-semibold text-subtext0 block mb-0.5">
                           {region.name}
                         </span>
                         <span className="text-[10px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
@@ -115,7 +115,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         <div className="flex flex-col gap-6 lg:col-span-3">
           <div className="bg-surface0/60 px-6 md:px-8 py-5 md:py-6 rounded-2xl border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-colors hover:border-peach/20 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs md:text-sm font-semibold text-overlay1">Temperature</span>
+              <span className="text-xs md:text-sm font-semibold text-subtext0">Temperature</span>
               <i className="fas fa-temperature-half text-peach text-xl md:text-2xl"></i>
             </div>
             <div className="flex items-center justify-center">
@@ -132,7 +132,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
 
           <div className="bg-surface0/60 px-6 md:px-8 py-5 md:py-6 rounded-2xl border border-surface1/20 flex flex-col justify-between flex-1 min-h-[150px] transition-colors hover:border-blue/20 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-xs md:text-sm font-semibold text-overlay1">Humidity</span>
+              <span className="text-xs md:text-sm font-semibold text-subtext0">Humidity</span>
               <i className="fas fa-droplet text-blue text-xl md:text-2xl"></i>
             </div>
             <div className="flex items-center justify-center">
@@ -151,14 +151,14 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         <div className="lg:col-span-2 flex">
           <div className="bg-surface0/60 p-6 md:p-8 rounded-2xl border border-surface1/20 flex flex-col items-center justify-between w-full transition-colors hover:border-teal/20 shadow-sm">
             <div className="w-full text-left">
-              <span className="text-xs md:text-sm font-semibold text-overlay1">Wind</span>
+              <span className="text-xs md:text-sm font-semibold text-subtext0">Wind</span>
             </div>
 
             <div className="flex-1 flex flex-col items-center justify-center gap-2 py-6">
               <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-text tracking-tighter uppercase leading-none">
                 {data.general.wind.direction}
               </h2>
-              <p className="text-overlay1 text-xs md:text-sm font-semibold">
+              <p className="text-subtext0 text-xs md:text-sm font-semibold">
                 {data.general.wind.speed.low} - {data.general.wind.speed.high} km/h
               </p>
             </div>

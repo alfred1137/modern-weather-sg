@@ -8,16 +8,17 @@ gate; `npm run format` exists for manual prettier runs.
 
 ## Commands
 
-| Command           | What                                                                                                                         |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `npm install`     | Install deps. **No lockfile is checked in** (`package-lock.json` gitignored) → resolves fresh each time (CI relies on this). |
-| `npm run dev`     | Vite dev server with HMR.                                                                                                    |
-| `npm run build`   | `tsc && vite build` — typecheck + bundle → `dist/`. **Primary gate.**                                                        |
-| `npm run lint`    | `eslint .` — **gate**, must be clean.                                                                                        |
-| `npm run test`    | `vitest run` — **gate**, must pass (50 tests / 12 suites).                                                                   |
-| `npm run format`  | `prettier --write .` — manual only, not part of the gate.                                                                    |
-| `npm run preview` | Serve `dist/` locally.                                                                                                       |
-| `npm run deploy`  | `gh-pages -d dist` — manual deploy to `gh-pages` branch.                                                                     |
+| Command               | What                                                                                                                                                                                                                                                                                   |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm install`         | Install deps. **No lockfile is checked in** (`package-lock.json` gitignored) → resolves fresh each time (CI relies on this).                                                                                                                                                           |
+| `npm run dev`         | Vite dev server with HMR.                                                                                                                                                                                                                                                              |
+| `npm run build`       | `tsc && vite build` — typecheck + bundle → `dist/`. **Primary gate.**                                                                                                                                                                                                                  |
+| `npm run lint`        | `eslint .` — **gate**, must be clean.                                                                                                                                                                                                                                                  |
+| `npm run test`        | `vitest run` — **gate**, must pass (50 tests / 12 suites).                                                                                                                                                                                                                             |
+| `npm run format`      | `prettier --write .` — manual only, not part of the gate.                                                                                                                                                                                                                              |
+| `npm run design:lint` | `designmd lint DESIGN.md` — validates the DESIGN.md design-system spec (token refs, contrast, structure). Manual only, not part of the gate. `designmd` alias is used instead of the package's `design.md` bin — the `.md` suffix collides with the Windows Markdown file association. |
+| `npm run preview`     | Serve `dist/` locally.                                                                                                                                                                                                                                                                 |
+| `npm run deploy`      | `gh-pages -d dist` — manual deploy to `gh-pages` branch.                                                                                                                                                                                                                               |
 
 Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 (`npm install` → `npm run build` → deploys `dist/` via `JamesIves/github-pages-deploy-action`).
@@ -88,6 +89,12 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 
 - Gates (all three must pass before commit): `npm run build`, `npm run lint`,
   `npm run test`.
+- **DESIGN.md is the normative design target** (project root, Google's
+  DESIGN.md format — tokens in YAML front matter, rationale in prose). The
+  UI code must conform to it; `npm run design:lint` catches broken token
+  refs and non-conforming component contrast. When changing UI styles,
+  update DESIGN.md and the code together — never let the file become a
+  snapshot of stale choices.
 - Version bumps: grep for stale strings after editing (`vX.Y.Z`, `vN`,
   `sg-weather-vN`) — see the `version-bump` skill.
 - Deploy: pushing to `main` triggers CI. GitHub Pages CDN caches HTML at

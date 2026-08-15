@@ -119,7 +119,7 @@ const AppContent: React.FC = () => {
       return (
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <div className="w-12 h-12 border-4 border-blue border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-overlay1 font-medium">Fetching real-time data...</p>
+          <p className="text-subtext0 font-medium">Fetching real-time data...</p>
         </div>
       )
     }
@@ -131,7 +131,7 @@ const AppContent: React.FC = () => {
           <h2 className="text-xl font-bold mb-2 uppercase tracking-tighter text-text">
             Sync error
           </h2>
-          <p className="text-overlay1 max-w-md text-sm">{state.error}</p>
+          <p className="text-subtext0 max-w-md text-sm">{state.error}</p>
           <button
             onClick={loadData}
             className="mt-8 bg-blue hover:bg-sky text-mantle px-6 py-3 rounded-xl font-bold text-sm transition-colors"
@@ -177,7 +177,7 @@ const AppContent: React.FC = () => {
 
         <div className="max-w-4xl w-full bg-surface0/60 border border-surface1/10 rounded-2xl p-8 md:p-10 flex flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-6 text-center">
-            <div className="space-y-4 text-overlay1 text-[11px] md:text-xs font-medium leading-relaxed max-w-2xl">
+            <div className="space-y-4 text-subtext0 text-[11px] md:text-xs font-medium leading-relaxed max-w-2xl">
               <p>
                 Data provided by the National Environment Agency & PUB, Singapore via Singapore Open
                 Data (
@@ -212,7 +212,7 @@ const AppContent: React.FC = () => {
               href="https://github.com/alfred1137/modern-weather-sg"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-surface0/40 hover:bg-surface0/80 border border-surface1/5 px-6 py-3 rounded-2xl transition-colors text-overlay1 hover:text-text flex items-center gap-3"
+              className="bg-surface0/40 hover:bg-surface0/80 border border-surface1/5 px-6 py-3 rounded-2xl transition-colors text-subtext0 hover:text-text flex items-center gap-3"
             >
               <i className="fab fa-github text-lg"></i>
               <span className="text-sm font-semibold">alfred1137 / modern-weather-sg</span>

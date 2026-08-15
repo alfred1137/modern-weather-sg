@@ -25,7 +25,7 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-col items-center gap-1 transition-colors duration-300 ${
-                activeTab === tab.id ? 'text-blue' : 'text-overlay1'
+                activeTab === tab.id ? 'text-blue' : 'text-subtext0'
               }`}
             >
               <i className={`fas ${tab.icon} text-lg`}></i>
@@ -51,7 +51,7 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
               className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-colors ${
                 activeTab === tab.id
                   ? 'bg-blue text-mantle'
-                  : 'text-overlay1 hover:text-text hover:bg-surface0'
+                  : 'text-subtext0 hover:text-text hover:bg-surface0'
               }`}
             >
               <i className={`fas ${tab.icon} text-sm`}></i>

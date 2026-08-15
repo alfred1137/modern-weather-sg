@@ -36,7 +36,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
   const { theme } = useTheme()
 
   if (!data)
-    return <div className="text-center p-8 text-sm text-overlay1">Synchronizing air quality...</div>
+    return <div className="text-center p-8 text-sm text-subtext0">Synchronizing air quality...</div>
 
   const mapImageStyle =
     theme === 'latte'
@@ -155,11 +155,11 @@ const PSIView: React.FC<Props> = ({ data }) => {
                     </div>
                   </div>
                   <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
-                    <span className="text-[9px] md:text-[11px] font-semibold text-overlay2 block mb-0.5">
+                    <span className="text-[11px] md:text-xs font-semibold text-subtext0 block mb-0.5">
                       {region.name}
                     </span>
                     <span
-                      className={`text-[10px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
+                      className={`text-[11px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
                     >
                       {bandFor(key)}
                     </span>
@@ -194,7 +194,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
                     {detailValue}
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-[10px] md:text-xs font-semibold text-overlay1">
+                    <span className="text-[11px] md:text-xs font-semibold text-subtext0">
                       {unit}
                     </span>
                     <span
@@ -213,7 +213,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
                       key={key}
                       className="flex flex-col items-center gap-0.5 bg-surface0/50 rounded-lg py-2 px-1"
                     >
-                      <span className="text-[9px] md:text-[11px] font-semibold text-overlay1">
+                      <span className="text-[11px] md:text-xs font-semibold text-subtext0">
                         {label}
                       </span>
                       <span
@@ -228,7 +228,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
             </div>
           ) : (
             <div className="w-full py-8 text-center border border-dashed border-surface1/50 rounded-xl">
-              <p className="text-xs md:text-sm font-medium text-overlay1">
+              <p className="text-xs md:text-sm font-medium text-subtext0">
                 Select a region on the map
               </p>
             </div>
@@ -238,7 +238,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
         <div className="bg-surface0/60 rounded-2xl px-5 py-5 md:px-6 md:py-6 border border-surface1/20 max-w-5xl mx-auto w-full">
           <div className="flex items-center gap-2 mb-4 md:mb-5">
             <i className="fas fa-list-ul text-blue text-xs"></i>
-            <span className="text-xs md:text-sm font-semibold text-overlay1">
+            <span className="text-xs md:text-sm font-semibold text-subtext0">
               {mode === 'psi' ? 'PSI bands' : '1-hr PM2.5 bands'}
             </span>
           </div>
@@ -255,7 +255,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
                   <span className="text-[10px] md:text-xs font-semibold text-text leading-tight">
                     {band.label}
                   </span>
-                  <span className="text-[9px] md:text-[11px] text-overlay0 leading-tight">
+                  <span className="text-[11px] md:text-xs text-subtext0 leading-tight">
                     {band.range}
                   </span>
                 </div>

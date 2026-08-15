@@ -145,6 +145,11 @@ hobby scale; leave as an explicit manual check for now.
 
 ## Files that encode these gotchas (update when you act)
 
+- `DESIGN.md` — normative legibility-first design target. Written as the
+  DESIRABLE state, not an inventory: tokens carry target values, Do's/Don'ts
+  carry the legibility contract (10px floor, 11px informational, 4.5:1
+  contrast, no opacity-on-muted-text). Code conforms to it; the file does
+  not conform to code.
 - `.agents/skills/version-bump/SKILL.md` — two-track single-source versioning
   (package.json define + sw.js CACHE_NAME), CDN cache verify.
 - `.agents/skills/sg-api-key-rotation/SKILL.md` — secret name, TTL, silent

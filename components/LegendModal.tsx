@@ -50,7 +50,7 @@ const LegendModal: React.FC<Props> = ({ isOpen, onClose }) => {
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-bold text-text">Weather Legend</h2>
-              <p className="text-overlay1 text-xs font-medium">
+              <p className="text-subtext0 text-xs font-medium">
                 Icon for each possible weather forecast
               </p>
             </div>
@@ -74,7 +74,7 @@ const LegendModal: React.FC<Props> = ({ isOpen, onClose }) => {
                 <div className="w-16 h-16 md:w-20 md:h-20 bg-surface0 rounded-full flex items-center justify-center mb-4 border border-surface1/10 overflow-hidden relative">
                   <div className="scale-90 md:scale-100">{getWeatherIcon(label)}</div>
                 </div>
-                <span className="text-[10px] md:text-xs font-semibold text-text leading-tight min-h-[2.5rem] flex items-center">
+                <span className="text-[11px] md:text-xs font-semibold text-text leading-tight min-h-[2.5rem] flex items-center">
                   {label}
                 </span>
               </div>
@@ -82,7 +82,7 @@ const LegendModal: React.FC<Props> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="mt-8 p-5 rounded-xl bg-surface0/40 border border-surface1/10 text-center">
-            <p className="text-overlay1 text-xs font-medium">
+            <p className="text-subtext0 text-xs font-medium">
               Iconography follows the Meteorological Service Singapore (MSS) standard for mobile
               weather reporting.
             </p>

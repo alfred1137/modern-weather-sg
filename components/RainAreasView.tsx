@@ -156,7 +156,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                 </span>
               </div>
             </div>
-            <p className="text-overlay1 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+            <p className="text-subtext0 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
               Latest observation:{' '}
               <span className="text-blue font-semibold">{currentItem?.label || '...'}</span>
             </p>
@@ -205,7 +205,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                 mode === 'SG' ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
               }`}
             >
-              <i className="fas fa-location-dot text-[8px]"></i> Singapore
+              <i className="fas fa-location-dot text-[10px]"></i> Singapore
             </button>
             <button
               onClick={() => {
@@ -217,7 +217,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
                 mode === 'REGIONAL' ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
               }`}
             >
-              <i className="fas fa-earth-asia text-[8px]"></i> Regional
+              <i className="fas fa-earth-asia text-[10px]"></i> Regional
             </button>
           </div>
         </div>
@@ -278,7 +278,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
           </button>
 
           <div className="flex-1 flex flex-col gap-4">
-            <div className="flex justify-between items-center text-[10px] md:text-xs font-semibold text-overlay1 px-1">
+            <div className="flex justify-between items-center text-[11px] md:text-xs font-semibold text-subtext0 px-1">
               <span className="opacity-60">Past 6 hours</span>
               <div className="bg-mantle px-4 py-1.5 rounded-full border border-surface1/20">
                 <span className="text-blue font-semibold">{currentItem?.label}</span>
@@ -310,15 +310,15 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
       <div className="mt-4 mb-2 max-w-4xl mx-auto w-full px-2">
         <div className="flex justify-between items-end mb-2.5 px-2">
           <div className="flex flex-col items-center">
-            <span className="text-overlay1 text-[10px] font-semibold mb-1.5">Heavy</span>
+            <span className="text-subtext0 text-[10px] font-semibold mb-1.5">Heavy</span>
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-overlay1 text-[10px] font-semibold mb-1.5">Moderate</span>
+            <span className="text-subtext0 text-[10px] font-semibold mb-1.5">Moderate</span>
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-overlay1 text-[10px] font-semibold mb-1.5">Light</span>
+            <span className="text-subtext0 text-[10px] font-semibold mb-1.5">Light</span>
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
         </div>

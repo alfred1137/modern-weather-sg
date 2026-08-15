@@ -1,6 +1,6 @@
 {
   "name": "sg-weather-modernized",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "private": true,
   "type": "module",
   "homepage": "https://alfred1137.github.io/modern-weather-sg/",
@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@google/design.md": "^0.4.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.4",
@@ -39,6 +40,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "design:lint": "designmd lint DESIGN.md",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   }

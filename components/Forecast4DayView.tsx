@@ -9,7 +9,7 @@ interface Props {
 }
 
 const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
-  if (!data) return <div className="text-center p-8 text-overlay1">Loading outlook...</div>
+  if (!data) return <div className="text-center p-8 text-subtext0">Loading outlook...</div>
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
@@ -28,7 +28,7 @@ const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
             <span className="text-blue font-bold text-sm mb-1">
               {new Date(day.date).toLocaleDateString('en-SG', { weekday: 'long' })}
             </span>
-            <span className="text-xs text-overlay1 mb-8 font-medium">
+            <span className="text-xs text-subtext0 mb-8 font-medium">
               {new Date(day.date).toLocaleDateString('en-SG', { day: 'numeric', month: 'short' })}
             </span>
 
@@ -42,13 +42,13 @@ const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
 
             <div className="w-full space-y-2">
               <div className="flex justify-between items-center px-4 py-2.5 bg-surface0/50 rounded-lg border border-surface1/20">
-                <span className="text-xs font-semibold text-overlay1">Temp</span>
+                <span className="text-xs font-semibold text-subtext0">Temp</span>
                 <span className="font-semibold text-text text-sm">
                   {day.temperature.low}° - {day.temperature.high}°C
                 </span>
               </div>
               <div className="flex justify-between items-center px-4 py-2.5 bg-surface0/50 rounded-lg border border-surface1/20">
-                <span className="text-xs font-semibold text-overlay1">Humidity</span>
+                <span className="text-xs font-semibold text-subtext0">Humidity</span>
                 <span className="font-semibold text-text text-sm">
                   {day.relative_humidity.low}% - {day.relative_humidity.high}%
                 </span>
@@ -63,7 +63,7 @@ const Forecast4DayView: React.FC<Props> = ({ data, onNavigate }) => {
           <i className="fas fa-circle-info"></i> About this forecast
         </h2>
         <div className="flex items-start gap-6">
-          <p className="text-overlay1 text-xs font-medium leading-relaxed">
+          <p className="text-subtext0 text-xs font-medium leading-relaxed">
             The 4-day outlook is published by the National Environment Agency (NEA) and
             Meteorological Service Singapore (MSS), based on multi-model weather forecasts. In
             Singapore's tropical climate, localized heating can trigger sudden thundery showers. For
