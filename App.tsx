@@ -3,11 +3,16 @@ import { AppTab, WeatherUIState } from './types'
 import Navigation from './components/Navigation'
 import NowcastView from './components/NowcastView'
 import RainAreasView from './components/RainAreasView'
-import FloodWarningView from './components/FloodWarningView'
+import PSIView from './components/PSIView'
 import Forecast24hView from './components/Forecast24hView'
 import Forecast4DayView from './components/Forecast4DayView'
 import LegendModal from './components/LegendModal'
-import { fetchNowcast, fetch24hForecast, fetch4DayForecast } from './services/weatherService'
+import {
+  fetchNowcast,
+  fetch24hForecast,
+  fetch4DayForecast,
+  fetchAirQuality,
+} from './services/weatherService'
 import { ThemeProvider } from './context/ThemeContext'
 import ThemeToggle from './components/ThemeToggle'
 
@@ -57,16 +62,17 @@ const AppContent: React.FC = () => {
   const loadData = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }))
     try {
-      const [nowcast, f24h, f4d] = await Promise.all([
+      const [nowcast, f24h, f4d, airQuality] = await Promise.all([
         fetchNowcast(),
         fetch24hForecast(),
         fetch4DayForecast(),
+        fetchAirQuality(),
       ])
       setState({
         nowcast,
         forecast24h: f24h,
         forecast4d: f4d,
-        airQuality: null,
+        airQuality,
         loading: false,
         error: null,
       })
@@ -77,6 +83,7 @@ const AppContent: React.FC = () => {
             nowcast,
             forecast24h: f24h,
             forecast4d: f4d,
+            airQuality,
           }),
         )
       } catch (persistErr: any) {
@@ -88,7 +95,7 @@ const AppContent: React.FC = () => {
         // If we have any data (from cache or an earlier success), keep showing
         // it instead of blanking to the error screen. Data is at most 5 minutes
         // stale, which matches the app's normal refresh cadence anyway.
-        if (prev.nowcast || prev.forecast24h || prev.forecast4d) {
+        if (prev.nowcast || prev.forecast24h || prev.forecast4d || prev.airQuality) {
           return { ...prev, loading: false, error: null }
         }
         return {
@@ -141,7 +148,7 @@ const AppContent: React.FC = () => {
       case AppTab.RAIN_AREAS:
         return <RainAreasView syncTimestamp={state.nowcast?.updateTimestamp} />
       case AppTab.AIR_QUALITY:
-        return <FloodWarningView />
+        return <PSIView data={state.airQuality} />
       case AppTab.FORECAST_24H:
         return <Forecast24hView data={state.forecast24h} />
       case AppTab.FORECAST_4DAY:

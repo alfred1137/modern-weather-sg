@@ -180,3 +180,31 @@ export const SG_REGIONS = [
   { id: 'west', name: 'West', x: '12%', y: '50%' },
   { id: 'central', name: 'Central', x: '50%', y: '50%' },
 ]
+
+// NEA air quality band tables, mapped onto the Catppuccin palette.
+export const PSI_BANDS = [
+  { max: 50, label: 'Good', range: '0 - 50', color: 'text-green', dot: 'bg-green' },
+  { max: 100, label: 'Moderate', range: '51 - 100', color: 'text-yellow', dot: 'bg-yellow' },
+  { max: 200, label: 'Unhealthy', range: '101 - 200', color: 'text-peach', dot: 'bg-peach' },
+  { max: 300, label: 'Very Unhealthy', range: '201 - 300', color: 'text-red', dot: 'bg-red' },
+  { max: Infinity, label: 'Hazardous', range: '> 300', color: 'text-mauve', dot: 'bg-mauve' },
+]
+
+export const PM25_BANDS = [
+  { max: 55, label: 'Normal', range: '0 - 55', color: 'text-green', dot: 'bg-green' },
+  { max: 150, label: 'Elevated', range: '56 - 150', color: 'text-yellow', dot: 'bg-yellow' },
+  { max: 250, label: 'High', range: '151 - 250', color: 'text-peach', dot: 'bg-peach' },
+  { max: Infinity, label: 'Very High', range: '>= 251', color: 'text-red', dot: 'bg-red' },
+]
+
+export const getPSIColor = (psi: number): string =>
+  PSI_BANDS.find((b) => psi <= b.max)?.color ?? 'text-mauve'
+
+export const getPSIBand = (psi: number): string =>
+  PSI_BANDS.find((b) => psi <= b.max)?.label ?? 'Hazardous'
+
+export const getPM25Color = (value: number): string =>
+  PM25_BANDS.find((b) => value <= b.max)?.color ?? 'text-red'
+
+export const getPM25Band = (value: number): string =>
+  PM25_BANDS.find((b) => value <= b.max)?.label ?? 'Very High'
