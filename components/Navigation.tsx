@@ -10,7 +10,7 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
   const tabs = [
     { id: AppTab.NOWCAST, label: 'Nowcast', icon: 'fa-location-dot' },
     { id: AppTab.RAIN_AREAS, label: 'Rain Areas', icon: 'fa-cloud-showers-heavy' },
-    { id: AppTab.FLOOD_WARNING, label: 'Flood Alert (Soon)', icon: 'fa-triangle-exclamation' },
+    { id: AppTab.AIR_QUALITY, label: 'Air Quality', icon: 'fa-wind' },
     { id: AppTab.FORECAST_24H, label: '24-Hour', icon: 'fa-clock' },
     { id: AppTab.FORECAST_4DAY, label: '4-Day', icon: 'fa-calendar-days' },
   ]

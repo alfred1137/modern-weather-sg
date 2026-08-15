@@ -25,6 +25,7 @@ const loadCachedState = (): WeatherUIState | null => {
       nowcast: parsed.nowcast ?? null,
       forecast24h: parsed.forecast24h ?? null,
       forecast4d: parsed.forecast4d ?? null,
+      airQuality: parsed.airQuality ?? null,
       loading: false,
       error: null,
     }
@@ -42,6 +43,7 @@ const AppContent: React.FC = () => {
         nowcast: null,
         forecast24h: null,
         forecast4d: null,
+        airQuality: null,
         loading: true,
         error: null,
       },
@@ -64,6 +66,7 @@ const AppContent: React.FC = () => {
         nowcast,
         forecast24h: f24h,
         forecast4d: f4d,
+        airQuality: null,
         loading: false,
         error: null,
       })
@@ -137,7 +140,7 @@ const AppContent: React.FC = () => {
         return <NowcastView data={state.nowcast} />
       case AppTab.RAIN_AREAS:
         return <RainAreasView syncTimestamp={state.nowcast?.updateTimestamp} />
-      case AppTab.FLOOD_WARNING:
+      case AppTab.AIR_QUALITY:
         return <FloodWarningView />
       case AppTab.FORECAST_24H:
         return <Forecast24hView data={state.forecast24h} />

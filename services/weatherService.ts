@@ -1,6 +1,15 @@
-import { NowcastData, Forecast24h, Forecast4Day } from '../types'
+import {
+  NowcastData,
+  Forecast24h,
+  Forecast4Day,
+  AirQualityData,
+  PSIRegionReadings,
+  RegionKey,
+} from '../types'
 
 const BASE_URL = 'https://sgw-proxy.alfred1137.workers.dev/api'
+
+const REGIONS: RegionKey[] = ['west', 'east', 'central', 'south', 'north']
 
 export const fetchNowcast = async (): Promise<NowcastData> => {
   const res = await fetch(`${BASE_URL}/two-hr-forecast`)
@@ -89,5 +98,40 @@ export const fetch4DayForecast = async (): Promise<Forecast4Day> => {
         direction: f.wind.direction,
       },
     })),
+  }
+}
+
+export const fetchAirQuality = async (): Promise<AirQualityData> => {
+  const [psiRes, pm25Res] = await Promise.all([fetch(`${BASE_URL}/psi`), fetch(`${BASE_URL}/pm25`)])
+  if (!psiRes.ok) throw new Error('Failed to fetch PSI')
+  if (!pm25Res.ok) throw new Error('Failed to fetch PM2.5')
+  const [psiJson, pm25Json] = await Promise.all([psiRes.json(), pm25Res.json()])
+  const psiItem = psiJson.data.items[0]
+  const pm25Item = pm25Json.data.items[0]
+
+  const psiReadings = {} as Record<RegionKey, PSIRegionReadings>
+  const pm25Readings = {} as Record<RegionKey, number>
+  for (const region of REGIONS) {
+    psiReadings[region] = {
+      psi_twenty_four_hourly: psiItem.readings.psi_twenty_four_hourly[region],
+      pm25_sub_index: psiItem.readings.pm25_sub_index[region],
+      pm10_sub_index: psiItem.readings.pm10_sub_index[region],
+      so2_sub_index: psiItem.readings.so2_sub_index[region],
+      o3_sub_index: psiItem.readings.o3_sub_index[region],
+      co_sub_index: psiItem.readings.co_sub_index[region],
+      no2_one_hour_max: psiItem.readings.no2_one_hour_max[region],
+    }
+    pm25Readings[region] = pm25Item.readings.pm25_one_hourly[region]
+  }
+
+  return {
+    psi: {
+      updateTimestamp: psiItem.updatedTimestamp,
+      readings: psiReadings,
+    },
+    pm25: {
+      updateTimestamp: pm25Item.updatedTimestamp,
+      readings: pm25Readings,
+    },
   }
 }

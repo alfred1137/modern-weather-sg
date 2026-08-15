@@ -42,10 +42,37 @@ export interface Forecast4Day {
   }>
 }
 
+export type RegionKey = 'west' | 'east' | 'central' | 'south' | 'north'
+
+export interface PSIRegionReadings {
+  psi_twenty_four_hourly: number
+  pm25_sub_index: number
+  pm10_sub_index: number
+  so2_sub_index: number
+  o3_sub_index: number
+  co_sub_index: number
+  no2_one_hour_max: number
+}
+
+export interface PSIData {
+  updateTimestamp: string
+  readings: Record<RegionKey, PSIRegionReadings>
+}
+
+export interface PM25Data {
+  updateTimestamp: string
+  readings: Record<RegionKey, number>
+}
+
+export interface AirQualityData {
+  psi: PSIData
+  pm25: PM25Data
+}
+
 export enum AppTab {
   NOWCAST = 'nowcast',
   RAIN_AREAS = 'rain-areas',
-  FLOOD_WARNING = 'flood-warning',
+  AIR_QUALITY = 'air-quality',
   FORECAST_24H = 'forecast-24h',
   FORECAST_4DAY = 'forecast-4day',
 }
@@ -54,6 +81,7 @@ export interface WeatherUIState {
   nowcast: NowcastData | null
   forecast24h: Forecast24h | null
   forecast4d: Forecast4Day | null
+  airQuality: AirQualityData | null
   loading: boolean
   error: string | null
 }

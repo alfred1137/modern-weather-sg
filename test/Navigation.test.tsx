@@ -9,7 +9,7 @@ describe('Navigation', () => {
 
     expect(screen.getAllByText('Nowcast').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('Rain Areas').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('Flood Alert').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Air Quality').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('24-Hour').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('4-Day').length).toBeGreaterThanOrEqual(1)
   })
