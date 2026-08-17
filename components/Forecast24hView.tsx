@@ -109,7 +109,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[90px] md:min-w-[100px]">
+                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[70px] md:min-w-[100px]">
                     <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
                       {region.name}
                     </span>
@@ -120,13 +120,6 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                 </div>
               )
             })}
-          </div>
-
-          <div className="absolute bottom-4 right-4 pointer-events-none z-20">
-            <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-xs font-semibold text-text flex items-center gap-2">
-              <i className="fas fa-hand-pointer text-blue"></i>
-              <span>Tap regions</span>
-            </div>
           </div>
         </div>
       </div>
