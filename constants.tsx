@@ -88,6 +88,10 @@ export const getWeatherIcon = (description: string, _sizeClass: string = 'text-3
   return WeatherIconMap['default']
 }
 
+/** Strip trailing "(Day)"/"(Night)" from forecast text for display. Icons must keep raw. */
+export const stripDayNight = (forecast: string): string =>
+  forecast.replace(/\s*\((?:day|night)\)\s*$/i, '')
+
 // Normalized coordinates (0-100%) for Singapore Weather Areas
 export const AREA_COORDINATES: Record<string, { x: number; y: number }> = {
   'Ang Mo Kio': { x: 49.77, y: 26.95 },

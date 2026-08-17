@@ -34,7 +34,7 @@ describe('Forecast24hView', () => {
   it('shows first period region forecasts by default', () => {
     renderWithTheme(<Forecast24hView data={forecast24hData()} />)
     expect(screen.getAllByText('Cloudy').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('Fair (Day)').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Fair').length).toBeGreaterThanOrEqual(1)
   })
 
   it('switches to the next period on tab click', () => {

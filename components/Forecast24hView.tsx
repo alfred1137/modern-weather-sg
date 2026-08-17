@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Forecast24h } from '../types'
-import { getWeatherIcon, SG_REGIONS } from '../constants'
+import { getWeatherIcon, SG_REGIONS, stripDayNight } from '../constants'
 import SyncFooter from './SyncFooter'
 import { useTheme } from '../context/ThemeContext'
 
@@ -85,41 +85,40 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
       </div>
 
       <div className="relative flex flex-col gap-4">
-        <div className="glass rounded-none sm:rounded-3xl overflow-visible sm:overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
+        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
           <img
             src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
             style={mapImageStyle}
             className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
             alt="Singapore Background"
           />
-          <div className="absolute inset-0 z-10">
-            {SG_REGIONS.map((region) => {
-              const forecast =
-                currentPeriod.regions[region.id as keyof typeof currentPeriod.regions]
-              return (
-                <div
-                  key={region.id}
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform"
-                  style={{ left: region.x, top: region.y }}
-                >
-                  <div className="relative mb-1 sm:mb-2">
-                    <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center shadow-sm">
-                      <div className="scale-[0.7] md:scale-100">
-                        {getWeatherIcon(forecast as string)}
+          <div className="absolute inset-0 z-10 px-6 sm:px-0">
+            <div className="relative w-full h-full">
+              {SG_REGIONS.map((region) => {
+                const forecast =
+                  currentPeriod.regions[region.id as keyof typeof currentPeriod.regions]
+                return (
+                  <div
+                    key={region.id}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group origin-center scale-[0.8] sm:scale-100 transition-transform w-max"
+                    style={{ left: region.x, top: region.y }}
+                  >
+                    <div className="relative mb-1 sm:mb-2">
+                      <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center shadow-sm">
+                        <div className="scale-[0.7] md:scale-100">
+                          {getWeatherIcon(forecast as string)}
+                        </div>
                       </div>
                     </div>
+                    <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center max-w-[160px] sm:max-w-none">
+                      <span className="text-[13px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
+                        {stripDayNight(forecast as string)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center">
-                    <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
-                      {region.name}
-                    </span>
-                    <span className="text-[13px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
-                      {forecast}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
         </div>
       </div>

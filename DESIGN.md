@@ -297,8 +297,14 @@ sm:flex` inside the header right; mobile = `sm:hidden` full-width glass
   `py-3` (mobile).
 - The **map** is a standalone glass container: `glass rounded-none sm:rounded-3xl
 overflow-hidden aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl
-border sm:border-surface1/20 shadow-md bg-base`. It includes an
-  `absolute bottom-4 right-4` helper pill ("Tap regions" / "Tap icons").
+border sm:border-surface1/20 shadow-md bg-base`. Nowcast/PSI include an
+  `absolute bottom-4 right-4` helper pill ("Tap regions" / "Tap icons");
+  F24h omits the pill (no detail card).
+- The **5-region markers** (F24h, PSI) share a layout standard: markers
+  layer has `px-6 sm:px-0` padding + inner `relative w-full h-full`
+  wrapper; each marker uses `w-max` (max-content) to override the
+  abs-position shrink-to-fit cap; chips have no region labels (placement
+  is self-evident). F24h strips `(Day)`/`(Night)` suffixes for display.
 - The **detail** area sits below the map inside the same `flex flex-col gap-4`
   wrapper, with `min-h-[70px]` for the hover/click card.
 - 24-Hour Forecast uses period tabs (Morning/Afternoon/Evening/Night) in place
@@ -327,12 +333,21 @@ border sm:border-surface1/20 shadow-md bg-base`. It includes an
 - **Search input** — `bg-surface0/40`, 1px `surface1/50` border, `rounded-xl`,
   `pl-11` icon slot; placeholder is `overlay0` (non-informational by
   definition); focused ring `ring-2 ring-blue/30`.
-- **Map marker (nowcast/F24h)** — `bg-mantle/60` circle + `backdrop-blur`,
-  icon center, hover `scale-110`; caption chip = `bg-crust/40` with region
-  name at `label-xs` in `subtle` and value in its band color. Active marker
-  lifts to `z-30` and the detail card below fills.
-- **Map marker (PSI)** — same chrome; the value is the label (`font-bold`,
-  band color, `label-xs` minimum) and the band name rides beneath.
+- **Map marker (nowcast)** — `bg-mantle/60` circle + `backdrop-blur`,
+  icon center, hover `scale-110`; icon-only on map, forecast text on hover.
+- **Map marker (F24h)** — same icon circle above a caption chip
+  (`bg-crust/40`, forecast text in `text-blue` at 13px, no region label —
+  placement is self-evident). Marker uses `w-max` (`max-content`) to
+  override the abs-position shrink-to-fit cap that would otherwise wrap
+  the rightmost chip. `max-w-[160px] sm:max-w-none` prevents edge
+  clipping; `whitespace-normal` for multi-word forecasts. Map container uses
+  `overflow-hidden`; markers layer uses `px-6 sm:px-0` with inner
+  `relative` wrapper to define a padded safe zone on mobile. Desktop
+  (`sm:px-0`) unchanged. Display strips trailing `(Day)`/`(Night)`
+  suffixes (user-facing text); icon keeps raw value for sun/moon selection.
+- **Map marker (PSI)** — same chrome as F24h: `w-max`, padded safe zone,
+  no region labels. The value is the label (`font-bold`, band color,
+  `label-xs` minimum) and the band name rides beneath in its band color.
 - **Slider (radar timeline)** — blue thumb, transparent track, custom
   `webkit-slider-*` parts; tick labels 11px `subtle`.
 - **Modal (legend)** — full-screen `crust/60` + blur scrim, `glass` sheet

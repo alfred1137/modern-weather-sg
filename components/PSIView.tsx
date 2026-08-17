@@ -138,43 +138,42 @@ const PSIView: React.FC<Props> = ({ data }) => {
             className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
             alt="Singapore Background"
           />
-          <div className="absolute inset-0 z-10">
-            {SG_REGIONS.map((region) => {
-              const key = region.id as RegionKey
-              const value = valueFor(key)
-              const colorClass = colorFor(key)
-              const isActive = selectedRegion === key
-              return (
-                <div
-                  key={region.id}
-                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform ${
-                    isActive ? 'z-30' : 'z-10'
-                  }`}
-                  style={{ left: region.x, top: region.y }}
-                  onMouseEnter={() => setSelectedRegion(key)}
-                  onMouseLeave={() => setSelectedRegion(null)}
-                  onClick={() => setSelectedRegion(key)}
-                >
-                  <div className="relative mb-1 sm:mb-2">
-                    <div
-                      className={`bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center ${colorClass}`}
-                    >
-                      <span className="text-sm md:text-lg font-bold">{value}</span>
+          <div className="absolute inset-0 z-10 px-6 sm:px-0">
+            <div className="relative w-full h-full">
+              {SG_REGIONS.map((region) => {
+                const key = region.id as RegionKey
+                const value = valueFor(key)
+                const colorClass = colorFor(key)
+                const isActive = selectedRegion === key
+                return (
+                  <div
+                    key={region.id}
+                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform w-max ${
+                      isActive ? 'z-30' : 'z-10'
+                    }`}
+                    style={{ left: region.x, top: region.y }}
+                    onMouseEnter={() => setSelectedRegion(key)}
+                    onMouseLeave={() => setSelectedRegion(null)}
+                    onClick={() => setSelectedRegion(key)}
+                  >
+                    <div className="relative mb-1 sm:mb-2">
+                      <div
+                        className={`bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center ${colorClass}`}
+                      >
+                        <span className="text-sm md:text-lg font-bold">{value}</span>
+                      </div>
+                    </div>
+                    <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center max-w-[160px] sm:max-w-none">
+                      <span
+                        className={`text-[13px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
+                      >
+                        {bandFor(key)}
+                      </span>
                     </div>
                   </div>
-                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[90px] md:min-w-[100px]">
-                    <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
-                      {region.name}
-                    </span>
-                    <span
-                      className={`text-[13px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
-                    >
-                      {bandFor(key)}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
 
           <div className="absolute bottom-4 right-4 pointer-events-none z-20">

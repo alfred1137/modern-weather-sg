@@ -97,6 +97,22 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   snapshot of stale choices.
 - Version bumps: grep for stale strings after editing (`vX.Y.Z`, `vN`,
   `sg-weather-vN`) — see the `version-bump` skill.
+
+## Workflow: preview before push
+
+For UI/design changes, follow this sequence before committing:
+
+1. Edit code + DESIGN.md.
+2. Run all gates: `npm run build` → `npm run lint` → `npm run test` →
+   `npm run design:lint`.
+3. Run `npm run preview` — serves `dist/` locally (usually `localhost:4173`).
+4. User inspects at localhost. **Do not commit or push until the user
+   confirms the result.**
+5. Only after confirmation: version bump → commit → push.
+
+This avoids pushing half-baked UI to GitHub Pages. The preview server
+is the source of truth for visual approval; CI deploy is the formality.
+
 - Deploy: pushing to `main` triggers CI. GitHub Pages CDN caches HTML at
   `max-age=600` (~10 min), so verify via the raw `gh-pages` branch, not the
   live URL:

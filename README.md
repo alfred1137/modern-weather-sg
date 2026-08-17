@@ -28,7 +28,7 @@
     <br />
     <a href="https://alfred1137.github.io/modern-weather-sg/"><strong>Try the Demo »</strong></a>
     <br />
-    <img src="https://img.shields.io/badge/version-v1.4.13-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.4.14-blue" alt="Version">
     <br />
     <br />
     <a href="https://github.com/alfred1137/modern-weather-sg/issues">Report Bug</a>
