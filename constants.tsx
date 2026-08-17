@@ -178,3 +178,18 @@ export const getPM25Color = (value: number): string =>
 
 export const getPM25Band = (value: number): string =>
   PM25_BANDS.find((b) => value <= b.max)?.label ?? 'Very High'
+
+// Canonical map image style for `rain-lighting_map_988.jpg` (F24h, PSI, Nowcast).
+// Used by getMapImageStyle(theme). RainAreasView uses different assets/filters.
+export const getMapImageStyle = (theme: 'macchiato' | 'latte'): React.CSSProperties =>
+  theme === 'latte'
+    ? {
+        opacity: 0.6,
+        filter: 'contrast(0.4) brightness(1.5) grayscale(1)',
+        mixBlendMode: 'multiply',
+      }
+    : {
+        opacity: 0.2,
+        filter: 'contrast(1.25) brightness(1.0) grayscale(1)',
+        mixBlendMode: 'screen',
+      }

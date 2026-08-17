@@ -8,6 +8,7 @@ import {
   getPSIBand,
   getPM25Color,
   getPM25Band,
+  getMapImageStyle,
 } from '../constants'
 import SyncFooter from './SyncFooter'
 import { useTheme } from '../context/ThemeContext'
@@ -38,18 +39,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
   if (!data)
     return <div className="text-center p-8 text-sm text-subtext0">Synchronizing air quality...</div>
 
-  const mapImageStyle =
-    theme === 'latte'
-      ? {
-          opacity: 0.6,
-          filter: 'contrast(0.4) brightness(1.5) grayscale(1)',
-          mixBlendMode: 'multiply' as const,
-        }
-      : {
-          opacity: 0.2,
-          filter: 'contrast(1.25) brightness(1.0) grayscale(1)',
-          mixBlendMode: 'screen' as const,
-        }
+  const mapImageStyle = getMapImageStyle(theme)
 
   const valueFor = (region: RegionKey): number =>
     mode === 'psi' ? data.psi.readings[region].psi_twenty_four_hourly : data.pm25.readings[region]
@@ -133,7 +123,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
       <div className="relative flex flex-col gap-4">
         <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
           <img
-            src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
+            src="./rain-lighting_map_988.png"
             style={mapImageStyle}
             className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
             alt="Singapore Background"

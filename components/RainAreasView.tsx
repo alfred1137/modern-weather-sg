@@ -229,11 +229,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
             className={`absolute inset-0 transition-transform duration-700 ease-out origin-center ${isSgMode ? 'scale-[1.2] sm:scale-100' : 'scale-100'}`}
           >
             <img
-              src={
-                mode === 'SG'
-                  ? 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/base-853.png'
-                  : 'https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/240km-v2.png'
-              }
+              src={mode === 'SG' ? './base-853.png' : './240km-v2.png'}
               style={baseMapStyle}
               className="absolute inset-0 w-full h-full object-contain pointer-events-none transition-opacity duration-500"
               alt="Base Map"
@@ -250,7 +246,7 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
             )}
             {mode === 'SG' && (
               <img
-                src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/MRT.png"
+                src="./MRT.png"
                 style={{
                   filter:
                     theme === 'latte'

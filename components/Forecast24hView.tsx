@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Forecast24h } from '../types'
-import { getWeatherIcon, SG_REGIONS, stripDayNight } from '../constants'
+import { getWeatherIcon, SG_REGIONS, stripDayNight, getMapImageStyle } from '../constants'
 import SyncFooter from './SyncFooter'
 import { useTheme } from '../context/ThemeContext'
 
@@ -25,18 +25,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
 
   const currentPeriod = data.periods[activePeriodIdx]
 
-  const mapImageStyle =
-    theme === 'latte'
-      ? {
-          opacity: 0.6,
-          filter: 'contrast(0.4) brightness(1.5) grayscale(1)',
-          mixBlendMode: 'multiply' as const,
-        }
-      : {
-          opacity: 0.2,
-          filter: 'contrast(1.25) brightness(1.0) grayscale(1)',
-          mixBlendMode: 'screen' as const,
-        }
+  const mapImageStyle = getMapImageStyle(theme)
 
   return (
     <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
@@ -87,7 +76,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
       <div className="relative flex flex-col gap-4">
         <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
           <img
-            src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
+            src="./rain-lighting_map_988.png"
             style={mapImageStyle}
             className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
             alt="Singapore Background"

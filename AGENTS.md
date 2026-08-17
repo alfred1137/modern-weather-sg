@@ -48,7 +48,8 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 - **Catppuccin theming** toggles `data-theme="macchiato"|"latte"` on `<html>`,
   persisted in `localStorage` key **`catppuccin-theme`**. Logic in
   `context/ThemeContext.tsx`; the 48 color RGB vars are in `index.html <style>`.
-  Radar/map image filters differ per theme (see `RainAreasView`/`NowcastView`).
+  Radar/map image filters differ per theme: F24h/PSI/Nowcast share
+  `getMapImageStyle(theme)` in `constants.tsx`; RainAreasView keeps its own.
 - **Versioning is single-source (two tracks).** App version: `package.json`
   `"version"` only — `vite.config.ts` `define`s `__APP_VERSION__` into the
   `App.tsx` footer, so never hand-edit the footer. The README badge is the only
@@ -56,9 +57,9 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   `CACHE_NAME` only (bump it whenever the bundle changes). `index.html` carries
   no version strings — the SW register uses only `t=Date.now()` to bypass HTTP
   caching, and the manifest link is unversioned.
-- **External images are not in the repo.** Radar base map, rain overlays, MRT map,
-  and the Singapore background map load from `weather.gov.sg`. A broken image is
-  an upstream outage, not a code bug.
+- **Base map images are bundled in `public/`.** The `rain-lighting_map_988`,
+  `base-853`, `240km-v2`, and `MRT` images ship with the project. Only the
+  dynamic radar overlays (`dpsri_*`) load from `weather.gov.sg` at runtime.
 - **`vite.config.ts` sets `base: './'`** for GitHub Pages subfolder deploy.
   Do not change it to a root path.
 - **Data refresh timing**: `App.tsx` refetches all data every `300000` ms (5 min);
