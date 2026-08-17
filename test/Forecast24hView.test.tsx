@@ -27,6 +27,7 @@ describe('Forecast24hView', () => {
   it('renders general forecast and period tabs', () => {
     renderWithTheme(<Forecast24hView data={forecast24hData()} />)
     expect(screen.getByText('24-Hour Forecast')).toBeInTheDocument()
+    expect(screen.getByText('Fair and warm.')).toBeInTheDocument()
     expect(screen.getAllByText('Morning').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('Afternoon').length).toBeGreaterThanOrEqual(1)
   })

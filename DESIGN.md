@@ -308,7 +308,11 @@ border sm:border-surface1/20 shadow-md bg-base`. Nowcast/PSI include an
 - The **detail** area sits below the map inside the same `flex flex-col gap-4`
   wrapper, with `min-h-[70px]` for the hover/click card.
 - 24-Hour Forecast uses period tabs (Morning/Afternoon/Evening/Night) in place
-  of a mode toggle, but the positional structure is identical.
+  of a mode toggle, but the positional structure is identical. The F24h subtitle
+  shows the sentence-cased `general.forecast` (via `stripDayNight`, lowercase the
+  rest, append a period) — same style as the PSI subtitle (`text-subtext0`,
+  `text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden
+text-ellipsis`). No label prefix, sentence only.
 
 ## Components
 

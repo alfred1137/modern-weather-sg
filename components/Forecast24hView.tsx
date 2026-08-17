@@ -35,6 +35,12 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">
               24-Hour Forecast
             </h1>
+            <p className="text-subtext0 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+              {(() => {
+                const stripped = stripDayNight(data.general.forecast)
+                return stripped.charAt(0).toUpperCase() + stripped.slice(1).toLowerCase() + '.'
+              })()}
+            </p>
           </div>
 
           <div className="hidden sm:flex flex-col items-end shrink-0">
