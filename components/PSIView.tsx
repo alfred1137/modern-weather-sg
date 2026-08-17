@@ -63,6 +63,10 @@ const PSIView: React.FC<Props> = ({ data }) => {
   const activeTimestamp = mode === 'psi' ? data.psi.updateTimestamp : data.pm25.updateTimestamp
   const activeBands = mode === 'psi' ? PSI_BANDS : PM25_BANDS
   const unit = mode === 'psi' ? 'PSI' : 'µg/m³'
+  const worstValue = (
+    Object.keys(data[mode === 'psi' ? 'psi' : 'pm25'].readings) as RegionKey[]
+  ).reduce((max, r) => Math.max(max, valueFor(r)), 0)
+  const worstBand = mode === 'psi' ? getPSIBand(worstValue) : getPM25Band(worstValue)
 
   const detailRegion = selectedRegion
   const detailValue = detailRegion ? valueFor(detailRegion) : null
@@ -76,13 +80,17 @@ const PSIView: React.FC<Props> = ({ data }) => {
             <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">
               Air Quality
             </h1>
+            <p className="text-subtext0 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
+              {mode === 'psi' ? '24-hr PSI' : '1-hr PM2.5'} —{' '}
+              <span className="text-subtext1 font-semibold">{worstBand}</span>
+            </p>
           </div>
 
           <div className="hidden sm:flex flex-col items-end shrink-0">
             <div className="glass p-1 rounded-xl flex flex-row border border-surface1/20 w-auto bg-surface0/30">
               <button
                 onClick={() => setMode('pm25')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
                   mode === 'pm25' ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
                 }`}
               >
@@ -90,7 +98,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
               </button>
               <button
                 onClick={() => setMode('psi')}
-                className={`px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
                   mode === 'psi' ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
                 }`}
               >
@@ -123,7 +131,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
       </div>
 
       <div className="relative flex flex-col gap-4">
-        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.35/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
+        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
           <img
             src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
             style={mapImageStyle}

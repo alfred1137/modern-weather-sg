@@ -27,8 +27,8 @@ describe('Forecast24hView', () => {
   it('renders general forecast and period tabs', () => {
     renderWithTheme(<Forecast24hView data={forecast24hData()} />)
     expect(screen.getByText('24-Hour Forecast')).toBeInTheDocument()
-    expect(screen.getByText('Morning')).toBeInTheDocument()
-    expect(screen.getByText('Afternoon')).toBeInTheDocument()
+    expect(screen.getAllByText('Morning').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Afternoon').length).toBeGreaterThanOrEqual(1)
   })
 
   it('shows first period region forecasts by default', () => {
@@ -41,7 +41,7 @@ describe('Forecast24hView', () => {
     renderWithTheme(<Forecast24hView data={forecast24hData()} />)
     expect(screen.queryByText('Thundery Showers')).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByText('Afternoon'))
+    fireEvent.click(screen.getAllByText('Afternoon')[0])
     expect(screen.getAllByText('Thundery Showers').length).toBeGreaterThanOrEqual(1)
   })
 })

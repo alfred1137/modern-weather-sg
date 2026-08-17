@@ -223,8 +223,8 @@ spacing doing the hierarchy work.
 | `body-md`     | 14px               | 500       | running data text — **the reading floor**                              |
 | `body-sm`     | 12px               | 500       | informational labels — **the informational floor**                     |
 | `label-xs`    | 11px               | 600       | data-carrying micro-labels (region names, band labels, unit values)    |
-| `label-deco`  | 10px               | 600       | bottom-nav labels, sync metadata — **absolute floor; nothing smaller** |
-| `label-caps`  | 10px               | 900       | period tabs (Morning/Afternoon/Evening/Night), `tracking 0.2em`        |
+| `label-deco`  | 11px               | 600       | bottom-nav labels, sync metadata — **absolute floor; nothing smaller** |
+| `label-caps`  | 11px               | 900       | period tabs (Morning/Afternoon/Evening/Night), `tracking 0.2em`        |
 
 **Legibility rules (normative):**
 
@@ -279,6 +279,31 @@ plus `full`. Cards and inputs use `md` (12px); map frames step up to `xl`
 A map view may be `rounded-none` on mobile (edge-to-edge bleed) but must
 regain its radius on `sm+` — never a permanently square card.
 
+## Layout contract (map views)
+
+All map-based views (Nowcast, Air Quality, 24-Hour Forecast) share the same
+vertical hierarchy:
+
+```
+[header block]  →  [toggle / tabs]  →  [map]  →  [detail]  →  [footer]
+```
+
+- The **header block** is wrapped in `flex flex-col gap-4`. It contains a
+  `<header>` with `flex justify-between items-start gap-2`: h1 + subtitle on
+  the left, segmented toggle (or period tabs) on the right.
+- The **toggle/tabs** use the `segmented-toggle` component: desktop = `hidden
+sm:flex` inside the header right; mobile = `sm:hidden` full-width glass
+  control below the header. Button sizing: `px-6 py-2.5` (desktop),
+  `py-3` (mobile).
+- The **map** is a standalone glass container: `glass rounded-none sm:rounded-3xl
+overflow-hidden aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl
+border sm:border-surface1/20 shadow-md bg-base`. It includes an
+  `absolute bottom-4 right-4` helper pill ("Tap regions" / "Tap icons").
+- The **detail** area sits below the map inside the same `flex flex-col gap-4`
+  wrapper, with `min-h-[70px]` for the hover/click card.
+- 24-Hour Forecast uses period tabs (Morning/Afternoon/Evening/Night) in place
+  of a mode toggle, but the positional structure is identical.
+
 ## Components
 
 - **Button (primary)** — `bg-blue` (#8AADF4) fill, `text-mantle` (#1E2030)
@@ -286,12 +311,13 @@ regain its radius on `sm+` — never a permanently square card.
   Blue is the only fill color for primary actions (retry, close legend,
   active tab).
 - **Navigation** — active tab = `button-primary` treatment (`rounded-xl`);
-  idle tabs = `text-subtle` on glass. Mobile: icon over a 10px `label-deco`
+  idle tabs = `text-subtle` on glass. Mobile: icon over a 11px `label-deco`
   caption (first word only). Desktop: icon + `body-md` label, `gap-2 px-4 py-2`.
 - **Segmented toggle** — glass track (`rounded-xl p-1`), active segment =
   `button-primary` treatment at `rounded-lg`, idle = `overlay1`/`subtext0`
-  at `font-bold`. Used for Map/Grid, Singapore/Regional, PSI/PM2.5 — mobile
-  and desktop variants, identical labels.
+  at `font-bold`. Used for Map/Grid, Singapore/Regional, PSI/PM2.5, and
+  period tabs (Morning/Afternoon/Evening/Night) — mobile and desktop
+  variants, identical labels.
 - **Card (data)** — `bg-surface0/60`, 1px `surface1/20` border, `rounded-2xl`,
   `shadow-sm`; hover lifts 4px and tints the border to its subject hue
   (peach temp, blue humidity, teal wind). Stat values are the hero: `display`
@@ -308,7 +334,7 @@ regain its radius on `sm+` — never a permanently square card.
 - **Map marker (PSI)** — same chrome; the value is the label (`font-bold`,
   band color, `label-xs` minimum) and the band name rides beneath.
 - **Slider (radar timeline)** — blue thumb, transparent track, custom
-  `webkit-slider-*` parts; tick labels 10px `subtle`.
+  `webkit-slider-*` parts; tick labels 11px `subtle`.
 - **Modal (legend)** — full-screen `crust/60` + blur scrim, `glass` sheet
   `rounded-2xl`, header with blue icon tile, item grid of circular swatch +
   11px label, `label-caps`-free footer button.

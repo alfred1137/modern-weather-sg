@@ -39,73 +39,93 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
         }
 
   return (
-    <div className="flex flex-col gap-6 md:gap-10 animate-fadeIn">
-      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 md:gap-6">
-        <div className="flex flex-col gap-1 pr-2">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">
-            24-Hour Forecast
-          </h1>
-        </div>
-      </header>
+    <div className="flex flex-col gap-6 md:gap-8 animate-fadeIn">
+      <div className="flex flex-col gap-4">
+        <header className="flex justify-between items-start gap-2">
+          <div className="flex flex-col gap-1 pr-2">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter uppercase text-text leading-none">
+              24-Hour Forecast
+            </h1>
+          </div>
 
-      <div className="flex flex-col gap-6">
-        <div className="glass overflow-hidden shadow-md rounded-2xl sm:rounded-3xl border border-surface1/20">
-          <div className="flex flex-col-reverse sm:flex-col">
-            <div className="flex border-t sm:border-t-0 sm:border-b border-surface1/20 bg-mantle/30 overflow-x-auto no-scrollbar">
+          <div className="hidden sm:flex flex-col items-end shrink-0">
+            <div className="glass p-1 rounded-xl flex flex-row border border-surface1/20 w-auto bg-surface0/30">
               {data.periods.map((period, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActivePeriodIdx(idx)}
-                  className={`flex-1 min-w-[120px] py-5 md:py-6 text-center transition-colors relative ${
-                    activePeriodIdx === idx ? 'text-text' : 'text-subtext0 hover:text-text'
+                  className={`px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
+                    activePeriodIdx === idx
+                      ? 'bg-blue text-mantle'
+                      : 'text-overlay1 hover:text-text'
                   }`}
                 >
-                  <span className="text-[11px] md:text-xs font-black uppercase tracking-[0.2em]">
-                    {getPeriodLabel(period.time.start)}
-                  </span>
-                  {activePeriodIdx === idx && (
-                    <div className="absolute bottom-0 left-1/4 w-1/2 h-1 bg-blue rounded-full"></div>
-                  )}
+                  {getPeriodLabel(period.time.start)}
                 </button>
               ))}
             </div>
+          </div>
+        </header>
 
-            <div className="relative w-full bg-base overflow-hidden aspect-[1.35/1] sm:aspect-[2.4/1] transition-colors duration-300">
-              <img
-                src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
-                style={mapImageStyle}
-                className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
-                alt="Singapore Background"
-              />
-              <div className="absolute inset-0 z-10">
-                {SG_REGIONS.map((region) => {
-                  const forecast =
-                    currentPeriod.regions[region.id as keyof typeof currentPeriod.regions]
-                  return (
-                    <div
-                      key={region.id}
-                      className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform"
-                      style={{ left: region.x, top: region.y }}
-                    >
-                      <div className="relative mb-1 sm:mb-2">
-                        <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center shadow-sm">
-                          <div className="scale-[0.7] md:scale-100">
-                            {getWeatherIcon(forecast as string)}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[90px] md:min-w-[100px]">
-                        <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
-                          {region.name}
-                        </span>
-                        <span className="text-[13px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
-                          {forecast}
-                        </span>
+        <div className="sm:hidden w-full glass p-1 rounded-xl border border-surface1/20 overflow-hidden bg-surface0/30">
+          <div className="flex flex-row w-full gap-1">
+            {data.periods.map((period, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActivePeriodIdx(idx)}
+                className={`flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
+                  activePeriodIdx === idx ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
+                }`}
+              >
+                {getPeriodLabel(period.time.start)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="relative flex flex-col gap-4">
+        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
+          <img
+            src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
+            style={mapImageStyle}
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
+            alt="Singapore Background"
+          />
+          <div className="absolute inset-0 z-10">
+            {SG_REGIONS.map((region) => {
+              const forecast =
+                currentPeriod.regions[region.id as keyof typeof currentPeriod.regions]
+              return (
+                <div
+                  key={region.id}
+                  className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform"
+                  style={{ left: region.x, top: region.y }}
+                >
+                  <div className="relative mb-1 sm:mb-2">
+                    <div className="bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center shadow-sm">
+                      <div className="scale-[0.7] md:scale-100">
+                        {getWeatherIcon(forecast as string)}
                       </div>
                     </div>
-                  )
-                })}
-              </div>
+                  </div>
+                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[90px] md:min-w-[100px]">
+                    <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
+                      {region.name}
+                    </span>
+                    <span className="text-[13px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
+                      {forecast}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="absolute bottom-4 right-4 pointer-events-none z-20">
+            <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-xs font-semibold text-text flex items-center gap-2">
+              <i className="fas fa-hand-pointer text-blue"></i>
+              <span>Tap regions</span>
             </div>
           </div>
         </div>
