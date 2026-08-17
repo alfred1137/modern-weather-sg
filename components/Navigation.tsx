@@ -29,7 +29,7 @@ const Navigation: React.FC<NavProps> = ({ activeTab, setActiveTab }) => {
               }`}
             >
               <i className={`fas ${tab.icon} text-lg`}></i>
-              <span className="text-[10px] font-semibold">{tab.label.split(' ')[0]}</span>
+              <span className="text-[11px] font-semibold">{tab.label.split(' ')[0]}</span>
             </button>
           ))}
         </div>

@@ -310,15 +310,15 @@ const RainAreasView: React.FC<Props> = ({ syncTimestamp }) => {
       <div className="mt-4 mb-2 max-w-4xl mx-auto w-full px-2">
         <div className="flex justify-between items-end mb-2.5 px-2">
           <div className="flex flex-col items-center">
-            <span className="text-subtext0 text-[10px] font-semibold mb-1.5">Heavy</span>
+            <span className="text-subtext0 text-[11px] font-semibold mb-1.5">Heavy</span>
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-subtext0 text-[10px] font-semibold mb-1.5">Moderate</span>
+            <span className="text-subtext0 text-[11px] font-semibold mb-1.5">Moderate</span>
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-subtext0 text-[10px] font-semibold mb-1.5">Light</span>
+            <span className="text-subtext0 text-[11px] font-semibold mb-1.5">Light</span>
             <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-overlay0"></div>
           </div>
         </div>

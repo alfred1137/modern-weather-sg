@@ -160,7 +160,7 @@ const NowcastView: React.FC<Props> = ({ data }) => {
             {hoveredArea ? (
               <div className="w-full bg-surface0/80 px-4 py-4 md:px-6 md:py-5 rounded-2xl border border-blue/20 animate-in fade-in zoom-in-95 duration-200 flex flex-row items-stretch gap-3 md:gap-6">
                 <div className="flex-1 flex flex-col justify-center text-left min-w-0">
-                  <span className="text-[10px] md:text-xs font-semibold text-blue/80 mb-1">
+                  <span className="text-[11px] md:text-xs font-semibold text-blue/80 mb-1">
                     Forecast
                   </span>
                   <h2 className="text-lg md:text-2xl font-bold text-text leading-tight truncate">

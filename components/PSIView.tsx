@@ -123,7 +123,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
       </div>
 
       <div className="relative flex flex-col gap-4">
-        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
+        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.35/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
           <img
             src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
             style={mapImageStyle}
@@ -139,7 +139,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
               return (
                 <div
                   key={region.id}
-                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.65] sm:scale-100 transition-transform ${
+                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform ${
                     isActive ? 'z-30' : 'z-10'
                   }`}
                   style={{ left: region.x, top: region.y }}
@@ -151,15 +151,15 @@ const PSIView: React.FC<Props> = ({ data }) => {
                     <div
                       className={`bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center ${colorClass}`}
                     >
-                      <span className="text-xs md:text-lg font-bold">{value}</span>
+                      <span className="text-sm md:text-lg font-bold">{value}</span>
                     </div>
                   </div>
-                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
-                    <span className="text-[11px] md:text-xs font-semibold text-subtext0 block mb-0.5">
+                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[90px] md:min-w-[100px]">
+                    <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
                       {region.name}
                     </span>
                     <span
-                      className={`text-[11px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
+                      className={`text-[13px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
                     >
                       {bandFor(key)}
                     </span>
@@ -170,7 +170,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
           </div>
 
           <div className="absolute bottom-4 right-4 pointer-events-none z-20">
-            <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-xs font-semibold text-text flex items-center gap-2">
+            <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-sm font-semibold text-text flex items-center gap-2">
               <i className="fas fa-hand-pointer text-blue"></i>
               <span>Tap regions</span>
             </div>
@@ -182,7 +182,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
             <div className="w-full bg-surface0/80 px-4 py-4 md:px-6 md:py-5 rounded-2xl border border-blue/20 animate-in fade-in zoom-in-95 duration-200 flex flex-col items-stretch gap-3 md:gap-4">
               <div className="flex flex-row items-stretch gap-3 md:gap-6">
                 <div className="flex-1 flex flex-col justify-center text-left min-w-0">
-                  <span className="text-[10px] md:text-xs font-semibold text-blue/80 mb-1">
+                  <span className="text-[11px] md:text-xs font-semibold text-blue/80 mb-1">
                     {mode === 'psi' ? '24-hr PSI' : '1-hr PM2.5'}
                   </span>
                   <h2 className="text-lg md:text-2xl font-bold text-text leading-tight truncate">
@@ -198,7 +198,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
                       {unit}
                     </span>
                     <span
-                      className={`text-[10px] md:text-xs font-semibold ${colorFor(detailRegion)}`}
+                      className={`text-[11px] md:text-xs font-semibold ${colorFor(detailRegion)}`}
                     >
                       {bandFor(detailRegion)}
                     </span>
@@ -252,7 +252,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
                   className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full flex-shrink-0 ${band.dot}`}
                 ></span>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-[10px] md:text-xs font-semibold text-text leading-tight">
+                  <span className="text-[11px] md:text-xs font-semibold text-text leading-tight">
                     {band.label}
                   </span>
                   <span className="text-[11px] md:text-xs text-subtext0 leading-tight">

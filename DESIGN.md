@@ -59,12 +59,12 @@ typography:
     lineHeight: 1.4
   label-deco:
     fontFamily: Onest
-    fontSize: 10px
+    fontSize: 11px
     fontWeight: 600
     lineHeight: 1.4
   label-caps:
     fontFamily: Onest
-    fontSize: 10px
+    fontSize: 11px
     fontWeight: 900
     lineHeight: 1.4
     letterSpacing: 0.2em
@@ -228,7 +228,7 @@ spacing doing the hierarchy work.
 
 **Legibility rules (normative):**
 
-- Nothing renders below **10px**. 8–9px type is a defect, not a style.
+- Nothing renders below **11px**. Period.
 - Informational text (region names, band names, units, timestamps, card
   labels) never goes below **11px**; reading text below **12px**.
 - Muted text never dips below the `subtle` token in either theme — `overlay*`
@@ -315,9 +315,9 @@ regain its radius on `sm+` — never a permanently square card.
 
 ## Do's and Don'ts
 
-- Do keep every informational text ≥ 11px and reading text ≥ 12px; 10px is
+- Do keep every informational text ≥ 12px and reading text ≥ 12px; 11px is
   the absolute floor and only for decorative captions.
-- Don't ever render 8–9px type, in either theme, for any reason.
+- Don't ever render below 11px, in either theme, for any reason.
 - Do keep informational text at ≥ 4.5:1 (WCAG AA): `secondary` or `subtle`
   on the surface it sits on, per the contrast table. In Latte, `subtle`
   means #5C5F77, not #6C6F85.

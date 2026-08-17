@@ -60,7 +60,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                     activePeriodIdx === idx ? 'text-text' : 'text-subtext0 hover:text-text'
                   }`}
                 >
-                  <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
+                  <span className="text-[11px] md:text-xs font-black uppercase tracking-[0.2em]">
                     {getPeriodLabel(period.time.start)}
                   </span>
                   {activePeriodIdx === idx && (
@@ -70,7 +70,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
               ))}
             </div>
 
-            <div className="relative w-full bg-base overflow-hidden aspect-[1.6/1] sm:aspect-[2.4/1] transition-colors duration-300">
+            <div className="relative w-full bg-base overflow-hidden aspect-[1.35/1] sm:aspect-[2.4/1] transition-colors duration-300">
               <img
                 src="https://www.weather.gov.sg/mobile/wp-content/themes/wiptheme/assets/img/rain-lighting_map_988.jpg"
                 style={mapImageStyle}
@@ -84,7 +84,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                   return (
                     <div
                       key={region.id}
-                      className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.65] sm:scale-100 transition-transform"
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform"
                       style={{ left: region.x, top: region.y }}
                     >
                       <div className="relative mb-1 sm:mb-2">
@@ -94,11 +94,11 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[80px] md:min-w-[100px]">
-                        <span className="text-[11px] md:text-xs font-semibold text-subtext0 block mb-0.5">
+                      <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[90px] md:min-w-[100px]">
+                        <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
                           {region.name}
                         </span>
-                        <span className="text-[10px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
+                        <span className="text-[13px] md:text-sm text-blue font-semibold block whitespace-normal leading-tight">
                           {forecast}
                         </span>
                       </div>
