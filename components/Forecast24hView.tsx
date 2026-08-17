@@ -109,7 +109,7 @@ const Forecast24hView: React.FC<Props> = ({ data }) => {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[70px] md:min-w-[100px]">
+                  <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center min-w-[50px] max-w-[80px] sm:max-w-none md:min-w-[100px]">
                     <span className="text-[13px] md:text-xs font-semibold text-subtext0 block mb-0.5">
                       {region.name}
                     </span>
