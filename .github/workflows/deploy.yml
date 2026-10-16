@@ -19,6 +19,10 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
+          # Pin npm to the dev-machine version: runner-default npm 11 minor
+          # releases crash fresh lockfile-less resolves with
+          # "Cannot read properties of null (reading 'edgesOut')".
+          npm install -g npm@11.19.0
           npm install
           npm run build
 
