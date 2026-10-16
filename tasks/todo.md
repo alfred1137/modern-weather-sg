@@ -119,10 +119,10 @@ integer `v19`→`v25` (public/sw.js CACHE_NAME single source).
 ## Per-milestone procedure
 
 1. Implement work item.
-2. Bump app version + SW integer (3 edits: package.json, README badge,
+2. Bump app version + SW name (3 edits: package.json, README badge,
    public/sw.js CACHE_NAME — footer is Vite-define-injected).
 3. Gate: `npm run build`, `npm run lint`, `npm run test`.
-4. Grep: no old `vX.Y.Z` / `vN` strings remain.
+4. Grep: no old `vX.Y.Z` / `sg-weather-vX.Y.Z` strings remain.
 5. Stage explicitly (never `git add -A`; exclude untracked `package-lock.json`),
    commit folded work+bump, push (CI deploys; verify via raw `gh-pages` branch,
    HTML CDN cache 10 min).
