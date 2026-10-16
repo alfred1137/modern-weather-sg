@@ -281,8 +281,8 @@ regain its radius on `sm+` — never a permanently square card.
 
 ## Layout contract (map views)
 
-All map-based views (Nowcast, Air Quality, 24-Hour Forecast) share the same
-vertical hierarchy:
+All map-based views (Nowcast, Air Quality, 24-Hour Forecast, MyCMAQ PM2.5
+forecast) share the same vertical hierarchy:
 
 ```
 [header block]  →  [toggle / tabs]  →  [map]  →  [detail]  →  [footer]
@@ -325,7 +325,7 @@ text-ellipsis`). No label prefix, sentence only.
   caption (first word only). Desktop: icon + `body-md` label, `gap-2 px-4 py-2`.
 - **Segmented toggle** — glass track (`rounded-xl p-1`), active segment =
   `button-primary` treatment at `rounded-lg`, idle = `overlay1`/`subtext0`
-  at `font-bold`. Used for Map/Grid, Singapore/Regional, PSI/PM2.5, and
+  at `font-bold`. Used for Map/Grid, Singapore/Regional, PSI/PM2.5/Forecast, and
   period tabs (Morning/Afternoon/Evening/Night) — mobile and desktop
   variants, identical labels.
 - **Card (data)** — `bg-surface0/60`, 1px `surface1/20` border, `rounded-2xl`,
@@ -352,8 +352,22 @@ text-ellipsis`). No label prefix, sentence only.
 - **Map marker (PSI)** — same chrome as F24h: `w-max`, padded safe zone,
   no region labels. The value is the label (`font-bold`, band color,
   `label-xs` minimum) and the band name rides beneath in its band color.
-- **Slider (radar timeline)** — blue thumb, transparent track, custom
-  `webkit-slider-*` parts; tick labels 11px `subtle`.
+- **Slider (radar/forecast timeline)** — blue thumb, transparent track, custom
+  `webkit-slider-*` parts; tick labels 11px `subtle`. The MyCMAQ forecast
+  player reuses the radar slider chrome; the center pill shows the frame's
+  LST valid time (`YYYY-MM-DD HH:00 LST`) plus the raw valid key
+  (`YYYYMMDD_HHLST`), and the right tick shows the frame position
+  ( `n/total`). Forecast PNGs carry their own base map + colorbar baked in:
+  light theme renders them on a fixed white card as published; dark theme
+  recolours via `invert(1) hue-rotate(180deg)` (hue-rotate restores the data
+  hues) plus a `base`-coloured `lighten` overlay, so the inverted background
+  lands on Macchiato `base` instead of true black while data colours pass
+  through. Frames valid more than an hour before now are trimmed, so the
+  timeline always starts at near-current and the playhead opens at index 0
+  (no stale scrub trap). A buffering pill (`Buffering n/total`, `subtle`,
+  pulse) tracks the frame preloader that warms the browser cache in display
+  order (4 lanes) so playback doesn't flash on frame swaps. Credit line names the Malaysian
+  Meteorological Department (MetMalaysia) MyCMAQ with a source link.
 - **Modal (legend)** — full-screen `crust/60` + blur scrim, `glass` sheet
   `rounded-2xl`, header with blue icon tile, item grid of circular swatch +
   11px label, `label-caps`-free footer button.

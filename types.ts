@@ -69,6 +69,29 @@ export interface AirQualityData {
   pm25: PM25Data
 }
 
+export interface MycmaqFrame {
+  file: string
+  /** e.g. 20261016_08LST — forecast valid time in Malaysia LST (UTC+8). */
+  validKey: string
+  /** e.g. 2026-10-16 08:00 LST — display label for the playback timeline. */
+  label: string
+  /** UTC instant of the valid time (LST minus 8h). */
+  iso: string
+  /** Direct MetMalaysia PNG URL. */
+  url: string
+  /** Worker-relative image proxy path, e.g. /mycmaq/image/<cycle>/<file>. */
+  proxyPath: string
+}
+
+export interface MycmaqForecast {
+  cycle: string
+  variable: string
+  domain: string
+  displayUrl: string
+  count: number
+  frames: MycmaqFrame[]
+}
+
 export enum AppTab {
   NOWCAST = 'nowcast',
   RAIN_AREAS = 'rain-areas',

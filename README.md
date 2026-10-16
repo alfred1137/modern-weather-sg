@@ -28,7 +28,7 @@
     <br />
     <a href="https://alfred1137.github.io/modern-weather-sg/"><strong>Try the Demo »</strong></a>
     <br />
-    <img src="https://img.shields.io/badge/version-v1.4.16-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.5.0-blue" alt="Version">
     <br />
     <br />
     <a href="https://github.com/alfred1137/modern-weather-sg/issues">Report Bug</a>
@@ -84,6 +84,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 - **Rain Radar**: High-resolution playback of rain areas (50km and 240km regional views) with an optimized dark-mode interface.
 - **Flood Warnings**: Live alerts synchronized with PUB (Singapore's National Water Agency) including severity levels and instructions.
 - **24-Hour Forecast**: Regional outlooks (North, South, East, West, Central) with temperature, humidity, and wind data.
+- **PM2.5 Forecast**: 5-day hourly PM2.5 animation (Malaysian Meteorological Department MyCMAQ, Domain 02 Malaysia) as a third Air Quality tab, with LST valid-time labels and playback.
 - **4-Day Outlook**: Extended weather planning with high-fidelity icons and trend insights.
 - **Fully Responsive**: Optimized for everything from mobile devices to high-resolution desktop monitors.
 - **Progressive Web App (PWA)**: Installable on iOS and Android for a native-like experience with offline asset caching.
@@ -189,6 +190,11 @@ The app does **not** call data.gov.sg directly. All weather requests route throu
 Worker secret (`WEATHER_API_KEY`) and caches each endpoint for 5 minutes — so a burst
 of visitors costs one upstream call per 5-minute window instead of one per visitor
 (prevents the anonymous quota from being exhausted).
+
+The worker also serves the MyCMAQ PM2.5 forecast (`/mycmaq/latest`,
+`/mycmaq/frames`, `/mycmaq/image/...`) with a 6-hour cache — MetMalaysia
+publishes static PNGs plus a manifest only (no API), so the worker resolves
+the latest cycle and proxies the bytes. No API key is needed for these routes.
 
 To deploy/update the worker:
 

@@ -10,10 +10,10 @@ independent version tracks** — do not conflate them.
 
 ## Versioning convention
 
-| Track                    | Format                                 | Example           | Where it lives                                     |
-| ------------------------ | -------------------------------------- | ----------------- | -------------------------------------------------- |
-| **App version**          | SemVer `X.Y.Z` (displayed as `vX.Y.Z`) | `1.4.5` → `1.4.6` | `package.json` (single source) + `README.md` badge |
-| **PWA/SW cache version** | Integer `N` (displayed as `vN`)        | `v24` → `v25`     | `public/sw.js` `CACHE_NAME`                        |
+| Track                    | Format                                         | Example             | Where it lives                                     |
+| ------------------------ | ---------------------------------------------- | ------------------- | -------------------------------------------------- |
+| **App version**          | SemVer `X.Y.Z` (displayed as `vX.Y.Z`)         | `1.4.5` → `1.4.6`   | `package.json` (single source) + `README.md` badge |
+| **PWA/SW cache version** | SemVer mirror `sg-weather-vX.Y.Z` (tracks app) | `sg-weather-v1.5.0` | `public/sw.js` `CACHE_NAME`                        |
 
 Rules:
 
@@ -35,8 +35,8 @@ Rules:
 
 1. `package.json` → `"version": "X.Y.Z"` (app + injects the footer).
 2. `README.md` → badge: `https://img.shields.io/badge/version-vX.Y.Z-blue`.
-3. `public/sw.js` → `const CACHE_NAME = 'sg-weather-vN';` (bump when bundle
-   changes; every milestone in the 1.4.Z series bumps it).
+3. `public/sw.js` → `const CACHE_NAME = 'sg-weather-vX.Y.Z';` (same version as
+   the app; bump on every bundle-changing milestone).
 
 ## Workflow
 
@@ -44,7 +44,7 @@ Rules:
    ```sh
    rg "v[0-9]+\.[0-9]+\.[0-9]+|v[0-9]+|sg-weather-v" package.json README.md public/sw.js
    ```
-2. Decide the new **app version** (SemVer) and new **SW integer**.
+2. Decide the new **app version** (SemVer); the SW name tracks it verbatim.
 3. Edit the 3 touchpoints above.
 4. Run the quality gate — must exit 0 (`tsc` typecheck + `vite build`):
    ```sh
@@ -63,7 +63,8 @@ Rules:
   versions (e.g. `1.0.11`), not the app version.
 - The footer renders `v{__APP_VERSION__}` (Vite `define`). `vitest.config.ts`
   mirrors the same define so tests see the real version; the App footer test
-  asserts the shape (`/v1\.4\./`) rather than an exact patch number.
+  asserts the shape (e.g. `/v1\.5\./`) rather than an exact version — update
+  that regex on every **minor** bump.
 - No lockfile is checked in (`package-lock.json` gitignored) → CI resolves deps
   fresh, so the deployed bundle hash may differ from your local `dist/`. Verify
   the deployed artifact, not just the local build.

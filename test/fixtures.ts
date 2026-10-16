@@ -1,4 +1,4 @@
-import { NowcastData, Forecast24h, Forecast4Day, AirQualityData } from '../types'
+import { NowcastData, Forecast24h, Forecast4Day, AirQualityData, MycmaqForecast } from '../types'
 
 // Shared mock builders for component tests. Each call returns a fresh object
 // so suites can never mutate a fixture and leak state across tests.
@@ -96,3 +96,37 @@ export const airQualityData = (): AirQualityData => {
     },
   }
 }
+
+export const mycmaqForecast = (): MycmaqForecast => ({
+  cycle: '20261015_12',
+  variable: 'PM25_TOT',
+  domain: 'd02',
+  displayUrl: 'https://mycmaq.met.gov.my/display_20261015_12.html',
+  count: 3,
+  frames: [
+    {
+      file: 'PM25_TOT_d02_20261016_08LST.png',
+      validKey: '20261016_08LST',
+      label: '2026-10-16 08:00 LST',
+      iso: '2026-10-16T00:00:00.000Z',
+      url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_08LST.png',
+      proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_08LST.png',
+    },
+    {
+      file: 'PM25_TOT_d02_20261016_09LST.png',
+      validKey: '20261016_09LST',
+      label: '2026-10-16 09:00 LST',
+      iso: '2026-10-16T01:00:00.000Z',
+      url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_09LST.png',
+      proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_09LST.png',
+    },
+    {
+      file: 'PM25_TOT_d02_20261016_10LST.png',
+      validKey: '20261016_10LST',
+      label: '2026-10-16 10:00 LST',
+      iso: '2026-10-16T02:00:00.000Z',
+      url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_10LST.png',
+      proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_10LST.png',
+    },
+  ],
+})

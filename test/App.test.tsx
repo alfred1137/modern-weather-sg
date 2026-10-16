@@ -55,7 +55,7 @@ describe('App', () => {
     render(<App />)
     // __APP_VERSION__ is injected by vite.config.ts define; assert the shape
     // rather than an exact version so bumps don't break the test.
-    expect(await screen.findByText(/v1\.4\./)).toBeInTheDocument()
+    expect(await screen.findByText(/v1\.5\./)).toBeInTheDocument()
   })
 
   it('shows the sync error screen when services fail with no cache', async () => {

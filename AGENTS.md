@@ -3,7 +3,7 @@
 Hobbyist React PWA (Vite + TypeScript) reimagining Singapore weather data.
 Quality gates: `npm run build` (tsc typecheck with `noEmit: true` + `vite build`
 → `dist/`), `npm run lint` (eslint — must stay at 0 warnings), `npm run test`
-(vitest + testing-library, 50 tests across 12 suites). No formatter in the
+(vitest + testing-library, 62 tests across 13 suites). No formatter in the
 gate; `npm run format` exists for manual prettier runs.
 
 ## Commands
@@ -14,7 +14,7 @@ gate; `npm run format` exists for manual prettier runs.
 | `npm run dev`         | Vite dev server with HMR.                                                                                                                                                                                                                                                              |
 | `npm run build`       | `tsc && vite build` — typecheck + bundle → `dist/`. **Primary gate.**                                                                                                                                                                                                                  |
 | `npm run lint`        | `eslint .` — **gate**, must be clean.                                                                                                                                                                                                                                                  |
-| `npm run test`        | `vitest run` — **gate**, must pass (50 tests / 12 suites).                                                                                                                                                                                                                             |
+| `npm run test`        | `vitest run` — **gate**, must pass (62 tests / 13 suites).                                                                                                                                                                                                                             |
 | `npm run format`      | `prettier --write .` — manual only, not part of the gate.                                                                                                                                                                                                                              |
 | `npm run design:lint` | `designmd lint DESIGN.md` — validates the DESIGN.md design-system spec (token refs, contrast, structure). Manual only, not part of the gate. `designmd` alias is used instead of the package's `design.md` bin — the `.md` suffix collides with the Windows Markdown file association. |
 | `npm run preview`     | Serve `dist/` locally.                                                                                                                                                                                                                                                                 |
@@ -29,10 +29,13 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   via `services/weatherService.ts` and passed down as props to view components.
 - **No router** — single page; tabs are an `AppTab` enum (`types.ts`) that drives
   `renderContent()` in `App.tsx`.
-- **Data layer**: `services/weatherService.ts` → `https://api-open.data.gov.sg/v2/real-time/api`
-  (NEA: 2-hour nowcast, 24h forecast, 4-day outlook; PUB: flood alerts).
-- **Views** (`components/`): `NowcastView`, `RainAreasView`, `FloodWarningView`,
-  `Forecast24hView`, `Forecast4DayView`.
+- **Data layer**: `services/weatherService.ts` → `https://sgw-proxy.alfred1137.workers.dev/api`
+  (`workers/` proxy injects `WEATHER_API_KEY` + 5-min cache → upstream `api-open.data.gov.sg`).
+  Endpoints: 2-hr nowcast, 24h forecast, 4-day outlook, PSI + PM2.5.
+- **Views** (`components/`): `NowcastView`, `RainAreasView`, `PSIView` (with a
+  third `Forecast` sub-tab rendering `MycmaqForecastView` — 5-day hourly PM2.5
+  playback, frames trimmed to ≥1h before fetch time),
+  `Forecast24hView`, `Forecast4DayView`. No `FloodWarningView` exists.
 - **Shared** (`components/`): `Navigation`, `ThemeToggle`, `LegendModal`, `SyncFooter`.
 - **Types**: all domain types + `AppTab` enum live in `types.ts`.
 - **Constants**: weather icon map (FontAwesome + Catppuccin colors), the 47
@@ -68,6 +71,13 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   `vite` to `esm.sh` CDN URLs. This is vestigial — Vite intercepts bare imports
   in dev and bundles in build, so it has no runtime effect. Leave it unless you are
   removing it intentionally.
+- **`workers/` is a separate unit.** Excluded from eslint (`eslint.config.js` ignores
+  `workers/`, `public/`, `dist/`). Deploys via `cd workers && npx wrangler deploy`
+  (secret `WEATHER_API_KEY` set via `npx wrangler secret put WEATHER_API_KEY`).
+  Never put the API key in source. Besides `/api/*`, the worker serves
+  `/mycmaq/latest|/frames|/image/...` (MetMalaysia static PNGs + manifest, 6h
+  cache, immutable browser headers, no key needed) — syntax-check JS changes
+  with `node --check workers/src/index.js` (no worker test runner exists).
 - **`rg` is not installed on the dev machine.** Use the grep tool (or
   `Select-String`) for content searches; shell pipelines with `rg` will fail.
 - **`vitest.config.ts` mirrors the Vite `define`** (`__APP_VERSION__` from
@@ -90,6 +100,7 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 
 - Gates (all three must pass before commit): `npm run build`, `npm run lint`,
   `npm run test`.
+- Focused test: `npx vitest run test/<Name>.test.tsx` (e.g. `test/NowcastView.test.tsx`).
 - **DESIGN.md is the normative design target** (project root, Google's
   DESIGN.md format — tokens in YAML front matter, rationale in prose). The
   UI code must conform to it; `npm run design:lint` catches broken token

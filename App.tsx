@@ -201,6 +201,19 @@ const AppContent: React.FC = () => {
                 .
               </p>
               <p>
+                PM2.5 forecast imagery provided by the Malaysian Meteorological Department
+                (MetMalaysia) via{' '}
+                <a
+                  href="https://mycmaq.met.gov.my/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue hover:underline"
+                >
+                  MyCMAQ
+                </a>
+                .
+              </p>
+              <p>
                 Developed with vibe to create a clear and modern weather forecasting experience for
                 those in Singapore.
                 <br />

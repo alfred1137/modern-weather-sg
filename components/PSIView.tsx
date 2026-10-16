@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { AirQualityData, RegionKey } from '../types'
+import React, { useEffect, useState } from 'react'
+import { AirQualityData, MycmaqForecast, RegionKey } from '../types'
 import {
   SG_REGIONS,
   PSI_BANDS,
@@ -11,13 +11,15 @@ import {
   getMapImageStyle,
 } from '../constants'
 import SyncFooter from './SyncFooter'
+import MycmaqForecastView from './MycmaqForecastView'
+import { fetchMycmaqForecast } from '../services/weatherService'
 import { useTheme } from '../context/ThemeContext'
 
 interface Props {
   data: AirQualityData | null
 }
 
-type Mode = 'psi' | 'pm25'
+type Mode = 'psi' | 'pm25' | 'mycmaq'
 
 const SUB_INDICES: Array<{
   key: keyof NonNullable<AirQualityData['psi']['readings'][RegionKey]>
@@ -34,7 +36,32 @@ const SUB_INDICES: Array<{
 const PSIView: React.FC<Props> = ({ data }) => {
   const [mode, setMode] = useState<Mode>('psi')
   const [selectedRegion, setSelectedRegion] = useState<RegionKey | null>(null)
+  const [mycmaq, setMycmaq] = useState<MycmaqForecast | null>(null)
+  const [mycmaqAsOf, setMycmaqAsOf] = useState(0)
+  const [mycmaqLoading, setMycmaqLoading] = useState(false)
+  const [mycmaqError, setMycmaqError] = useState<string | null>(null)
   const { theme } = useTheme()
+
+  const loadMycmaq = async () => {
+    setMycmaqLoading(true)
+    setMycmaqError(null)
+    try {
+      const forecast = await fetchMycmaqForecast()
+      setMycmaq(forecast)
+      setMycmaqAsOf(Date.now())
+    } catch {
+      setMycmaqError('PM2.5 forecast is unavailable right now. Please try again later.')
+    } finally {
+      setMycmaqLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (mode === 'mycmaq' && !mycmaq && !mycmaqLoading && !mycmaqError) {
+      loadMycmaq()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
 
   if (!data)
     return <div className="text-center p-8 text-sm text-subtext0">Synchronizing air quality...</div>
@@ -71,7 +98,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
               Air Quality
             </h1>
             <p className="text-subtext0 text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden text-ellipsis">
-              {mode === 'psi' ? '24-hr PSI' : '1-hr PM2.5'} —{' '}
+              {mode === 'psi' ? '24-hr PSI' : mode === 'pm25' ? '1-hr PM2.5' : 'PM2.5 forecast'} —{' '}
               <span className="text-subtext1 font-semibold">{worstBand}</span>
             </p>
           </div>
@@ -93,6 +120,14 @@ const PSIView: React.FC<Props> = ({ data }) => {
                 }`}
               >
                 <i className="fas fa-gauge-high text-[10px]"></i> 24-hr PSI
+              </button>
+              <button
+                onClick={() => setMode('mycmaq')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
+                  mode === 'mycmaq' ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
+                }`}
+              >
+                <i className="fas fa-wind text-[10px]"></i> Forecast
               </button>
             </div>
           </div>
@@ -116,153 +151,171 @@ const PSIView: React.FC<Props> = ({ data }) => {
             >
               <i className="fas fa-gauge-high text-[8px]"></i> 24-hr PSI
             </button>
+            <button
+              onClick={() => setMode('mycmaq')}
+              className={`flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
+                mode === 'mycmaq' ? 'bg-blue text-mantle' : 'text-overlay1 hover:text-text'
+              }`}
+            >
+              <i className="fas fa-wind text-[8px]"></i> Forecast
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="relative flex flex-col gap-4">
-        <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
-          <img
-            src="./rain-lighting_map_988.png"
-            style={mapImageStyle}
-            className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
-            alt="Singapore Background"
-          />
-          <div className="absolute inset-0 z-10 px-6 sm:px-0">
-            <div className="relative w-full h-full">
-              {SG_REGIONS.map((region) => {
-                const key = region.id as RegionKey
-                const value = valueFor(key)
-                const colorClass = colorFor(key)
-                const isActive = selectedRegion === key
-                return (
-                  <div
-                    key={region.id}
-                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform w-max ${
-                      isActive ? 'z-30' : 'z-10'
-                    }`}
-                    style={{ left: region.x, top: region.y }}
-                    onMouseEnter={() => setSelectedRegion(key)}
-                    onMouseLeave={() => setSelectedRegion(null)}
-                    onClick={() => setSelectedRegion(key)}
-                  >
-                    <div className="relative mb-1 sm:mb-2">
-                      <div
-                        className={`bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center ${colorClass}`}
-                      >
-                        <span className="text-sm md:text-lg font-bold">{value}</span>
+      {mode === 'mycmaq' ? (
+        <MycmaqForecastView
+          forecast={mycmaq}
+          loading={mycmaqLoading}
+          error={mycmaqError}
+          onRetry={loadMycmaq}
+          asOf={mycmaqAsOf}
+        />
+      ) : (
+        <div className="relative flex flex-col gap-4">
+          <div className="glass rounded-none sm:rounded-3xl overflow-hidden relative aspect-[1.6/1] w-auto -mx-4 sm:mx-auto sm:w-full max-w-5xl border sm:border-surface1/20 shadow-md bg-base transition-colors duration-300">
+            <img
+              src="./rain-lighting_map_988.png"
+              style={mapImageStyle}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300"
+              alt="Singapore Background"
+            />
+            <div className="absolute inset-0 z-10 px-6 sm:px-0">
+              <div className="relative w-full h-full">
+                {SG_REGIONS.map((region) => {
+                  const key = region.id as RegionKey
+                  const value = valueFor(key)
+                  const colorClass = colorFor(key)
+                  const isActive = selectedRegion === key
+                  return (
+                    <div
+                      key={region.id}
+                      className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group cursor-pointer origin-center scale-[0.8] sm:scale-100 transition-transform w-max ${
+                        isActive ? 'z-30' : 'z-10'
+                      }`}
+                      style={{ left: region.x, top: region.y }}
+                      onMouseEnter={() => setSelectedRegion(key)}
+                      onMouseLeave={() => setSelectedRegion(null)}
+                      onClick={() => setSelectedRegion(key)}
+                    >
+                      <div className="relative mb-1 sm:mb-2">
+                        <div
+                          className={`bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center ${colorClass}`}
+                        >
+                          <span className="text-sm md:text-lg font-bold">{value}</span>
+                        </div>
+                      </div>
+                      <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center max-w-[160px] sm:max-w-none">
+                        <span
+                          className={`text-[13px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
+                        >
+                          {bandFor(key)}
+                        </span>
                       </div>
                     </div>
-                    <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center max-w-[160px] sm:max-w-none">
-                      <span
-                        className={`text-[13px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
-                      >
-                        {bandFor(key)}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="absolute bottom-4 right-4 pointer-events-none z-20">
-            <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-sm font-semibold text-text flex items-center gap-2">
-              <i className="fas fa-hand-pointer text-blue"></i>
-              <span>Tap regions</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="min-h-[70px] md:min-h-[80px] flex items-center justify-center max-w-5xl mx-auto w-full">
-          {detailRegion && detailValue !== null ? (
-            <div className="w-full bg-surface0/80 px-4 py-4 md:px-6 md:py-5 rounded-2xl border border-blue/20 animate-in fade-in zoom-in-95 duration-200 flex flex-col items-stretch gap-3 md:gap-4">
-              <div className="flex flex-row items-stretch gap-3 md:gap-6">
-                <div className="flex-1 flex flex-col justify-center text-left min-w-0">
-                  <span className="text-[11px] md:text-xs font-semibold text-blue/80 mb-1">
-                    {mode === 'psi' ? '24-hr PSI' : '1-hr PM2.5'}
-                  </span>
-                  <h2 className="text-lg md:text-2xl font-bold text-text leading-tight truncate">
-                    {detailRegion}
-                  </h2>
-                </div>
-                <div className="flex-1 flex items-center justify-center gap-2 md:gap-3 bg-surface2/20 px-3 py-2 md:px-4 md:py-2.5 rounded-xl border border-surface1/20 min-w-0">
-                  <span className={`text-lg md:text-3xl font-bold ${colorFor(detailRegion)}`}>
-                    {detailValue}
-                  </span>
-                  <div className="flex flex-col">
-                    <span className="text-[11px] md:text-xs font-semibold text-subtext0">
-                      {unit}
-                    </span>
-                    <span
-                      className={`text-[11px] md:text-xs font-semibold ${colorFor(detailRegion)}`}
-                    >
-                      {bandFor(detailRegion)}
-                    </span>
-                  </div>
-                </div>
+                  )
+                })}
               </div>
+            </div>
 
-              {mode === 'psi' && detailReadings && (
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 pt-3 border-t border-surface1/20">
-                  {SUB_INDICES.map(({ key, label }) => (
-                    <div
-                      key={key}
-                      className="flex flex-col items-center gap-0.5 bg-surface0/50 rounded-lg py-2 px-1"
-                    >
+            <div className="absolute bottom-4 right-4 pointer-events-none z-20">
+              <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-sm font-semibold text-text flex items-center gap-2">
+                <i className="fas fa-hand-pointer text-blue"></i>
+                <span>Tap regions</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="min-h-[70px] md:min-h-[80px] flex items-center justify-center max-w-5xl mx-auto w-full">
+            {detailRegion && detailValue !== null ? (
+              <div className="w-full bg-surface0/80 px-4 py-4 md:px-6 md:py-5 rounded-2xl border border-blue/20 animate-in fade-in zoom-in-95 duration-200 flex flex-col items-stretch gap-3 md:gap-4">
+                <div className="flex flex-row items-stretch gap-3 md:gap-6">
+                  <div className="flex-1 flex flex-col justify-center text-left min-w-0">
+                    <span className="text-[11px] md:text-xs font-semibold text-blue/80 mb-1">
+                      {mode === 'psi' ? '24-hr PSI' : '1-hr PM2.5'}
+                    </span>
+                    <h2 className="text-lg md:text-2xl font-bold text-text leading-tight truncate">
+                      {detailRegion}
+                    </h2>
+                  </div>
+                  <div className="flex-1 flex items-center justify-center gap-2 md:gap-3 bg-surface2/20 px-3 py-2 md:px-4 md:py-2.5 rounded-xl border border-surface1/20 min-w-0">
+                    <span className={`text-lg md:text-3xl font-bold ${colorFor(detailRegion)}`}>
+                      {detailValue}
+                    </span>
+                    <div className="flex flex-col">
                       <span className="text-[11px] md:text-xs font-semibold text-subtext0">
-                        {label}
+                        {unit}
                       </span>
                       <span
-                        className={`text-xs md:text-sm font-semibold ${getPSIColor(detailReadings[key])}`}
+                        className={`text-[11px] md:text-xs font-semibold ${colorFor(detailRegion)}`}
                       >
-                        {detailReadings[key]}
+                        {bandFor(detailRegion)}
                       </span>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="w-full py-8 text-center border border-dashed border-surface1/50 rounded-xl">
-              <p className="text-xs md:text-sm font-medium text-subtext0">
-                Select a region on the map
-              </p>
-            </div>
-          )}
-        </div>
 
-        <div className="bg-surface0/60 rounded-2xl px-5 py-5 md:px-6 md:py-6 border border-surface1/20 max-w-5xl mx-auto w-full">
-          <div className="flex items-center gap-2 mb-4 md:mb-5">
-            <i className="fas fa-list-ul text-blue text-xs"></i>
-            <span className="text-xs md:text-sm font-semibold text-subtext0">
-              {mode === 'psi' ? 'PSI bands' : '1-hr PM2.5 bands'}
-            </span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
-            {activeBands.map((band) => (
-              <div
-                key={band.label}
-                className="flex items-center gap-2 md:gap-2.5 bg-surface0/50 rounded-lg px-3 py-2 border border-surface1/10"
-              >
-                <span
-                  className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full flex-shrink-0 ${band.dot}`}
-                ></span>
-                <div className="flex flex-col min-w-0">
-                  <span className="text-[11px] md:text-xs font-semibold text-text leading-tight">
-                    {band.label}
-                  </span>
-                  <span className="text-[11px] md:text-xs text-subtext0 leading-tight">
-                    {band.range}
-                  </span>
-                </div>
+                {mode === 'psi' && detailReadings && (
+                  <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 pt-3 border-t border-surface1/20">
+                    {SUB_INDICES.map(({ key, label }) => (
+                      <div
+                        key={key}
+                        className="flex flex-col items-center gap-0.5 bg-surface0/50 rounded-lg py-2 px-1"
+                      >
+                        <span className="text-[11px] md:text-xs font-semibold text-subtext0">
+                          {label}
+                        </span>
+                        <span
+                          className={`text-xs md:text-sm font-semibold ${getPSIColor(detailReadings[key])}`}
+                        >
+                          {detailReadings[key]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
+            ) : (
+              <div className="w-full py-8 text-center border border-dashed border-surface1/50 rounded-xl">
+                <p className="text-xs md:text-sm font-medium text-subtext0">
+                  Select a region on the map
+                </p>
+              </div>
+            )}
           </div>
-        </div>
 
-        <SyncFooter timestamp={activeTimestamp} className="max-w-5xl mx-auto" />
-      </div>
+          <div className="bg-surface0/60 rounded-2xl px-5 py-5 md:px-6 md:py-6 border border-surface1/20 max-w-5xl mx-auto w-full">
+            <div className="flex items-center gap-2 mb-4 md:mb-5">
+              <i className="fas fa-list-ul text-blue text-xs"></i>
+              <span className="text-xs md:text-sm font-semibold text-subtext0">
+                {mode === 'psi' ? 'PSI bands' : '1-hr PM2.5 bands'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
+              {activeBands.map((band) => (
+                <div
+                  key={band.label}
+                  className="flex items-center gap-2 md:gap-2.5 bg-surface0/50 rounded-lg px-3 py-2 border border-surface1/10"
+                >
+                  <span
+                    className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full flex-shrink-0 ${band.dot}`}
+                  ></span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[11px] md:text-xs font-semibold text-text leading-tight">
+                      {band.label}
+                    </span>
+                    <span className="text-[11px] md:text-xs text-subtext0 leading-tight">
+                      {band.range}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <SyncFooter timestamp={activeTimestamp} className="max-w-5xl mx-auto" />
+        </div>
+      )}
     </div>
   )
 }

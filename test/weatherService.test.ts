@@ -4,6 +4,7 @@ import {
   fetch24hForecast,
   fetch4DayForecast,
   fetchAirQuality,
+  fetchMycmaqForecast,
 } from '../services/weatherService'
 
 const mockFetch = vi.fn()
@@ -204,5 +205,56 @@ describe('fetchAirQuality', () => {
   it('throws when PM2.5 fetch fails', async () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(psiResponse)).mockResolvedValueOnce({ ok: false })
     await expect(fetchAirQuality()).rejects.toThrow('Failed to fetch PM2.5')
+  })
+})
+
+describe('fetchMycmaqForecast', () => {
+  const framesResponse = {
+    cycle: '20261015_12',
+    variable: 'PM25_TOT',
+    domain: 'd02',
+    displayUrl: 'https://mycmaq.met.gov.my/display_20261015_12.html',
+    count: 2,
+    frames: [
+      {
+        file: 'PM25_TOT_d02_20261016_08LST.png',
+        validKey: '20261016_08LST',
+        label: '2026-10-16 08:00 LST',
+        iso: '2026-10-16T00:00:00.000Z',
+        url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_08LST.png',
+        proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_08LST.png',
+      },
+      {
+        file: 'PM25_TOT_d02_20261016_09LST.png',
+        validKey: '20261016_09LST',
+        label: '2026-10-16 09:00 LST',
+        iso: '2026-10-16T01:00:00.000Z',
+        url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_09LST.png',
+        proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_09LST.png',
+      },
+    ],
+  }
+
+  it('maps worker frames response', async () => {
+    mockFetch.mockResolvedValue(jsonResponse(framesResponse))
+
+    const result = await fetchMycmaqForecast()
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/mycmaq/frames?var=PM25_TOT&domain=d02'),
+    )
+    expect(result.cycle).toBe('20261015_12')
+    expect(result.frames).toHaveLength(2)
+    expect(result.frames[0].validKey).toBe('20261016_08LST')
+  })
+
+  it('throws on non-ok response', async () => {
+    mockFetch.mockResolvedValue({ ok: false })
+    await expect(fetchMycmaqForecast()).rejects.toThrow('Failed to fetch MyCMAQ forecast')
+  })
+
+  it('throws on empty frames', async () => {
+    mockFetch.mockResolvedValue(jsonResponse({ ...framesResponse, frames: [] }))
+    await expect(fetchMycmaqForecast()).rejects.toThrow('Failed to fetch MyCMAQ forecast')
   })
 })

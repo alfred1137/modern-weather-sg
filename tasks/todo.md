@@ -126,3 +126,41 @@ integer `v19`→`v25` (public/sw.js CACHE_NAME single source).
 5. Stage explicitly (never `git add -A`; exclude untracked `package-lock.json`),
    commit folded work+bump, push (CI deploys; verify via raw `gh-pages` branch,
    HTML CDN cache 10 min).
+
+---
+
+# v1.5.0 — MyCMAQ PM2.5 forecast tab
+
+Goal: third Air Quality sub-tab (`Forecast`) playing MetMalaysia MyCMAQ 5-day
+hourly PM2.5 (Domain 02 Malaysia) with LST valid-time labels, rain-radar-style
+playback, theme-matched recolour, and frame buffering.
+
+## What changed
+
+- `workers/src/index.js` — `/mycmaq/latest|/frames|/image/...` passthrough
+  (6h edge cache, immutable browser headers, no API key; static PNGs +
+  manifest only, no upstream API). Fixed during preview: `_TOT` filename
+  regex, absolute-URL cache key.
+- `types.ts` — `MycmaqFrame` / `MycmaqForecast`.
+- `services/weatherService.ts` — `fetchMycmaqLatestCycle`,
+  `fetchMycmaqForecast` (defaults `PM25_TOT`/`d02`), `mycmaqImageUrl`.
+- `components/MycmaqForecastView.tsx` (new) — 600ms playback + slider, LST
+  pill + raw valid key, 1h trim (timeline starts at ~now), 4-lane preloader
+  with buffering pill, latte white card / macchiato invert+hue-rotate +
+  `bg-base` lighten overlay, MetMalaysia credit + source link, `asOf` prop
+  freezes the trim boundary (keeps `react-hooks/purity` clean).
+- `components/PSIView.tsx` — `Mode` extended to `psi|pm25|mycmaq`, lazy fetch
+  on first switch, desktop + mobile 3-way toggles.
+- `App.tsx` — footer MetMalaysia credit. `DESIGN.md` — forecast-player spec.
+- `test/` — 62 tests / 13 suites (new `MycmaqForecastView` suite, service +
+  PSIView additions, footer regex tracks minor).
+- Docs/skills — README (feature + worker routes), AGENTS.md (counts, views,
+  worker routes), fixed `version-bump` (SW tracks app SemVer, not integer)
+  and `ship-milestone` (dropped hardcoded test counts) skill drift.
+
+## Verification
+
+- `npm run build`, `npm run lint` (0 warnings), `npm run test` (62/62),
+  `npm run design:lint` (0 errors) — all green pre-push.
+- Previewed locally against `wrangler dev` (120/120 frames, PNG bytes +
+  immutable headers verified) before shipping.

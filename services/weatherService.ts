@@ -5,9 +5,14 @@ import {
   AirQualityData,
   PSIRegionReadings,
   RegionKey,
+  MycmaqForecast,
 } from '../types'
 
 const BASE_URL = 'https://sgw-proxy.alfred1137.workers.dev/api'
+const MYCMAQ_URL = 'https://sgw-proxy.alfred1137.workers.dev/mycmaq'
+
+export const MYCMAQ_DEFAULT_VAR = 'PM25_TOT'
+export const MYCMAQ_DEFAULT_DOMAIN = 'd02'
 
 const REGIONS: RegionKey[] = ['west', 'east', 'central', 'south', 'north']
 
@@ -156,3 +161,34 @@ export const fetchAirQuality = async (): Promise<AirQualityData> => {
     },
   }
 }
+
+export const fetchMycmaqLatestCycle = async (): Promise<string> => {
+  const res = await fetch(`${MYCMAQ_URL}/latest`)
+  if (!res.ok) throw new Error('Failed to fetch MyCMAQ cycle')
+  const json = await res.json()
+  if (!json.cycle) throw new Error('Failed to fetch MyCMAQ cycle')
+  return json.cycle as string
+}
+
+// PM2.5 forecast over Domain 02 (Malaysia) via the sgw-proxy MyCMAQ
+// passthrough (MetMalaysia publishes PNGs + manifest.json only — no API).
+// Frames are hourly (~120 per daily cycle); each carries its LST valid time.
+export const fetchMycmaqForecast = async (
+  cycle?: string,
+  variable: string = MYCMAQ_DEFAULT_VAR,
+  domain: string = MYCMAQ_DEFAULT_DOMAIN,
+): Promise<MycmaqForecast> => {
+  const params = new URLSearchParams({ var: variable, domain })
+  if (cycle) params.set('cycle', cycle)
+  const res = await fetch(`${MYCMAQ_URL}/frames?${params.toString()}`)
+  if (!res.ok) throw new Error('Failed to fetch MyCMAQ forecast')
+  const json = (await res.json()) as MycmaqForecast
+  if (!Array.isArray(json.frames) || json.frames.length === 0) {
+    throw new Error('Failed to fetch MyCMAQ forecast')
+  }
+  return json
+}
+
+// Worker-proxied PNG URL for a frame (6h edge cache, avoids hotlink issues).
+export const mycmaqImageUrl = (frame: { proxyPath: string }): string =>
+  `https://sgw-proxy.alfred1137.workers.dev${frame.proxyPath}`

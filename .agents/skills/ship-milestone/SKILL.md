@@ -20,9 +20,9 @@ Two tracks, three manual edits (see `version-bump` skill for details):
 
 1. `package.json` → `"version"` (injects the App footer via Vite `define`).
 2. `README.md` → shields badge.
-3. `public/sw.js` → `CACHE_NAME = 'sg-weather-vN'`.
+3. `public/sw.js` → `CACHE_NAME = 'sg-weather-vX.Y.Z'` (tracks the app version).
 
-App patch/minor/major per SemVer; SW integer bumps on EVERY bundle change —
+App patch/minor/major per SemVer; SW name bumps on EVERY bundle change —
 missing it serves stale UI to returning PWA users.
 
 ## 3. Gates (all three must pass)
@@ -30,7 +30,7 @@ missing it serves stale UI to returning PWA users.
 ```sh
 npm run build   # tsc --noEmit + vite build
 npm run lint    # eslint . — 0 warnings
-npm run test    # vitest run — all suites (50 tests / 12 suites)
+npm run test    # vitest run — full suite, all green (don't hardcode counts here; they drift)
 ```
 
 ## 4. Grep stale versions
@@ -38,7 +38,7 @@ npm run test    # vitest run — all suites (50 tests / 12 suites)
 After any bump, confirm no old strings linger in code:
 
 ```sh
-rg "vX\.Y\.Z|vN|sg-weather-vN" package.json README.md public/sw.js
+rg "vX\.Y\.Z|sg-weather-vX\.Y\.Z" package.json README.md public/sw.js
 ```
 
 `rg` is NOT installed on the dev machine — use the grep tool or
