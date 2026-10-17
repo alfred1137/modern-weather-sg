@@ -174,6 +174,87 @@ hobby scale; leave as an explicit manual check for now.
   `Date.now`/`caches`, pass-through fetch, ≤3 origin fetches) caught the cycle
   edge cases before deploy; `node --check` alone would not have.
 
+## MyCMAQ playback + publish time (2026-10, 1.5.2)
+
+- **A blend-mode clamp must be applied per layer, never to a mixture.** Dark theme
+  clamps the inverted frame back onto `base` with `mix-blend-mode: lighten`, and
+  `max` is convex: `max(avg(A,B)) <= avg(max(A),max(B))`. One shared overlay over
+  a cross-fading pair therefore clamps the _mixture_ and is always darker than
+  clamping each frame and mixing — computed on real frames, a `−0.82` luma dip at
+  mid-fade (light theme unaffected: it has no clamp). Clamping inside each
+  `isolate`d layer makes the fade a plain weighted average again (`−0.04`). So
+  "dark mode dims during the fade" was a real, theme-specific bug, not perception.
+- **A theme-coloured backdrop turns a skipped decode into a theme-specific
+  flash.** Each frame layer keeps its background solid, and that background is
+  `base` in dark mode / white in light. Fading toward a frame whose bytes have not
+  decoded yet showed the backdrop where the plumes belong: a dark flash in
+  Macchiato, invisible against Latte's white. Waiting for the incoming frame's
+  `onLoad` before fading fixed it — the outgoing frame simply holds longer.
+  "Light mode looks fine" is not evidence of correctness when the themes differ in
+  backdrop colour.
+- **Freezing a transition to inspect a mid-fade lies to you.**
+  `getAnimations()` + `pause()` + `currentTime` produced contradictory luma
+  readings (a fake `−3.8` dip) that a controlled sweep and per-pixel math both
+  refuted. Trustworthy options, cheapest first:
+  1. compute the CSS math per pixel on the real PNGs (exact, no timing);
+  2. sweep opacity with a `linear` WAAPI animation on the live element;
+  3. sample real, unperturbed transitions: read computed opacity and screenshot
+     back-to-back in a loop, then bucket luma by opacity.
+     Never treat a single frozen-transition screenshot as evidence.
+- **The service worker serves the preview a stale bundle.** `vite preview` had the
+  rebuilt dist, but the page kept loading the previous `assets/index-*.js` because
+  `CACHE_NAME` had not changed. Check the running bundle
+  (`document.querySelector('script[type=module]').src`) before believing any
+  visual measurement, and unregister the SW + clear caches when verifying a
+  change locally — the release bump only covers real users.
+- **A cross-dissolve dips when both layers fade against a background.** Symmetric
+  cross-fade (old `1→0`, new `0→1`) makes the composite weights sum to less than
+  1 mid-fade, so the card shows through and the map dims then brightens. The fix
+  is a DIRECTION, not a duration: keep the current frame fully opaque BENEATH and
+  fade the previous one out on top (`zIndex` by role; the transition class only on
+  the outgoing layer). The weights then sum to 1 at every instant.
+- **Prove motion in real Chrome, don't ask the user to eyeball it.** A rAF sampler
+  reading `getComputedStyle(el).opacity` settled the fade direction in one run:
+  outgoing `1 → 0.54 → 0.22 → 0` over ~200ms while the incoming layer sat at
+  exactly `1` for every sample — including an 8-step scrub faster than the fade.
+  Identify the layers by computed `zIndex`, not DOM order. `--headless=new
+--remote-debugging-port` with a throwaway profile needs no manual toggle.
+- **Adding the transition class in the same commit as the value change does
+  animate.** The after-change style's `transition-property` governs, so "become
+  outgoing" (class + `opacity: 0` together) runs the fade — no rAF/effect dance.
+  Worth verifying anyway: this is the kind of thing that silently degrades to a
+  hard cut.
+- **A keyed `<img>` cannot cross-fade.** Changing `key` remounts a fresh element,
+  and a fresh element has no decoded bitmap at its first paint — on a view whose
+  frame IS the whole map, that paints the card background (the "flash"). The
+  radar player survives the same idiom only because its frames are transparent
+  overlays on a base map, so a blank layer just reveals the map. Fix: two
+  always-mounted layers alternating, the incoming one taking its `src` while
+  fully transparent, plus `img.decode()` in the preloader so "Buffered" means
+  _decodable_, not merely downloaded.
+- **A first attempt at the two-layer fix degenerated into a hard cut.** Holding
+  the previous frame in the under-layer via an effect that sets
+  `prevIndex = selectedIndex` makes the under-layer's src swap in the same commit
+  the over-layer fades in — so the visible content jumps and the fade shows the
+  new frame over itself. The layer that must receive a frame is the one that is
+  _off_, not the one that just became current.
+- **`manifest.json`'s `Last-Modified` is a housekeeping stamp, not a go-live
+  time.** Every live cycle's manifest shares one stamp to the second (rewritten
+  in a batch) while the frame PNGs keep their own original write times — for
+  `20261015_12` the manifest trailed its frames by 16h. Date imagery from the
+  frames. Related: don't assume a batch is written at once without checking;
+  here the frames _were_ (all within 30s), which is what makes a single HEAD a
+  valid proxy for the whole cycle.
+- **Changing a cached payload's SHAPE needs a cache-key version.** A 6h-TTL
+  JSON payload kept serving pre-deploy bodies (missing the new field) until
+  expiry, so the feature looked broken on the live URL right after deploy.
+  `MYCMAQ_PAYLOAD_VERSION` in the worker's cache keys is the fix — the same
+  instinct as the SW `CACHE_NAME` bump.
+- **PowerShell coerces JSON ISO strings to `DateTime`.** `ConvertFrom-Json`
+  turns `publishedAt` into a local-kind `DateTime`, so `.ToString('o')`
+  comparisons against a re-parsed header silently mismatch on `Kind`. Verify
+  worker timestamps with node (`new Date(...).getTime()`), not PowerShell.
+
 ## Files that encode these gotchas (update when you act)
 
 - `DESIGN.md` — normative legibility-first design target. Written as the

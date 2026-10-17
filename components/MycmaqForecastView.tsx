@@ -3,7 +3,7 @@ import SyncFooter from './SyncFooter'
 import { MycmaqForecast, MycmaqFrame } from '../types'
 import { mycmaqImageUrl } from '../services/weatherService'
 import { useTheme } from '../context/ThemeContext'
-import { formatShortDateTime, frameValidKeyToDate } from '../constants'
+import { formatShortDateTime, formatShortDateTimeUTC8, frameValidKeyToDate } from '../constants'
 
 interface Props {
   forecast: MycmaqForecast | null
@@ -12,6 +12,13 @@ interface Props {
   onRetry: () => void
   /** Wall-clock ms captured when the forecast was fetched — window boundary. */
   asOf: number
+}
+
+/** The two alternating frame layers; `aIncoming` holds the current frame. */
+interface FrameLayers {
+  a: MycmaqFrame
+  b: MycmaqFrame
+  aIncoming: boolean
 }
 
 // Timeline window: a ONE-DAY outlook anchored on now. Frames from before the
@@ -52,9 +59,36 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [bufferedCount, setBufferedCount] = useState(0)
+  // The frame the incoming layer has actually PAINTED. Until it matches the
+  // incoming frame's url the outgoing layer stays opaque, so a frame that has
+  // not decoded yet can never reveal the layer background (see the render
+  // block): that backdrop is theme-coloured, so an unpainted frame flashed a
+  // dark map in the dark theme and went unnoticed in the light one.
+  const [paintedSrc, setPaintedSrc] = useState<string | null>(null)
   const playbackTimerRef = useRef<number | null>(null)
   const { theme } = useTheme()
   const isLatte = theme === 'latte'
+
+  const current = frames[selectedIndex] ?? frames[0]
+
+  // Two always-mounted layers alternate the frame (see the render below). The
+  // layer that is currently OFF takes the incoming frame: its src swaps while
+  // fully transparent, so no decode is ever watched, and the frame on screen
+  // only ever fades. Reconciled during render rather than in an effect so the
+  // incoming layer flips in the same commit as the playhead — no frame of lag
+  // behind the pill. `aIncoming` marks the layer holding the CURRENT frame: it
+  // sits underneath and is fully opaque, while the previous frame fades out
+  // above it (see the render block for why that order matters).
+  const [layers, setLayers] = useState<FrameLayers | null>(null)
+  if (current && current !== (layers ? (layers.aIncoming ? layers.a : layers.b) : null)) {
+    setLayers((prev) =>
+      prev
+        ? prev.aIncoming
+          ? { a: prev.a, b: current, aIncoming: false }
+          : { a: current, b: prev.b, aIncoming: true }
+        : { a: current, b: current, aIncoming: true },
+    )
+  }
 
   useEffect(() => {
     setSelectedIndex(0)
@@ -64,8 +98,9 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
   // Preload frames into the browser cache in display order (4 at a time, so
   // the first viewer of a cycle doesn't slam the worker with 120 concurrent
   // origin fetches). Without this the animation flashes: each frame swap
-  // waits on network + PNG decode. Preloaded frames swap instantly, on any
-  // worker location (edge cache HITs still cost decode-on-swap otherwise).
+  // waits on network + PNG decode. A frame only counts as buffered once it is
+  // DECODED, not merely downloaded — a cached PNG still costs a decode on its
+  // first paint, which is exactly the blank beat this pill promises is over.
   useEffect(() => {
     let cancelled = false
     setBufferedCount(0)
@@ -78,7 +113,13 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
         const url = urls[cursor++]
         await new Promise<void>((resolve) => {
           const img = new Image()
-          img.onload = () => resolve()
+          const settle = () => {
+            // `decode()` is absent in jsdom, so it is opt-in, never assumed.
+            const decoding = typeof img.decode === 'function' ? img.decode() : null
+            if (decoding) decoding.then(resolve, resolve)
+            else resolve()
+          }
+          img.onload = settle
           img.onerror = () => resolve()
           img.src = url
         })
@@ -129,17 +170,33 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
     )
   }
 
-  const current = frames[selectedIndex] ?? frames[0]
   const buffering = bufferedCount < frames.length
   // LST wall-clock of the current frame — from the frame's own valid key so it
   // is timezone-proof (the PNG's baked-in labels are LST).
   const currentTime = formatShortDateTime(frameValidKeyToDate(current.validKey))
+  // The footer reports when MetMalaysia PUBLISHED the imagery (the cycle's frame
+  // Last-Modified), not which hour the frame is valid for — that is the pill's
+  // job. Fixed UTC+8: the publish instant is Malaysian time regardless of where
+  // the viewer is. Absent stamp → no footer rather than a wrong time.
+  const publishedLabel = formatShortDateTimeUTC8(forecast.publishedAt) ?? undefined
+  // Recolour is identical on both layers, so the crossfade never shifts hue.
+  const mapStyle = isLatte ? undefined : { filter: 'invert(1) hue-rotate(180deg)' }
   // Left tick: "Now" only when the timeline really starts at ~now; a genuine
   // lead (a cycle whose window opens later) is shown as an offset instead of a
   // label that lies. Nothing is shown when the only frame is stale.
   const leadMs = Date.parse(frames[0].iso) - asOf
   const startsNow = Math.abs(leadMs) <= 90 * 60 * 1000
   const leftTick = startsNow ? 'Now' : leadMs > 0 ? `+${Math.round(leadMs / 3600000)}h` : ' '
+  // The reconciled pair. The fallbacks only cover the throwaway render pass the
+  // reconcile above discards, so they can never reach the screen; they exist so
+  // the JSX is typed without asserting non-null.
+  const layerA = layers?.a ?? current
+  const layerB = layers?.b ?? current
+  const aIncoming = layers?.aIncoming ?? true
+  // The frame the incoming layer is showing, and whether it has painted. The
+  // outgoing layer only starts fading once it has.
+  const incomingSrc = mycmaqImageUrl(aIncoming ? layerA : layerB)
+  const incomingPainted = paintedSrc === incomingSrc
 
   return (
     <div className="flex flex-col gap-4">
@@ -148,18 +205,68 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
           isLatte ? 'bg-white' : 'bg-base'
         }`}
       >
-        <img
-          key={current.file}
-          src={mycmaqImageUrl(current)}
-          style={isLatte ? undefined : { filter: 'invert(1) hue-rotate(180deg)' }}
-          className="w-full h-auto object-contain pointer-events-none"
-          decoding="async"
-          alt={`PM2.5 forecast for ${current.label}`}
-          onError={() => console.debug('MyCMAQ frame missing:', current.file)}
-        />
-        {!isLatte && (
-          <div className="absolute inset-0 bg-base mix-blend-lighten pointer-events-none" />
-        )}
+        {/* Two layers, both always mounted, alternating the frame. The layer
+            that is currently OFF receives the incoming PNG — its src swaps
+            while it is transparent, so the decode is never watched. That kills
+            the old flash: a keyed <img> remounts a fresh element per frame and
+            a fresh element has no decoded bitmap at its first paint, so the card
+            went blank. (The radar view keeps the single keyed layer because its
+            frames are transparent overlays drawn on a base map — a blank overlay
+            just reveals the map.)
+            Fade direction matters: the CURRENT frame is fully opaque UNDERNEATH
+            and the PREVIOUS frame fades out ON TOP. A symmetric dissolve (old
+            fading out while the new fades in, both partly transparent) lets the
+            card show through mid-fade, so the map visibly dims then brightens.
+            Here the two weights always sum to 1, so on-screen brightness is
+            constant.
+            The dark-theme treatments live INSIDE each layer, and each layer is
+            `isolate`d. Both are load-bearing. The inverted map is clamped back
+            onto `base` with `lighten`, and `max` is convex: clamping the MIXTURE
+            of two frames is always darker than clamping each frame and mixing
+            (Jensen), so a single overlay over the pair dimmed the map mid-fade
+            while the light theme, which has no clamp, was untouched. Per-layer
+            clamping makes the fade a plain weighted average again.
+            The fade also waits for the incoming frame to PAINT (`paintedSrc`).
+            Each layer keeps the layer background solid, which is theme-coloured
+            — `base` in dark mode, white in light. Fading to a frame whose bytes
+            have not decoded yet showed that backdrop where the plumes should be:
+            a dark flash in the dark theme and an invisible one in the light one.
+            Square container: the d02 frames are a fixed 1024×1024. */}
+        <div className="relative w-full aspect-square">
+          {[layerA, layerB].map((frame, slot) => {
+            const incoming = (slot === 0) === aIncoming
+            const src = mycmaqImageUrl(frame)
+            return (
+              <div
+                key={slot}
+                className={`absolute inset-0 bg-base isolate${
+                  incoming ? '' : ' transition-opacity duration-200'
+                }`}
+                style={{
+                  // The outgoing layer holds its frame until the incoming one is
+                  // painted, then fades out over it.
+                  opacity: incoming || !incomingPainted ? 1 : 0,
+                  zIndex: incoming ? 0 : 10,
+                }}
+              >
+                <img
+                  src={src}
+                  style={mapStyle}
+                  className={`w-full h-full object-contain pointer-events-none${
+                    isLatte ? '' : ' mix-blend-lighten'
+                  }`}
+                  decoding="async"
+                  alt={incoming ? `PM2.5 forecast for ${frame.label}` : ''}
+                  aria-hidden={incoming ? undefined : true}
+                  onLoad={incoming ? () => setPaintedSrc(src) : undefined}
+                  onError={
+                    incoming ? () => console.debug('MyCMAQ frame missing:', frame.file) : undefined
+                  }
+                />
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <div className="bg-surface0/60 p-5 md:p-6 rounded-2xl border border-surface1/20 max-w-5xl mx-auto w-full">
@@ -227,7 +334,7 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
         </p>
       </div>
 
-      <SyncFooter label={currentTime} className="max-w-5xl mx-auto" />
+      <SyncFooter label={publishedLabel} className="max-w-5xl mx-auto" />
     </div>
   )
 }

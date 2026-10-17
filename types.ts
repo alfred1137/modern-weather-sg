@@ -89,6 +89,12 @@ export interface MycmaqForecast {
   domain: string
   displayUrl: string
   count: number
+  /**
+   * ISO instant when MetMalaysia published this cycle's imagery (the frame
+   * PNG's own Last-Modified, read by the worker). Null/absent when unknown, in
+   * which case the source footer is omitted rather than guessing.
+   */
+  publishedAt?: string | null
   frames: MycmaqFrame[]
 }
 

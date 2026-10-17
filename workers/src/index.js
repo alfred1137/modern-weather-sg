@@ -9,8 +9,8 @@
 //  so a burst of viewers costs ONE upstream request per 5-minute window.
 //
 // Route:  GET /api/<endpoint>  ->  https://api-open.data.gov.sg/v2/real-time/api/<endpoint>
-// Route:  GET /mycmaq/latest                     ->  { cycle, displayUrl, manifestUrl }
-// Route:  GET /mycmaq/frames?cycle=&var=&domain= ->  { cycle, variable, domain, count, frames[] }
+// Route:  GET /mycmaq/latest                     ->  { cycle, displayUrl, manifestUrl, publishedAt }
+// Route:  GET /mycmaq/frames?cycle=&var=&domain= ->  { cycle, variable, domain, count, publishedAt, frames[] }
 // Route:  GET /mycmaq/image/<cycle>/<file>       ->  proxied forecast PNG (6h cache)
 //
 // MyCMAQ (Malaysian Meteorological Department) publishes NO JSON API — only
@@ -47,6 +47,10 @@ const MYCMAQ_BASE = 'https://mycmaq.met.gov.my'
 const MYCMAQ_TTL_SEC = 21600
 const MYCMAQ_DEFAULT_VAR = 'PM25_TOT' // PM2.5 filenames carry a _TOT suffix
 const MYCMAQ_DEFAULT_DOMAIN = 'd02' // d01 = Southeast Asia, d02 = Malaysia
+// Bump when a cached payload's SHAPE changes: entries live for MYCMAQ_TTL_SEC,
+// so without a bump the edge would keep serving pre-change bodies (missing new
+// fields) until they expire.
+const MYCMAQ_PAYLOAD_VERSION = 'v2'
 const MYCMAQ_FILE_RE = /^([A-Za-z0-9_]+)_d0[12]_\d{8}_\d{2}LST\.png$/
 const MYCMAQ_FRAME_RE = /_(\d{8})_(\d{2})LST\.png$/
 
@@ -241,7 +245,9 @@ async function handleMycmaq(request, url, ctx) {
   const path = url.pathname
 
   if (path === '/mycmaq/latest') {
-    const cacheKey = new Request(`${MYCMAQ_BASE}/__sgw_latest__`, { method: 'GET' })
+    const cacheKey = new Request(`${MYCMAQ_BASE}/__sgw_latest_${MYCMAQ_PAYLOAD_VERSION}__`, {
+      method: 'GET',
+    })
     let cached = null
     try {
       cached = await cache.match(cacheKey)
@@ -273,7 +279,7 @@ async function handleMycmaq(request, url, ctx) {
     // and re-resolving on every hit would defeat the cache. The 'latest' slot's
     // cycle still covers "now" for the whole 6h TTL, so this is safe.
     const cacheKey = new Request(
-      `${MYCMAQ_BASE}/__sgw_frames_${cycleParam || 'latest'}_${variable}_${domain}__`,
+      `${MYCMAQ_BASE}/__sgw_frames_${MYCMAQ_PAYLOAD_VERSION}_${cycleParam || 'latest'}_${variable}_${domain}__`,
       { method: 'GET' },
     )
     let cached = null
@@ -352,6 +358,9 @@ function candidateCycles(cycles) {
 }
 
 // Fetch + parse a cycle manifest's file list; null when unreachable/malformed.
+// Its Last-Modified is deliberately NOT used as the publish time: all live
+// manifests share one housekeeping stamp (rewritten in a batch, up to ~16h
+// behind or ahead of the imagery), so it only ever serves as a fallback.
 async function fetchManifest(cycle) {
   try {
     const res = await fetch(`${MYCMAQ_BASE}/${cycle}/manifest.json`, {
@@ -359,9 +368,31 @@ async function fetchManifest(cycle) {
     })
     if (!res.ok) return null
     const manifest = await res.json()
-    return Array.isArray(manifest?.files) ? manifest.files : null
+    if (!Array.isArray(manifest?.files)) return null
+    const stamp = res.headers.get('last-modified') || res.headers.get('date')
+    const manifestStamp =
+      stamp && !Number.isNaN(Date.parse(stamp)) ? new Date(stamp).toISOString() : null
+    return { files: manifest.files, manifestStamp }
   } catch {
     return null
+  }
+}
+
+// The imagery's go-live instant: the frame PNG's own Last-Modified. A cycle is
+// written in a single ~30s run and never rewritten, so one frame's stamp dates
+// the whole batch. Costs one HEAD per cycle resolution, which is then carried
+// inside the (6h-cached) payload — no per-frame requests for the client.
+async function fetchPublishedAt(cycle, file, fallback) {
+  try {
+    const res = await fetch(`${MYCMAQ_BASE}/${cycle}/${file}`, {
+      method: 'HEAD',
+      headers: { 'User-Agent': 'sgw-proxy' },
+    })
+    if (!res.ok) return fallback
+    const stamp = res.headers.get('last-modified') || res.headers.get('date')
+    return stamp && !Number.isNaN(Date.parse(stamp)) ? new Date(stamp).toISOString() : fallback
+  } catch {
+    return fallback
   }
 }
 
@@ -372,14 +403,25 @@ async function resolveCoveringFrames(variable, domain) {
   if (!cycles) return null
   let fallback = null
   for (const cycle of candidateCycles(cycles)) {
-    const files = await fetchManifest(cycle)
-    if (!files) continue
-    const frames = buildFrames(files, cycle, variable, domain)
+    const manifest = await fetchManifest(cycle)
+    if (!manifest) continue
+    const frames = buildFrames(manifest.files, cycle, variable, domain)
     if (frames.length === 0) continue
-    if (!fallback) fallback = { cycle, frames }
-    if (Date.parse(frames[0].iso) <= Date.now()) return { cycle, frames }
+    const entry = { cycle, frames, manifestStamp: manifest.manifestStamp }
+    if (!fallback) fallback = entry
+    if (Date.parse(frames[0].iso) <= Date.now()) {
+      fallback = entry
+      break
+    }
   }
-  return fallback
+  if (!fallback) return null
+  // One frame HEAD per resolution dates the batch (see fetchPublishedAt).
+  const publishedAt = await fetchPublishedAt(
+    fallback.cycle,
+    fallback.frames[0].file,
+    fallback.manifestStamp,
+  )
+  return { cycle: fallback.cycle, frames: fallback.frames, publishedAt }
 }
 
 async function resolveLatestCycle(cache, cacheKey) {
@@ -391,6 +433,7 @@ async function resolveLatestCycle(cache, cacheKey) {
     displayPage: `display_${cycle}.html`,
     displayUrl: `${MYCMAQ_BASE}/display_${cycle}.html`,
     manifestUrl: `${MYCMAQ_BASE}/${cycle}/manifest.json`,
+    publishedAt: resolved.publishedAt,
   }
   try {
     const stamped = new Response(JSON.stringify(data), {
@@ -456,21 +499,27 @@ function buildFrames(files, cycle, variable, domain) {
 async function resolveFrames(cycle, variable, domain, cache, cacheKey) {
   let chosen = cycle
   let frames
+  let publishedAt = null
   if (cycle) {
-    const files = await fetchManifest(cycle)
-    if (!files) return { ok: false, status: 502, error: 'MyCMAQ manifest unreachable' }
-    frames = buildFrames(files, cycle, variable, domain)
+    const manifest = await fetchManifest(cycle)
+    if (!manifest) return { ok: false, status: 502, error: 'MyCMAQ manifest unreachable' }
+    frames = buildFrames(manifest.files, cycle, variable, domain)
+    publishedAt = frames.length
+      ? await fetchPublishedAt(cycle, frames[0].file, manifest.manifestStamp)
+      : manifest.manifestStamp
   } else {
     const resolved = await resolveCoveringFrames(variable, domain)
     if (!resolved) return { ok: false, status: 502, error: 'MyCMAQ index unreachable' }
     chosen = resolved.cycle
     frames = resolved.frames
+    publishedAt = resolved.publishedAt
   }
   const data = {
     cycle: chosen,
     variable,
     domain,
     count: frames.length,
+    publishedAt,
     displayUrl: `${MYCMAQ_BASE}/display_${chosen}.html`,
     frames,
   }

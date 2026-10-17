@@ -37,7 +37,8 @@ null (reading 'edgesOut')". See the `npm-pin-management` skill before changing i
   Endpoints: 2-hr nowcast, 24h forecast, 4-day outlook, PSI + PM2.5.
 - **Views** (`components/`): `NowcastView`, `RainAreasView`, `PSIView` (with a
   third `Forecast` sub-tab rendering `MycmaqForecastView` — hourly PM2.5
-  playback trimmed client-side to a one-day outlook: current hour step → +24h),
+  playback trimmed client-side to a one-day outlook: current hour step → +24h,
+  cross-faded between two alternating frame layers),
   `Forecast24hView`, `Forecast4DayView`. No `FloodWarningView` exists.
 - **Shared** (`components/`): `Navigation`, `ThemeToggle`, `LegendModal`, `SyncFooter`.
 - **Types**: all domain types + `AppTab` enum live in `types.ts`.
@@ -86,6 +87,11 @@ null (reading 'edgesOut')". See the `npm-pin-management` skill before changing i
   usually starts in the FUTURE, so the worker picks the newest cycle whose
   window has already started (first frame ≤ now), never the newest blindly —
   otherwise the app opens hours ahead of "now" (the v1.5.0 06:00 bug).
+  `/frames` and `/latest` also carry **`publishedAt`** — when MetMalaysia
+  published the imagery, read from the cycle's FIRST FRAME `Last-Modified` (one
+  HEAD per resolution, cached inside the payload). Do not use the manifest's
+  `Last-Modified` for this: every live manifest shares one housekeeping stamp
+  that is rewritten in a batch and can trail the frames by hours.
 - **`rg` is not installed on the dev machine.** Use the grep tool (or
   `Select-String`) for content searches; shell pipelines with `rg` will fail.
 - **`vitest.config.ts` mirrors the Vite `define`** (`__APP_VERSION__` from

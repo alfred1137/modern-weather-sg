@@ -338,10 +338,12 @@ text-ellipsis`). No label prefix, sentence only. Air Quality subtitles carry a
 - **Chip/badge** — `bg-mantle/90` pill with 1px border, 10–12px semibold
   label, `text-subtle`/`text-text`; the "Live" badge is `bg-blue text-mantle`.
 - **Source footer** — right-aligned 11–12px `subtext0` line reading
-  "Source data last updated at `DD-MMM HH:MM`". Renders nothing without a
-  timestamp, and accepts a preformatted `label` for data whose wall-clock is
-  fixed (MyCMAQ LST frames, so the shown hour does not shift with the viewer's
-  timezone).
+  "Source data last updated at `DD-MMM HH:MM`". The time is the SOURCE's
+  publish instant, not the data's validity window (a MyCMAQ frame pill already
+  shows the hour it is valid for). Renders nothing when that instant is
+  unknown, and accepts a preformatted `label` for stamps whose wall-clock is
+  fixed (MyCMAQ cycles publish in UTC+8, so `formatShortDateTimeUTC8` keeps the
+  shown hour from shifting with the viewer's timezone).
 - **Search input** — `bg-surface0/40`, 1px `surface1/50` border, `rounded-xl`,
   `pl-11` icon slot; placeholder is `overlay0` (non-informational by
   definition); focused ring `ring-2 ring-blue/30`.
@@ -373,11 +375,30 @@ text-ellipsis`). No label prefix, sentence only. Air Quality subtitles carry a
   count is ~25 rather than 120. Forecast PNGs carry their own base map +
   colorbar baked in: light theme renders them on a fixed white card as
   published; dark theme recolours via `invert(1) hue-rotate(180deg)` (hue-rotate
-  restores the data hues) plus a `base`-coloured `lighten` overlay, so the
-  inverted background lands on Macchiato `base` instead of true black while data
-  colours pass through. A buffering pill (`Buffering n/total`, `subtle`, pulse)
-  tracks the frame preloader that warms the browser cache in display order (4
-  lanes) so playback doesn't flash on frame swaps. Credit line names the
+  restores the data hues) and clamps the result back onto Macchiato `base` with
+  `lighten`, so the inverted background lands on `base` instead of true black
+  while data colours pass through. That clamp lives INSIDE each frame layer, and
+  each layer is `isolate`d: `max` is convex, so clamping the mixture of two
+  frames is always darker than clamping each frame and mixing, and one shared
+  overlay dimmed the map part-way through every fade in the dark theme only.
+  Frames are drawn by TWO always-mounted layers that alternate: the layer that is
+  off receives the incoming PNG (its `src` swaps while transparent, so no decode
+  is ever watched). The CURRENT frame is opaque and sits underneath; the PREVIOUS
+  frame fades out on top of it over 200ms — a data transition, not decoration: it
+  covers the decode that would otherwise show as a blank card between frames. The
+  fade runs that direction on purpose. A symmetric dissolve (both layers partly
+  transparent part-way through) lets the card show through, so the map dims then
+  brightens as you scrub; here the two weights always sum to 1 and on-screen
+  brightness is constant. The fade also waits for the incoming frame to have
+  actually painted: a layer background is theme-coloured, so fading over a frame
+  whose bytes have not decoded shows that backdrop where the data should be —
+  invisible against the white of Latte, a dark flash in Macchiato. A single keyed
+  `<img>` (the radar player's idiom) cannot do this because each key remounts a
+  fresh element with no decoded bitmap at first paint. A buffering
+  pill (`Buffering n/total`, `subtle`, pulse) tracks the frame preloader that
+  warms the browser cache in display order (4 lanes); a frame counts as
+  buffered only once it is DECODED, not merely downloaded, so "Buffered" does
+  not promise more than the player can paint. Credit line names the
   Malaysian Meteorological Department (MetMalaysia) MyCMAQ with a source link.
 - **Modal (legend)** — full-screen `crust/60` + blur scrim, `glass` sheet
   `rounded-2xl`, header with blue icon tile, item grid of circular swatch +
@@ -398,6 +419,10 @@ text-ellipsis`). No label prefix, sentence only. Air Quality subtitles carry a
   status palette's job (PSI bands, radar ramp, weather icons).
 - Do keep the icon language flat and hue-coded; opacity encodes intensity
   only on glyphs, never on text.
+- Don't add motion for decoration — no floats, glows or ambient animation.
+  Motion is allowed only where it carries data: a frame swap fading the outgoing
+  frame out over the incoming one (200ms `transition-opacity`, constant on-screen
+  brightness), a pulse on a loading pill.
 - Don't add shadows beyond `shadow-lg` on the modal sheet and theme toggle;
   tonal layers and hairline borders carry depth.
 - Do keep uppercase for `display` headlines and `label-caps` period tabs only.

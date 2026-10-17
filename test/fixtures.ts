@@ -122,6 +122,9 @@ export const mycmaqForecast = (): MycmaqForecast => {
     domain: 'd02',
     displayUrl: `https://mycmaq.met.gov.my/display_${cycle}.html`,
     count: frames.length,
+    // Publish instant deliberately off the frame hours (16 Oct 06:40 SGT), so a
+    // test can prove the footer is NOT echoing the current frame's valid time.
+    publishedAt: '2026-10-15T22:40:00.000Z',
     frames,
   }
 }
@@ -145,6 +148,7 @@ export const mycmaqForecastOutlook = (): MycmaqForecast => {
     domain: 'd02',
     displayUrl: `https://mycmaq.met.gov.my/display_${cycle}.html`,
     count: frames.length,
+    publishedAt: '2026-10-15T22:40:00.000Z',
     frames,
   }
 }

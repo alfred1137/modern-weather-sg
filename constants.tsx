@@ -215,6 +215,19 @@ const pad2 = (n: number): string => String(n).padStart(2, '0')
 export const formatShortDateTime = (d: Date): string =>
   `${pad2(d.getDate())}-${MONTHS_SHORT[d.getMonth()]} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`
 
+// `DD-MMM HH:MM` in FIXED UTC+8, e.g. `17-Oct 02:42`. For source timestamps whose
+// wall-clock must not move with the viewer's timezone — a MyCMAQ cycle's publish
+// instant is Malaysian time, and `formatShortDateTime` would shift it (a UTC
+// viewer would read the previous day). Returns null for a missing/invalid stamp
+// so callers can omit the line entirely rather than print `NaN-NaN NaN:NaN`.
+export const formatShortDateTimeUTC8 = (iso: string | null | undefined): string | null => {
+  if (!iso) return null
+  const ms = Date.parse(iso)
+  if (Number.isNaN(ms)) return null
+  const d = new Date(ms + 8 * 60 * 60 * 1000)
+  return `${pad2(d.getUTCDate())}-${MONTHS_SHORT[d.getUTCMonth()]} ${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}`
+}
+
 // MyCMAQ frame valid key (`YYYYMMDD_HHLST`) as a date built from LOCAL
 // components, so `formatShortDateTime` always renders the frame's LST wall-clock
 // — the forecast PNGs bake in LST labels, so the displayed time must not shift

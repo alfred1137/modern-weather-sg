@@ -273,3 +273,169 @@ deployment` success (40 s). Raw `gh-pages` verified: `sw.js` =
   on a custom zone.
 - **Leftover:** `workers/.wrangler/` stays untracked; the throwaway harness at
   `…\Temp\opencode\mycmaq-cycle-check.mjs` is not committed.
+
+---
+
+# v1.5.2 — PM2.5 playback smoothing + true publish time
+
+Two user-reported defects in the Forecast (MyCMAQ) sub-tab.
+
+## Findings
+
+**1. Frame flash on first playback.** `MycmaqForecastView` renders the frame as
+`<img key={current.file} src=…>` (line 151). The `key` remounts a brand-new
+element on every frame change, and a fresh `<img>` has no decoded bitmap at its
+first paint → the card background shows for a beat (the flash), even though the
+preloader already reported `Buffered`. The preloader waits on `onload` only
+(line 81) — i.e. _bytes_, not _decode_ — so "Buffered" oversells readiness.
+`RainAreasView` gets away with the same `key` + `transition-opacity` pattern
+(line 238) because its frames are transparent radar overlays drawn **on top of**
+a base map: a not-yet-painted overlay simply reveals the map beneath. A MyCMAQ
+frame _is_ the map, so the same idiom blanks the whole card.
+
+**2. Footer shows the wrong timestamp.** `SyncFooter label={currentTime}` passes
+the _frame's_ LST valid time, so it reads e.g. `17-Oct 10:00` — the hour the
+frame is valid for, not when MetMalaysia published it. The publish instant is
+available for free: the cycle manifest's HTTP `Last-Modified`. Measured on cycle
+`20261016_00`:
+
+| resource               | `Last-Modified` (GMT) | = SGT           |
+| ---------------------- | --------------------- | --------------- |
+| `PM25_TOT_…_08LST.png` | Fri, 16 Oct 18:42:14  | 17 Oct 02:42:14 |
+| `PM25_TOT_…_13LST.png` | Fri, 16 Oct 18:42:16  | 17 Oct 02:42:16 |
+| `PM25_TOT_…_20LST.png` | Fri, 16 Oct 18:42:18  | 17 Oct 02:42:18 |
+| `PM25_TOT_…_22_07LST`  | Fri, 16 Oct 18:42:43  | 17 Oct 02:42:43 |
+| `manifest.json`        | Fri, 16 Oct 18:43:39  | 17 Oct 02:43:39 |
+
+A cycle is written in one run (~30 s) — so a cycle-level stamp is a fair proxy for
+the whole cycle, and costs one HEAD rather than one per frame. **Superseded:** the
+manifest `Last-Modified` turned out to be a housekeeping rewrite, not the write
+time; see the Decision revision below for what actually ships.
+
+## Steps
+
+- [x] P1 — Worker: `publishedAt` on `/mycmaq/frames` + `/mycmaq/latest`, read
+      from the cycle's first-frame `Last-Modified` (one HEAD per resolution,
+      carried inside the cached payload); the manifest stamp is only a fallback.
+      `node --check` + harness assert.
+- [x] P2 — `constants.tsx`: `formatShortDateTimeUTC8(iso)` — `DD-MMM HH:MM` in
+      fixed UTC+8, null for a missing/invalid stamp.
+- [x] P3 — `types.ts`: `MycmaqForecast.publishedAt?: string | null`.
+- [x] P4 — View: footer renders the cycle publish time (UTC+8 preformatted
+      label) or nothing when unknown.
+- [x] P5 — View: preloader awaits `decode()` (guarded) and the frame is drawn by
+      two always-mounted alternating layers (the current frame opaque beneath,
+      the previous fading out on top), so no remount can blank the card.
+- [x] P6 — Tests: 68 → 72 (publish-time footer, hidden-when-unknown, decoded
+      buffering, two-layer crossfade, dip-free fade direction).
+- [x] P7 — Docs: `DESIGN.md` (Source footer, slider/player, motion rule),
+      `AGENTS.md` (worker `publishedAt` + view description), `tasks/lessons.md`.
+- [ ] P8 — Gates → preview → user confirm → bump 1.5.2 → commit → push →
+      worker deploy + live verify.
+
+## Decision revision (D3)
+
+The confirmed D3 was "cycle-level manifest `Last-Modified`". Measurement after
+implementing it showed that is **wrong**: every live manifest shares one
+housekeeping stamp, rewritten in a batch, and it trails the frames badly.
+
+| cycle         | frames `Last-Modified`     | manifest `Last-Modified` |
+| ------------- | -------------------------- | ------------------------ |
+| `20261016_00` | 16 Oct 18:42:14 – 18:42:43 | 16 Oct 18:43:39          |
+| `20261015_12` | 16 Oct 02:43:03 – 02:43:32 | 16 Oct 18:43:39 (+16h!)  |
+
+Both manifests carried the _same_ stamp to the second, while their frames differ
+by 16h. So `publishedAt` now comes from the served cycle's **first frame**
+`Last-Modified` — still cycle-level (a cycle is written in one ~30s run, frames
+never rewritten), still one request per resolution, but actually honest. The
+manifest stamp survives only as the fallback when the HEAD fails.
+
+## Also found (P1)
+
+Cache-invalidation trap: the `/frames` + `/latest` payloads live for 6h, so the
+deploy-time shape change kept serving pre-change bodies (no `publishedAt`) until
+the TTL expired — the footer would have stayed hidden for hours. Fixed the way
+the SW does it: `MYCMAQ_PAYLOAD_VERSION` (`v2`) is now part of both cache keys,
+so a shape change abandons stale entries instead of reusing them.
+
+## Decisions (locked)
+
+- **D1** — 200ms fade between two alternating layers (`duration-200`, the existing
+  scale). Direction revised after review: the current frame stays opaque beneath
+  and the previous frame fades out on top, so a symmetric dissolve's dim-then-
+  brighten dip can't happen. Documented as a data transition, not decoration.
+- **D2** — footer copy stays "Source data last updated at"; the time it shows is
+  now the cycle publish instant (UTC+8).
+- **D3** — cycle-level publish instant, revised to the frame's own stamp (above).
+
+## Review iteration (post-preview)
+
+User reported the first two-layer build still felt wrong: on playback the map
+_dims then brightens_. Correct diagnosis, wrong mechanism — the two layers were
+cross-fading symmetrically (old `1→0`, new `0→1`), so their weights summed to less
+than 1 mid-fade and the card showed through.
+
+Fixed by inverting the fade instead of tuning its duration: the current frame is
+opaque **beneath** (`zIndex` by role) and the previous frame fades out **on top**,
+with the transition class only on the outgoing layer (the after-change
+`transition-property` governs, so class + value can change in one commit).
+
+Verified in headless Chrome (CDP, throwaway profile — no manual debug toggle),
+sampling `getComputedStyle(img).opacity` per `requestAnimationFrame`:
+
+- single step: outgoing `1 → 0.54 → 0.22 → 0.04 → 0` over ~200ms, incoming pinned
+  at exactly `1` for every one of 27 samples;
+- 8-step scrub at 90ms (faster than the fade): incoming `1` at all 56 samples,
+  coverage never below 1;
+- 20s of real playback: 24 frames, each fully decoded (`naturalWidth 1024`) at
+  every sample — no blank beat.
+
+Live preview also confirmed the footer reads `Source data last updated at
+17-Oct 02:42` (publish instant) while the pill shows the frame hour `17-Oct 10:00`.
+Gates after the change: build ✓, lint ✓ 0 warnings, **72/72** tests, `design:lint`
+0 errors. Version still 1.5.1 — bump/commit/push await the confirmation.
+
+## Review iteration 2 (dark theme)
+
+Second report: light mode "looks GREAT", dark mode "still flashing a bit — the
+backdrop behind the PNG is too dark and shows between frames".
+
+The clamp behaves differently from every other part of the fade, and that is the
+whole story. Dark theme clamps the inverted frame back onto `base` with
+`mix-blend-mode: lighten`; light theme has no clamp. `max` is convex, so
+`max(avg(A,B)) ≤ avg(max(A),max(B))` — clamping a _mixture_ of two frames is
+always darker than clamping each frame and mixing:
+
+| mid-fade composite (real frames, computed per pixel) | luma              |
+| ---------------------------------------------------- | ----------------- |
+| frame A clamped                                      | 62.23             |
+| frame B clamped                                      | 63.73             |
+| midpoint reference                                   | 62.98             |
+| **one shared overlay clamping the mixture**          | **62.15 (−0.82)** |
+| **per-layer clamp, then mix**                        | **62.94 (−0.04)** |
+
+So the fix is per-layer: each frame gets its own `bg-base` + `isolate`d wrapper
+with the `lighten` clamp inside it, and the crossfade averages already-clamped
+frames. The shared overlay was the only thing making the dark theme dim.
+
+Second, smaller hole, same symptom: a layer background is theme-coloured, so
+fading toward a frame whose bytes have not decoded yet showed that backdrop where
+the plumes belong — a dark flash in dark mode, invisible against white in light
+mode (which is exactly why light mode looked fine). The fade now waits for the
+incoming frame's `onLoad` (`paintedSrc`), so no frame is revealed before it has
+painted; the outgoing frame just holds longer.
+
+Verified in headless Chrome, both themes, real unperturbed transitions during
+playback (opacity read from the live element, screenshot back-to-back, luma
+bucketed by opacity — a _frozen_ transition lies, see lessons):
+
+- dark: 186 samples, 169 mid-fade, p spans `0…1`, luma spread 0.59, no sample
+  below median−1;
+- light: 144 samples, 132 mid-fade, luma spread 0.64, same;
+- zero samples fading (p<0.98) while the incoming frame was unpainted.
+
+Tests 72 → 73 (the outgoing layer must hold at opacity 1 until the incoming image
+fires `load`, then fade). Gates: build ✓, lint ✓, **73/73**, `design:lint` ✓.
+Note for verification: the service worker served the _previous_ bundle in
+preview until `CACHE_NAME` moves — check the running bundle hash before
+believing a screenshot.
