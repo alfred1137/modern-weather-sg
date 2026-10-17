@@ -222,8 +222,7 @@ trim player/pill/footer over-information.
       `README.md` (feature bullet + worker cycle note); new
       `npm-pin-management` project skill.
 - [x] P9 — Worker deployed + verified; all gates green on the upgraded
-      toolchain; preview live for visual approval (version bump + push pending
-      that approval).
+      toolchain; preview approved; v1.5.1 bumped, committed and deployed.
 
 ## Decisions (locked)
 
@@ -253,6 +252,24 @@ trim player/pill/footer over-information.
   platform optional dep supplies esbuild's binary and build + tests pass — but
   documented in the `npm-pin-management` skill.
 
-## Open decisions (blocking)
+## Review (shipped 2026-10-17)
 
-- None. Awaiting preview approval, then bump → commit → push.
+- **Commit** `2cfc6ff` — `feat: v1.5.1 MyCMAQ cycle fix + one-day outlook, SW
+v1.5.1` (16 files, +601/−137). Worker deployed separately as
+  `sgw-proxy` version `bb6b61a9`.
+- **Gates:** build ✓ · lint ✓ (0 warnings) · test 68/68 ✓ · design:lint ✓ —
+  run twice on the final tree (before and after the version bump), on Node
+  24.20.0 / npm 12.2.0.
+- **Deploy:** `Deploy to GitHub Pages` success (36 s) → `pages build and
+deployment` success (40 s). Raw `gh-pages` verified: `sw.js` =
+  `sg-weather-v1.5.1`, bundle contains `1.5.1` + the reworded Malaysian-time
+  credit. (Local and CI bundle hashes differ — expected without a lockfile.)
+- **Worker:** live `/mycmaq/frames?var=PM25_TOT&domain=d02` → `20261016_00`,
+  120 frames, first frame `2026-10-17 08:00 LST` ≤ now at 09:31 SGT; `/latest`
+  consistent.
+- **Deliberately not done:** any "compression" work — the origin publishes one
+  rendition and the only free lever (transfer less) is already spent on the
+  one-day window. Revisit only if Cloudflare Image Resizing becomes free/usable
+  on a custom zone.
+- **Leftover:** `workers/.wrangler/` stays untracked; the throwaway harness at
+  `…\Temp\opencode\mycmaq-cycle-check.mjs` is not committed.

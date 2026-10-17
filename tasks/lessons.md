@@ -143,6 +143,37 @@ hobby scale; leave as an explicit manual check for now.
 - **`rg` is not installed** — content searches must use the grep tool /
   `Select-String`. Shell pipelines with `rg` fail on this machine.
 
+## MyCMAQ / toolchain session (2026-10, 1.5.0–1.5.1)
+
+- **MyCMAQ cycles start in the FUTURE.** A cycle `D` covers `D+1 08:00 → D+6
+07:00` LST, so the newest cycle in the viewer index usually has not begun.
+  Picking it blindly put "Now" hours ahead (the 06:00 bug: newest `20261016_00`
+  began 08:00). The worker must scan newest-first for the first cycle whose
+  window has _started_. Verified against the live index with a stubbed clock —
+  do not reason about this from the filename alone.
+- **The origin offers one rendition only.** `mycmaq.met.gov.my` serves 1024×1024
+  RGB PNGs (~250 KB each, ~30 MB a cycle); no webp/smaller variant exists.
+  Cloudflare Image Resizing needs a custom zone (not `workers.dev`) _and_ is
+  paid; a WASM re-encode busts the free 10 ms CPU. The only free lever is
+  transferring less — hence the client-side one-day window that the user
+  approved (D1). Don't re-litigate this as a "compression" task.
+- **npm 12 blocks install scripts by default** — a fresh `npm install` warns
+  `esbuild@0.25.12 (postinstall: node install.js)` is blocked. Harmless (the
+  platform optional dep supplies the binary; build + tests pass). Do **not**
+  approve scripts or add `allowScripts` to silence it.
+- **Upgrading Node kills running dev servers.** The MSI replaces the executable
+  mid-run; a `cmd /c npm run preview` wrapper is left wedged at
+  `Terminate batch job (Y/N)?`, holding the port while nothing listens. Kill
+  that cmd, then relaunch.
+- **Local vs CI bundle hash always differs** (no lockfile → fresh resolves), so
+  a hash mismatch is _not_ evidence of a stale deploy. Verify by fetching the
+  raw `gh-pages` bundle and asserting the new strings (`1.5.1`, the reworded
+  credit) — the CDN copy is up to 10 min behind.
+- **Verify worker changes against a stubbed clock, not "looks right".** The
+  throwaway harness that drove the real `workers/src/index.js` (stubbed
+  `Date.now`/`caches`, pass-through fetch, ≤3 origin fetches) caught the cycle
+  edge cases before deploy; `node --check` alone would not have.
+
 ## Files that encode these gotchas (update when you act)
 
 - `DESIGN.md` — normative legibility-first design target. Written as the
@@ -158,3 +189,5 @@ hobby scale; leave as an explicit manual check for now.
   vi.mock paths, fixtures, duplicate-text and map-mode gotchas.
 - `.agents/skills/ship-milestone/SKILL.md` — gate → bump → commit → push →
   verify-deploy loop for every milestone.
+- `.agents/skills/npm-pin-management/SKILL.md` — CI npm pin, `edgesOut`
+  symptom, `sudo` requirement, install-scripts warning, Node-range gate.
