@@ -80,10 +80,21 @@ const PSIView: React.FC<Props> = ({ data }) => {
   const activeTimestamp = mode === 'psi' ? data.psi.updateTimestamp : data.pm25.updateTimestamp
   const activeBands = mode === 'psi' ? PSI_BANDS : PM25_BANDS
   const unit = mode === 'psi' ? 'PSI' : 'µg/m³'
-  const worstValue = (
-    Object.keys(data[mode === 'psi' ? 'psi' : 'pm25'].readings) as RegionKey[]
-  ).reduce((max, r) => Math.max(max, valueFor(r)), 0)
-  const worstBand = mode === 'psi' ? getPSIBand(worstValue) : getPM25Band(worstValue)
+  // Header band: the worst 24-hr PSI for the PSI and forecast modes — the MyCMAQ
+  // frame is a PM2.5 forecast, but Singapore readers gauge air quality on the
+  // national 24-hr PSI scale, so the forecast tab reports the same categories
+  // ("Unhealthy") rather than the 1-hr PM2.5 bands ("Elevated"). PM2.5 mode
+  // keeps its own bands.
+  const regionKeys = Object.keys(data.psi.readings) as RegionKey[]
+  const worstValue = regionKeys.reduce(
+    (max, r) =>
+      Math.max(
+        max,
+        mode === 'pm25' ? data.pm25.readings[r] : data.psi.readings[r].psi_twenty_four_hourly,
+      ),
+    0,
+  )
+  const worstBand = mode === 'pm25' ? getPM25Band(worstValue) : getPSIBand(worstValue)
 
   const detailRegion = selectedRegion
   const detailValue = detailRegion ? valueFor(detailRegion) : null

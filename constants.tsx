@@ -193,3 +193,38 @@ export const getMapImageStyle = (theme: 'macchiato' | 'latte'): React.CSSPropert
         filter: 'contrast(1.25) brightness(1.0) grayscale(1)',
         mixBlendMode: 'screen',
       }
+
+const MONTHS_SHORT = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
+
+const pad2 = (n: number): string => String(n).padStart(2, '0')
+
+/** `DD-MMM HH:MM` from the date's local components, e.g. `17-Oct 08:00`. */
+export const formatShortDateTime = (d: Date): string =>
+  `${pad2(d.getDate())}-${MONTHS_SHORT[d.getMonth()]} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+
+// MyCMAQ frame valid key (`YYYYMMDD_HHLST`) as a date built from LOCAL
+// components, so `formatShortDateTime` always renders the frame's LST wall-clock
+// — the forecast PNGs bake in LST labels, so the displayed time must not shift
+// with the viewer's timezone.
+export const frameValidKeyToDate = (validKey: string): Date => {
+  const [date, hour] = validKey.split('_')
+  return new Date(
+    Number(date.slice(0, 4)),
+    Number(date.slice(4, 6)) - 1,
+    Number(date.slice(6, 8)),
+    Number(hour.slice(0, 2)),
+  )
+}

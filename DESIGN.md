@@ -312,7 +312,10 @@ border sm:border-surface1/20 shadow-md bg-base`. Nowcast/PSI include an
   shows the sentence-cased `general.forecast` (via `stripDayNight`, lowercase the
   rest, append a period) — same style as the PSI subtitle (`text-subtext0`,
   `text-xs md:text-sm font-medium mt-2 whitespace-nowrap overflow-hidden
-text-ellipsis`). No label prefix, sentence only.
+text-ellipsis`). No label prefix, sentence only. Air Quality subtitles carry a
+  band label after an em dash; the **Forecast** sub-tab reports the worst
+  **24-hr PSI** category (`getPSIBand`) rather than a 1-hr PM2.5 band, so all
+  three sub-tabs speak Singapore's national air-quality scale.
 
 ## Components
 
@@ -334,6 +337,11 @@ text-ellipsis`). No label prefix, sentence only.
   weight at 36–60px.
 - **Chip/badge** — `bg-mantle/90` pill with 1px border, 10–12px semibold
   label, `text-subtle`/`text-text`; the "Live" badge is `bg-blue text-mantle`.
+- **Source footer** — right-aligned 11–12px `subtext0` line reading
+  "Source data last updated at `DD-MMM HH:MM`". Renders nothing without a
+  timestamp, and accepts a preformatted `label` for data whose wall-clock is
+  fixed (MyCMAQ LST frames, so the shown hour does not shift with the viewer's
+  timezone).
 - **Search input** — `bg-surface0/40`, 1px `surface1/50` border, `rounded-xl`,
   `pl-11` icon slot; placeholder is `overlay0` (non-informational by
   definition); focused ring `ring-2 ring-blue/30`.
@@ -354,20 +362,23 @@ text-ellipsis`). No label prefix, sentence only.
   `label-xs` minimum) and the band name rides beneath in its band color.
 - **Slider (radar/forecast timeline)** — blue thumb, transparent track, custom
   `webkit-slider-*` parts; tick labels 11px `subtle`. The MyCMAQ forecast
-  player reuses the radar slider chrome; the center pill shows the frame's
-  LST valid time (`YYYY-MM-DD HH:00 LST`) plus the raw valid key
-  (`YYYYMMDD_HHLST`), and the right tick shows the frame position
-  ( `n/total`). Forecast PNGs carry their own base map + colorbar baked in:
-  light theme renders them on a fixed white card as published; dark theme
-  recolours via `invert(1) hue-rotate(180deg)` (hue-rotate restores the data
-  hues) plus a `base`-coloured `lighten` overlay, so the inverted background
-  lands on Macchiato `base` instead of true black while data colours pass
-  through. Frames valid more than an hour before now are trimmed, so the
-  timeline always starts at near-current and the playhead opens at index 0
-  (no stale scrub trap). A buffering pill (`Buffering n/total`, `subtle`,
-  pulse) tracks the frame preloader that warms the browser cache in display
-  order (4 lanes) so playback doesn't flash on frame swaps. Credit line names the Malaysian
-  Meteorological Department (MetMalaysia) MyCMAQ with a source link.
+  player reuses the radar slider chrome and shows the least that identifies the
+  frame: one centre pill with the frame's LST valid time as `DD-MMM HH:MM`
+  (`17-Oct 08:00`), plus the frame position (`n/total`) on the right tick. The
+  left tick reads `Now` when the timeline really starts at the current hour
+  step; when the cycle window opens later it shows the honest lead (`+Nh`) with
+  nothing left to lie about. The player is a ONE-DAY outlook: frames before the
+  current hour step and beyond +24h are trimmed client-side (a full cycle is 5
+  days / ~30 MB of PNGs — far too heavy for a mobile preload), so the frame
+  count is ~25 rather than 120. Forecast PNGs carry their own base map +
+  colorbar baked in: light theme renders them on a fixed white card as
+  published; dark theme recolours via `invert(1) hue-rotate(180deg)` (hue-rotate
+  restores the data hues) plus a `base`-coloured `lighten` overlay, so the
+  inverted background lands on Macchiato `base` instead of true black while data
+  colours pass through. A buffering pill (`Buffering n/total`, `subtle`, pulse)
+  tracks the frame preloader that warms the browser cache in display order (4
+  lanes) so playback doesn't flash on frame swaps. Credit line names the
+  Malaysian Meteorological Department (MetMalaysia) MyCMAQ with a source link.
 - **Modal (legend)** — full-screen `crust/60` + blur scrim, `glass` sheet
   `rounded-2xl`, header with blue icon tile, item grid of circular swatch +
   11px label, `label-caps`-free footer button.

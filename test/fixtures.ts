@@ -97,36 +97,54 @@ export const airQualityData = (): AirQualityData => {
   }
 }
 
-export const mycmaqForecast = (): MycmaqForecast => ({
-  cycle: '20261015_12',
-  variable: 'PM25_TOT',
-  domain: 'd02',
-  displayUrl: 'https://mycmaq.met.gov.my/display_20261015_12.html',
-  count: 3,
-  frames: [
-    {
-      file: 'PM25_TOT_d02_20261016_08LST.png',
-      validKey: '20261016_08LST',
-      label: '2026-10-16 08:00 LST',
-      iso: '2026-10-16T00:00:00.000Z',
-      url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_08LST.png',
-      proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_08LST.png',
-    },
-    {
-      file: 'PM25_TOT_d02_20261016_09LST.png',
-      validKey: '20261016_09LST',
-      label: '2026-10-16 09:00 LST',
-      iso: '2026-10-16T01:00:00.000Z',
-      url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_09LST.png',
-      proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_09LST.png',
-    },
-    {
-      file: 'PM25_TOT_d02_20261016_10LST.png',
-      validKey: '20261016_10LST',
-      label: '2026-10-16 10:00 LST',
-      iso: '2026-10-16T02:00:00.000Z',
-      url: 'https://mycmaq.met.gov.my/20261015_12/PM25_TOT_d02_20261016_10LST.png',
-      proxyPath: '/mycmaq/image/20261015_12/PM25_TOT_d02_20261016_10LST.png',
-    },
-  ],
+// MyCMAQ frame builder — `date` is `YYYYMMDD`, `hour` is `HH` (both LST/UTC+8).
+const mycmaqFrame = (cycle: string, date: string, hour: string) => ({
+  file: `PM25_TOT_d02_${date}_${hour}LST.png`,
+  validKey: `${date}_${hour}LST`,
+  label: `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)} ${hour}:00 LST`,
+  iso: new Date(
+    Date.UTC(+date.slice(0, 4), +date.slice(4, 6) - 1, +date.slice(6, 8), +hour - 8),
+  ).toISOString(),
+  url: `https://mycmaq.met.gov.my/${cycle}/PM25_TOT_d02_${date}_${hour}LST.png`,
+  proxyPath: `/mycmaq/image/${cycle}/PM25_TOT_d02_${date}_${hour}LST.png`,
 })
+
+export const mycmaqForecast = (): MycmaqForecast => {
+  const cycle = '20261015_12'
+  const frames = [
+    mycmaqFrame(cycle, '20261016', '08'),
+    mycmaqFrame(cycle, '20261016', '09'),
+    mycmaqFrame(cycle, '20261016', '10'),
+  ]
+  return {
+    cycle,
+    variable: 'PM25_TOT',
+    domain: 'd02',
+    displayUrl: `https://mycmaq.met.gov.my/display_${cycle}.html`,
+    count: frames.length,
+    frames,
+  }
+}
+
+// Frames straddling the one-day-outlook cap, so the view's window trimming can
+// be asserted: from an asOf of 16 Oct 09:30 LST the window keeps 16 Oct 09:00,
+// 16 Oct 12:00 and 17 Oct 09:00, dropping 16 Oct 08:00 (behind) and 17 Oct
+// 10:00 (past +24h).
+export const mycmaqForecastOutlook = (): MycmaqForecast => {
+  const cycle = '20261015_12'
+  const frames = [
+    mycmaqFrame(cycle, '20261016', '08'),
+    mycmaqFrame(cycle, '20261016', '09'),
+    mycmaqFrame(cycle, '20261016', '12'),
+    mycmaqFrame(cycle, '20261017', '09'),
+    mycmaqFrame(cycle, '20261017', '10'),
+  ]
+  return {
+    cycle,
+    variable: 'PM25_TOT',
+    domain: 'd02',
+    displayUrl: `https://mycmaq.met.gov.my/display_${cycle}.html`,
+    count: frames.length,
+    frames,
+  }
+}

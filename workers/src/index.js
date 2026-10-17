@@ -16,8 +16,17 @@
 // MyCMAQ (Malaysian Meteorological Department) publishes NO JSON API — only
 // static PNGs + a viewer page + manifest.json per daily cycle. The browser
 // cannot reliably scrape those (CORS + no `latest` alias), so this worker
-// resolves the latest cycle, filters the manifest to PM2.5 / Domain 02
+// resolves a usable cycle, filters the manifest to PM2.5 / Domain 02
 // (Malaysia), and serves cacheable JSON + image bytes to the PWA.
+//
+// Cycle selection: a cycle's frame window is a function of its DATE — cycle
+// `D` covers [D+1 08:00, D+6 07:00] LST (120 hourly frames; verified across
+// 5 consecutive cycles). The newest cycle in the viewer index therefore
+// usually starts in the FUTURE, so picking it blindly made the PWA open on a
+// frame hours ahead of "now" (the 17 Oct 06:00 bug: newest cycle
+// `20261016_00` begins 17 Oct 08:00). We instead pick the newest cycle whose
+// window has already STARTED (first frame <= now), which is the last date's
+// cycle until the next window opens.
 //
 // Deploy (from this dir):
 //   npx wrangler login
@@ -258,16 +267,15 @@ async function handleMycmaq(request, url, ctx) {
     const cycleParam = url.searchParams.get('cycle')
     const variable = url.searchParams.get('var') || MYCMAQ_DEFAULT_VAR
     const domain = url.searchParams.get('domain') || MYCMAQ_DEFAULT_DOMAIN
-    let cycle = cycleParam
-    if (!cycle) {
-      const latest = await fetchLatestCycleJson()
-      if (!latest) return mycmaqError('MyCMAQ index unreachable')
-      cycle = latest.cycle
-    }
-    if (!/^\d{8}_\d{2}$/.test(cycle)) return mycmaqError('Invalid cycle', 400)
-    const cacheKey = new Request(`${MYCMAQ_BASE}/${cycle}/__sgw_frames_${variable}_${domain}__`, {
-      method: 'GET',
-    })
+    if (cycleParam && !/^\d{8}_\d{2}$/.test(cycleParam)) return mycmaqError('Invalid cycle', 400)
+    // Cache scope is per-cycle when pinned, else a single 'latest' slot: the
+    // resolved cycle is not known until after the (cacheable) manifest scan,
+    // and re-resolving on every hit would defeat the cache. The 'latest' slot's
+    // cycle still covers "now" for the whole 6h TTL, so this is safe.
+    const cacheKey = new Request(
+      `${MYCMAQ_BASE}/__sgw_frames_${cycleParam || 'latest'}_${variable}_${domain}__`,
+      { method: 'GET' },
+    )
     let cached = null
     try {
       cached = await cache.match(cacheKey)
@@ -277,10 +285,10 @@ async function handleMycmaq(request, url, ctx) {
     if (cached) {
       const age = Date.now() / 1000 - Number(cached.headers.get('x-sgw-cached-at') || '0')
       if (age < MYCMAQ_TTL_SEC) return fromResponse(cached, browserHeaders())
-      ctx.waitUntil(resolveFrames(cycle, variable, domain, cache, cacheKey).catch(() => {}))
+      ctx.waitUntil(resolveFrames(cycleParam, variable, domain, cache, cacheKey).catch(() => {}))
       return fromResponse(cached, browserHeaders())
     }
-    const fresh = await resolveFrames(cycle, variable, domain, cache, cacheKey)
+    const fresh = await resolveFrames(cycleParam, variable, domain, cache, cacheKey)
     if (!fresh.ok)
       return mycmaqError(fresh.error || 'MyCMAQ manifest unreachable', fresh.status || 502)
     return mycmaqJson(fresh.data, { 'x-sgw-cached-at': String(Date.now() / 1000) })
@@ -311,7 +319,8 @@ async function handleMycmaq(request, url, ctx) {
   return new Response('Not found', { status: 404, headers: browserHeaders() })
 }
 
-async function fetchLatestCycleJson() {
+// Scrape the MyCMAQ viewer index for published cycle ids, ascending.
+async function fetchCycleList() {
   try {
     const res = await fetch(`${MYCMAQ_BASE}/`, { headers: { 'User-Agent': 'sgw-proxy' } })
     if (!res.ok) return null
@@ -319,22 +328,70 @@ async function fetchLatestCycleJson() {
     const cycles = [
       ...new Set([...html.matchAll(/display_(\d{8}_\d{2})\.html/g)].map((m) => m[1])),
     ].sort()
-    if (cycles.length === 0) return null
-    const cycle = cycles[cycles.length - 1]
-    return {
-      cycle,
-      displayPage: `display_${cycle}.html`,
-      displayUrl: `${MYCMAQ_BASE}/display_${cycle}.html`,
-      manifestUrl: `${MYCMAQ_BASE}/${cycle}/manifest.json`,
-    }
+    return cycles.length > 0 ? cycles : null
   } catch {
     return null
   }
 }
 
+// Probe order for cycle resolution: newest cycle DATE first (latest run, then
+// its same-window sibling). A cycle's frame window depends on its date only, so
+// probing one date at a time keeps the scan to ~2 manifest fetches; the sibling
+// run stays as a fallback in case one run's manifest is malformed.
+function candidateCycles(cycles) {
+  const runsByDate = new Map()
+  for (const cycle of cycles) {
+    const date = cycle.slice(0, 8)
+    if (!runsByDate.has(date)) runsByDate.set(date, [])
+    runsByDate.get(date).push(cycle)
+  }
+  return [...runsByDate.keys()]
+    .sort()
+    .reverse()
+    .flatMap((date) => runsByDate.get(date).sort().reverse())
+}
+
+// Fetch + parse a cycle manifest's file list; null when unreachable/malformed.
+async function fetchManifest(cycle) {
+  try {
+    const res = await fetch(`${MYCMAQ_BASE}/${cycle}/manifest.json`, {
+      headers: { 'User-Agent': 'sgw-proxy' },
+    })
+    if (!res.ok) return null
+    const manifest = await res.json()
+    return Array.isArray(manifest?.files) ? manifest.files : null
+  } catch {
+    return null
+  }
+}
+
+// Newest cycle whose frame window has already started; else the newest cycle
+// that has frames at all (an all-future or all-past index still renders).
+async function resolveCoveringFrames(variable, domain) {
+  const cycles = await fetchCycleList()
+  if (!cycles) return null
+  let fallback = null
+  for (const cycle of candidateCycles(cycles)) {
+    const files = await fetchManifest(cycle)
+    if (!files) continue
+    const frames = buildFrames(files, cycle, variable, domain)
+    if (frames.length === 0) continue
+    if (!fallback) fallback = { cycle, frames }
+    if (Date.parse(frames[0].iso) <= Date.now()) return { cycle, frames }
+  }
+  return fallback
+}
+
 async function resolveLatestCycle(cache, cacheKey) {
-  const data = await fetchLatestCycleJson()
-  if (!data) return { ok: false, status: 502 }
+  const resolved = await resolveCoveringFrames(MYCMAQ_DEFAULT_VAR, MYCMAQ_DEFAULT_DOMAIN)
+  if (!resolved) return { ok: false, status: 502 }
+  const { cycle } = resolved
+  const data = {
+    cycle,
+    displayPage: `display_${cycle}.html`,
+    displayUrl: `${MYCMAQ_BASE}/display_${cycle}.html`,
+    manifestUrl: `${MYCMAQ_BASE}/${cycle}/manifest.json`,
+  }
   try {
     const stamped = new Response(JSON.stringify(data), {
       status: 200,
@@ -368,19 +425,10 @@ function frameIso(dateStr, hourStr) {
   return utc.toISOString()
 }
 
-async function resolveFrames(cycle, variable, domain, cache, cacheKey) {
-  let manifest
-  try {
-    const res = await fetch(`${MYCMAQ_BASE}/${cycle}/manifest.json`, {
-      headers: { 'User-Agent': 'sgw-proxy' },
-    })
-    if (!res.ok) return { ok: false, status: res.status, error: 'MyCMAQ manifest unreachable' }
-    manifest = await res.json()
-  } catch {
-    return { ok: false, status: 502, error: 'MyCMAQ manifest unreachable' }
-  }
-  const files = Array.isArray(manifest?.files) ? manifest.files : []
-  const frames = files
+// Filter a manifest's file list down to the requested variable/domain frames,
+// chronologically ordered, with LST labels + UTC instants.
+function buildFrames(files, cycle, variable, domain) {
+  return files
     .filter(
       (f) => f.startsWith(`${variable}_`) && f.includes(`_${domain}_`) && MYCMAQ_FRAME_RE.test(f),
     )
@@ -401,12 +449,29 @@ async function resolveFrames(cycle, variable, domain, cache, cacheKey) {
         proxyPath: `/mycmaq/image/${cycle}/${file}`,
       }
     })
+}
+
+// `cycle` null → resolve the newest cycle that already covers now (see the
+// header comment); a pinned cycle is used as given.
+async function resolveFrames(cycle, variable, domain, cache, cacheKey) {
+  let chosen = cycle
+  let frames
+  if (cycle) {
+    const files = await fetchManifest(cycle)
+    if (!files) return { ok: false, status: 502, error: 'MyCMAQ manifest unreachable' }
+    frames = buildFrames(files, cycle, variable, domain)
+  } else {
+    const resolved = await resolveCoveringFrames(variable, domain)
+    if (!resolved) return { ok: false, status: 502, error: 'MyCMAQ index unreachable' }
+    chosen = resolved.cycle
+    frames = resolved.frames
+  }
   const data = {
-    cycle,
+    cycle: chosen,
     variable,
     domain,
     count: frames.length,
-    displayUrl: `${MYCMAQ_BASE}/display_${cycle}.html`,
+    displayUrl: `${MYCMAQ_BASE}/display_${chosen}.html`,
     frames,
   }
   try {

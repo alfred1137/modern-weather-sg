@@ -3,26 +3,38 @@ import SyncFooter from './SyncFooter'
 import { MycmaqForecast, MycmaqFrame } from '../types'
 import { mycmaqImageUrl } from '../services/weatherService'
 import { useTheme } from '../context/ThemeContext'
+import { formatShortDateTime, frameValidKeyToDate } from '../constants'
 
 interface Props {
   forecast: MycmaqForecast | null
   loading: boolean
   error: string | null
   onRetry: () => void
-  /** Wall-clock ms captured when the forecast was fetched — trim boundary. */
+  /** Wall-clock ms captured when the forecast was fetched — window boundary. */
   asOf: number
 }
 
-// Drop frames valid more than an hour before now: scrubbing back into
-// half-day-old forecast steps disorients (no way back to "now"), so the
-// timeline always starts at near-current conditions. Falls back to the single
-// latest frame when a stale cycle has nothing fresh left. Trimming is
-// client-side so worker responses stay time-invariant (immutable, cacheable).
+// Timeline window: a ONE-DAY outlook anchored on now. Frames from before the
+// current hour step are dropped (no stale scrub trap), and frames past +24h are
+// dropped too: a full MyCMAQ cycle is 5 days of 1024² PNGs (~30 MB), which is
+// far too heavy for mobile to preload. Trimming is client-side so worker
+// responses stay time-invariant (immutable, cacheable).
+const WINDOW_BACK_MS = 30 * 60 * 1000
+const WINDOW_FORWARD_MS = 24 * 60 * 60 * 1000
+
 const trimFrames = (frames: MycmaqFrame[], nowMs: number): MycmaqFrame[] => {
-  const cutoff = nowMs - 60 * 60 * 1000
-  const fresh = frames.filter((f) => new Date(f.iso).getTime() >= cutoff)
-  if (fresh.length > 0) return fresh
-  return frames.length > 0 ? [frames[frames.length - 1]] : []
+  const windowed = frames.filter((f) => {
+    const t = Date.parse(f.iso)
+    return t >= nowMs - WINDOW_BACK_MS && t <= nowMs + WINDOW_FORWARD_MS
+  })
+  if (windowed.length > 0) return windowed
+  // Degenerate cycle (entirely past or entirely future): show the single frame
+  // closest to now instead of a misleading first/last pick.
+  if (frames.length === 0) return []
+  const closest = frames.reduce((best, f) =>
+    Math.abs(Date.parse(f.iso) - nowMs) < Math.abs(Date.parse(best.iso) - nowMs) ? f : best,
+  )
+  return [closest]
 }
 
 // PM2.5 forecast playback (MetMalaysia MyCMAQ, Domain 02 Malaysia).
@@ -119,6 +131,15 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
 
   const current = frames[selectedIndex] ?? frames[0]
   const buffering = bufferedCount < frames.length
+  // LST wall-clock of the current frame — from the frame's own valid key so it
+  // is timezone-proof (the PNG's baked-in labels are LST).
+  const currentTime = formatShortDateTime(frameValidKeyToDate(current.validKey))
+  // Left tick: "Now" only when the timeline really starts at ~now; a genuine
+  // lead (a cycle whose window opens later) is shown as an offset instead of a
+  // label that lies. Nothing is shown when the only frame is stale.
+  const leadMs = Date.parse(frames[0].iso) - asOf
+  const startsNow = Math.abs(leadMs) <= 90 * 60 * 1000
+  const leftTick = startsNow ? 'Now' : leadMs > 0 ? `+${Math.round(leadMs / 3600000)}h` : ' '
 
   return (
     <div className="flex flex-col gap-4">
@@ -132,6 +153,7 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
           src={mycmaqImageUrl(current)}
           style={isLatte ? undefined : { filter: 'invert(1) hue-rotate(180deg)' }}
           className="w-full h-auto object-contain pointer-events-none"
+          decoding="async"
           alt={`PM2.5 forecast for ${current.label}`}
           onError={() => console.debug('MyCMAQ frame missing:', current.file)}
         />
@@ -154,10 +176,9 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
 
           <div className="flex-1 flex flex-col gap-4">
             <div className="flex justify-between items-center text-[11px] md:text-xs font-semibold text-subtext0 px-1">
-              <span className="opacity-60">Now</span>
+              <span className="opacity-60">{leftTick}</span>
               <div className="bg-mantle px-4 py-1.5 rounded-full border border-surface1/20 text-center">
-                <span className="text-blue font-semibold">{current.label}</span>{' '}
-                <span className="text-subtext0 font-mono">({current.validKey})</span>
+                <span className="text-blue font-semibold">{currentTime}</span>
               </div>
               <span className="opacity-60">
                 {selectedIndex + 1}/{frames.length}
@@ -193,7 +214,7 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
         </div>
         <p className="mt-4 text-[11px] md:text-xs text-subtext0 leading-relaxed">
           PM2.5 forecast imagery: Malaysian Meteorological Department (MetMalaysia) MyCMAQ, Domain
-          02 (Malaysia), cycle {forecast.cycle}. LST is Malaysian local standard time (UTC+8).{' '}
+          02 (Malaysia), cycle {forecast.cycle}. Times are Malaysian local time (UTC+8).{' '}
           <a
             href={forecast.displayUrl}
             target="_blank"
@@ -206,7 +227,7 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
         </p>
       </div>
 
-      <SyncFooter timestamp={current.iso} className="max-w-5xl mx-auto" />
+      <SyncFooter label={currentTime} className="max-w-5xl mx-auto" />
     </div>
   )
 }

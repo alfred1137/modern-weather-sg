@@ -3,7 +3,7 @@
 Hobbyist React PWA (Vite + TypeScript) reimagining Singapore weather data.
 Quality gates: `npm run build` (tsc typecheck with `noEmit: true` + `vite build`
 → `dist/`), `npm run lint` (eslint — must stay at 0 warnings), `npm run test`
-(vitest + testing-library, 62 tests across 13 suites). No formatter in the
+(vitest + testing-library, 68 tests across 13 suites). No formatter in the
 gate; `npm run format` exists for manual prettier runs.
 
 ## Commands
@@ -14,7 +14,7 @@ gate; `npm run format` exists for manual prettier runs.
 | `npm run dev`         | Vite dev server with HMR.                                                                                                                                                                                                                                                              |
 | `npm run build`       | `tsc && vite build` — typecheck + bundle → `dist/`. **Primary gate.**                                                                                                                                                                                                                  |
 | `npm run lint`        | `eslint .` — **gate**, must be clean.                                                                                                                                                                                                                                                  |
-| `npm run test`        | `vitest run` — **gate**, must pass (62 tests / 13 suites).                                                                                                                                                                                                                             |
+| `npm run test`        | `vitest run` — **gate**, must pass (68 tests / 13 suites).                                                                                                                                                                                                                             |
 | `npm run format`      | `prettier --write .` — manual only, not part of the gate.                                                                                                                                                                                                                              |
 | `npm run design:lint` | `designmd lint DESIGN.md` — validates the DESIGN.md design-system spec (token refs, contrast, structure). Manual only, not part of the gate. `designmd` alias is used instead of the package's `design.md` bin — the `.md` suffix collides with the Windows Markdown file association. |
 | `npm run preview`     | Serve `dist/` locally.                                                                                                                                                                                                                                                                 |
@@ -22,6 +22,9 @@ gate; `npm run format` exists for manual prettier runs.
 
 Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
 (`npm install` → `npm run build` → deploys `dist/` via `JamesIves/github-pages-deploy-action`).
+The workflow pins npm with `sudo npm install -g npm@12.2.0` — the runner's
+default npm 11 crashes lockfile-less resolves with "Cannot read properties of
+null (reading 'edgesOut')". See the `npm-pin-management` skill before changing it.
 
 ## Architecture
 
@@ -33,8 +36,8 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   (`workers/` proxy injects `WEATHER_API_KEY` + 5-min cache → upstream `api-open.data.gov.sg`).
   Endpoints: 2-hr nowcast, 24h forecast, 4-day outlook, PSI + PM2.5.
 - **Views** (`components/`): `NowcastView`, `RainAreasView`, `PSIView` (with a
-  third `Forecast` sub-tab rendering `MycmaqForecastView` — 5-day hourly PM2.5
-  playback, frames trimmed to ≥1h before fetch time),
+  third `Forecast` sub-tab rendering `MycmaqForecastView` — hourly PM2.5
+  playback trimmed client-side to a one-day outlook: current hour step → +24h),
   `Forecast24hView`, `Forecast4DayView`. No `FloodWarningView` exists.
 - **Shared** (`components/`): `Navigation`, `ThemeToggle`, `LegendModal`, `SyncFooter`.
 - **Types**: all domain types + `AppTab` enum live in `types.ts`.
@@ -78,6 +81,11 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   `/mycmaq/latest|/frames|/image/...` (MetMalaysia static PNGs + manifest, 6h
   cache, immutable browser headers, no key needed) — syntax-check JS changes
   with `node --check workers/src/index.js` (no worker test runner exists).
+  A MyCMAQ cycle's frame window is a function of its **date**: cycle `D` covers
+  `[D+1 08:00, D+6 07:00]` LST. The newest cycle in the viewer index therefore
+  usually starts in the FUTURE, so the worker picks the newest cycle whose
+  window has already started (first frame ≤ now), never the newest blindly —
+  otherwise the app opens hours ahead of "now" (the v1.5.0 06:00 bug).
 - **`rg` is not installed on the dev machine.** Use the grep tool (or
   `Select-String`) for content searches; shell pipelines with `rg` will fail.
 - **`vitest.config.ts` mirrors the Vite `define`** (`__APP_VERSION__` from
@@ -109,6 +117,8 @@ Deploy via CI: pushing to `main` triggers `.github/workflows/deploy.yml`
   snapshot of stale choices.
 - Version bumps: grep for stale strings after editing (`vX.Y.Z`, `vN`,
   `sg-weather-vN`) — see the `version-bump` skill.
+- npm/toolchain pins (dev Node + npm vs the CI pin): see the
+  `npm-pin-management` skill.
 
 ## Workflow: preview before push
 

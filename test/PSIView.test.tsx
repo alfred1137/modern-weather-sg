@@ -62,4 +62,13 @@ describe('PSIView', () => {
     fireEvent.click(screen.getAllByText('Forecast')[0])
     expect(screen.getByText('Loading PM2.5 forecast...')).toBeInTheDocument()
   })
+
+  it('reads the forecast header band from the 24-hr PSI scale', () => {
+    // Fixture PSI is 55 → "Moderate"; its 1-hr PM2.5 values (14-18) would band
+    // as "Normal", so "Moderate" proves the header uses the PSI scale.
+    renderWithTheme(<PSIView data={airQualityData()} />)
+    fireEvent.click(screen.getAllByText('Forecast')[0])
+    expect(screen.getByText('Moderate')).toBeInTheDocument()
+    expect(screen.queryByText('Normal')).not.toBeInTheDocument()
+  })
 })

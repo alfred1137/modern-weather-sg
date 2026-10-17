@@ -164,3 +164,95 @@ playback, theme-matched recolour, and frame buffering.
   `npm run design:lint` (0 errors) — all green pre-push.
 - Previewed locally against `wrangler dev` (120/120 frames, PNG bytes +
   immutable headers verified) before shipping.
+
+---
+
+# v1.5.1 — forecast correctness + UX refinement
+
+Goal: fix the MyCMAQ "Now is not now" bug, cut mobile buffering cost, and
+trim player/pill/footer over-information.
+
+## Findings (investigated 17 Oct)
+
+- **Item 3 — cycle selection bug (confirmed, reproducible).** Every MyCMAQ
+  cycle covers a fixed window `[D+1 08:00, D+6 07:00]` LST for cycle date `D`
+  (verified across 5 cycles: `20261016_00` → 17 Oct 08:00 – 22 Oct 07:00, etc.).
+  The worker picks the _newest index cycle_, whose window almost always starts
+  in the future. At the user's 17 Oct 06:00 test the newest cycle
+  (`20261016_00`) had zero frames ≤ now, so `trimFrames` kept the whole array
+  and frame 0 was 17 Oct **08:00** while labelled "Now". The cycle that actually
+  covers now was `20261015_12` (window from 16 Oct 08:00).
+- **Item 4 — no compression lever on free tier.** Origin publishes exactly one
+  asset per frame: 1024×1024 RGB PNG (colorType 2), ~250–270 KB → ~30 MB per
+  120-frame cycle. No smaller/webp rendition exists; Cloudflare Image Resizing
+  needs a zone (not `workers.dev`) and is a paid add-on; WASM re-encode exceeds
+  the free 10 ms CPU budget. Only free lever = transfer less (preload windowing).
+- **Item 6 — `SyncFooter`** renders time only (`22:22`), no date.
+- **Item 7 — band source.** `PSIView` computes `worstBand` for `mycmaq` mode
+  from 1-hr PM2.5 (`PM25_BANDS` → "Elevated").
+- **Env note (item 1):** dev has Node `v24.4.1` + npm `11.19.0`; npm 12 needs
+  Node `>=24.15.0`. No version manager installed (Node at
+  `C:\Program Files\nodejs`, winget + choco available).
+
+## Steps
+
+- [x] P1 — Worker: choose the newest cycle whose window covers now (scans index
+      cycles, newest date first, accepts the first manifest with a frame ≤ now;
+      `/latest` and `/frames` share the logic; cycle-less `/frames` caches under
+      a `latest` scope so resolution runs once per TTL).
+- [x] P2 — View: honest timeline start — `Now` only when the first frame is
+      within 90 min of the fetch; a later-opening window shows the real lead
+      (`+Nh`), a stale-only window shows nothing.
+- [x] P3 — View: time pill collapsed to `DD-MMM HH:MM` (LST suffix + raw valid
+      key dropped; credit line reworded to "Times are Malaysian local time").
+- [x] P4 — `SyncFooter`: date + time (`DD-MMM HH:MM`), plus an optional
+      preformatted `label` so MyCMAQ's fixed LST wall-clock can't shift with the
+      viewer's timezone.
+- [x] P5 — One-day outlook: window = current hour step → +24h (~25 frames ≈
+      6 MB instead of 120 ≈ 30 MB); degenerate cycles fall back to the frame
+      closest to now; frames get `decoding="async"`.
+- [x] P6 — `PSIView`: MyCMAQ header band from the worst SG 24-hr PSI
+      (`getPSIBand`), so the forecast tab reports "Moderate"/"Unhealthy" instead
+      of the 1-hr PM2.5 "Elevated".
+- [x] P7 — Tests: 62 → 68 (new outlook-cap, lead-offset, buffering/format,
+      PSI-band and SyncFooter-format cases; fixtures gained a frame builder +
+      `mycmaqForecastOutlook`).
+- [x] P8 — Docs: `DESIGN.md` (slider/player, source footer, forecast band),
+      `AGENTS.md` (test counts, view + worker cycle rule, CI npm pin),
+      `README.md` (feature bullet + worker cycle note); new
+      `npm-pin-management` project skill.
+- [x] P9 — Worker deployed + verified; all gates green on the upgraded
+      toolchain; preview live for visual approval (version bump + push pending
+      that approval).
+
+## Decisions (locked)
+
+- **D1 (item 4):** one-day outlook — timeline capped to now → +24h.
+- **D2 (item 7):** header reads `PM2.5 forecast — <band>`, band from the worst
+  24-hr PSI region.
+- **D3 (item 1):** upgrade Node then npm so dev matches CI.
+
+## Verification
+
+- Worker, driven with a stubbed clock against the live MetMalaysia index
+  (throwaway harness, not committed): at 17 Oct 06:00 the scan rejects the
+  future-starting newest cycle `20261016_00` and selects `20261015_12`
+  (window starts 16 Oct 08:00, `first ≤ now ≤ last`); at 09:19 it selects
+  `20261016_00`; `/latest` agrees. Scan cost = index + ≤2 manifests (6h cached).
+- Live worker after deploy: `cycle=20261016_00`, 120 frames,
+  `/mycmaq/latest` consistent.
+- `npm run build`, `npm run lint` (0 warnings), `npm run test` (68/68),
+  `npm run design:lint` (0 errors) — green, re-run on Node 24.20.0 / npm 12.2.0.
+
+## Environment (item 1)
+
+- Node 24.4.1 → **24.20.0** (`winget install OpenJS.NodeJS.LTS`, UAC), npm
+  11.19.0 → **12.2.0** — dev now matches the CI pin.
+- New npm 12 behaviour: install scripts are blocked unless approved
+  (`npm warn install-scripts esbuild@0.25.12 … blocked`). Harmless here — the
+  platform optional dep supplies esbuild's binary and build + tests pass — but
+  documented in the `npm-pin-management` skill.
+
+## Open decisions (blocking)
+
+- None. Awaiting preview approval, then bump → commit → push.

@@ -3,7 +3,7 @@ import type React from 'react'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import MycmaqForecastView from '../components/MycmaqForecastView'
 import { ThemeProvider } from '../context/ThemeContext'
-import { mycmaqForecast } from './fixtures'
+import { mycmaqForecast, mycmaqForecastOutlook } from './fixtures'
 
 function renderWithTheme(ui: React.ReactNode) {
   return render(<ThemeProvider>{ui}</ThemeProvider>)
@@ -11,8 +11,9 @@ function renderWithTheme(ui: React.ReactNode) {
 
 const noop = () => {}
 
-// "Now" for trim purposes: 2026-10-16 09:30 LST. The 1h trim keeps the 09:00 +
-// 10:00 LST fixture frames and drops 08:00, so the playhead opens at 09:00.
+// "Now" for windowing purposes: 2026-10-16 09:30 LST. The one-day-outlook window
+// keeps the 09:00 + 10:00 LST fixture frames and drops 08:00, so the playhead
+// opens at 09:00.
 const AS_OF = new Date('2026-10-16T01:30:00Z').getTime()
 
 beforeEach(() => {
@@ -52,7 +53,7 @@ describe('MycmaqForecastView', () => {
     expect(screen.getByText('Retry')).toBeInTheDocument()
   })
 
-  it('opens on the near-current frame with LST label and raw valid key', () => {
+  it('opens on the near-current frame with a compact time pill', () => {
     renderWithTheme(
       <MycmaqForecastView
         forecast={mycmaqForecast()}
@@ -62,12 +63,16 @@ describe('MycmaqForecastView', () => {
         asOf={AS_OF}
       />,
     )
-    expect(screen.getByText('2026-10-16 09:00 LST')).toBeInTheDocument()
-    expect(screen.getByText('(20261016_09LST)')).toBeInTheDocument()
+    // Pill + source footer both render the compact LST time.
+    expect(screen.getAllByText('16-Oct 09:00').length).toBe(2)
+    // The long label + raw valid key are gone from the player.
+    expect(screen.queryByText('(20261016_09LST)')).not.toBeInTheDocument()
+    expect(screen.queryByText('2026-10-16 09:00 LST')).not.toBeInTheDocument()
+    expect(screen.getByText('Now')).toBeInTheDocument()
     expect(screen.getByText('1/2')).toBeInTheDocument()
   })
 
-  it('drops frames older than ~1h from the timeline', () => {
+  it('dates the source footer', () => {
     renderWithTheme(
       <MycmaqForecastView
         forecast={mycmaqForecast()}
@@ -77,11 +82,63 @@ describe('MycmaqForecastView', () => {
         asOf={AS_OF}
       />,
     )
-    expect(screen.queryByText('2026-10-16 08:00 LST')).not.toBeInTheDocument()
-    expect(screen.queryByText('(20261016_08LST)')).not.toBeInTheDocument()
+    expect(screen.getByText(/Source data last updated at/)).toHaveTextContent('16-Oct 09:00')
   })
 
-  it('falls back to the latest frame when the whole cycle is stale', () => {
+  it('drops frames before the current hour step', () => {
+    renderWithTheme(
+      <MycmaqForecastView
+        forecast={mycmaqForecast()}
+        loading={false}
+        error={null}
+        onRetry={noop}
+        asOf={AS_OF}
+      />,
+    )
+    expect(screen.queryByText('16-Oct 08:00')).not.toBeInTheDocument()
+  })
+
+  it('caps the timeline at a one-day outlook', () => {
+    renderWithTheme(
+      <MycmaqForecastView
+        forecast={mycmaqForecastOutlook()}
+        loading={false}
+        error={null}
+        onRetry={noop}
+        asOf={AS_OF}
+      />,
+    )
+    // 5 frames in → 3 inside [09:00, +24h]: 16 Oct 09:00 & 12:00, 17 Oct 09:00.
+    expect(screen.getByText('1/3')).toBeInTheDocument()
+    const slider = screen.getByLabelText('Forecast hour')
+    expect(slider).toHaveAttribute('max', '2')
+    // Scrubbing to the end lands on 17 Oct 09:00 — one hour short of the
+    // excluded 10:00 frame.
+    fireEvent.change(slider, { target: { value: '2' } })
+    expect(screen.getAllByText('17-Oct 09:00').length).toBe(2)
+    expect(screen.getByText('3/3')).toBeInTheDocument()
+    // Behind and past +24h are both dropped.
+    expect(screen.queryByText('16-Oct 08:00')).not.toBeInTheDocument()
+    expect(screen.queryByText('17-Oct 10:00')).not.toBeInTheDocument()
+  })
+
+  it('shows a lead offset instead of "Now" when the cycle starts later', () => {
+    // 16 Oct 06:00 LST: the fixture's first frame (08:00) is two hours ahead.
+    renderWithTheme(
+      <MycmaqForecastView
+        forecast={mycmaqForecast()}
+        loading={false}
+        error={null}
+        onRetry={noop}
+        asOf={new Date('2026-10-15T22:00:00Z').getTime()}
+      />,
+    )
+    expect(screen.getByText('+2h')).toBeInTheDocument()
+    expect(screen.queryByText('Now')).not.toBeInTheDocument()
+    expect(screen.getByText('1/3')).toBeInTheDocument()
+  })
+
+  it('falls back to the frame closest to now when the whole cycle is stale', () => {
     const staleAsOf = new Date('2026-10-30T00:00:00Z').getTime()
     renderWithTheme(
       <MycmaqForecastView
@@ -92,8 +149,9 @@ describe('MycmaqForecastView', () => {
         asOf={staleAsOf}
       />,
     )
-    expect(screen.getByText('2026-10-16 10:00 LST')).toBeInTheDocument()
+    expect(screen.getAllByText('16-Oct 10:00').length).toBe(2)
     expect(screen.getByText('1/1')).toBeInTheDocument()
+    expect(screen.queryByText('Now')).not.toBeInTheDocument()
   })
 
   it('shows buffering progress until frames preload', () => {
@@ -140,7 +198,7 @@ describe('MycmaqForecastView', () => {
     )
     const slider = screen.getByLabelText('Forecast hour')
     fireEvent.change(slider, { target: { value: '1' } })
-    expect(screen.getByText('2026-10-16 10:00 LST')).toBeInTheDocument()
+    expect(screen.getAllByText('16-Oct 10:00').length).toBe(2)
     expect(screen.getByText('2/2')).toBeInTheDocument()
     expect(screen.getByText(/Malaysian Meteorological Department/)).toBeInTheDocument()
     expect(screen.getByText('View source')).toBeInTheDocument()

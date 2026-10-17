@@ -28,7 +28,7 @@
     <br />
     <a href="https://alfred1137.github.io/modern-weather-sg/"><strong>Try the Demo »</strong></a>
     <br />
-    <img src="https://img.shields.io/badge/version-v1.5.0-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.5.1-blue" alt="Version">
     <br />
     <br />
     <a href="https://github.com/alfred1137/modern-weather-sg/issues">Report Bug</a>
@@ -84,7 +84,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 - **Rain Radar**: High-resolution playback of rain areas (50km and 240km regional views) with an optimized dark-mode interface.
 - **Flood Warnings**: Live alerts synchronized with PUB (Singapore's National Water Agency) including severity levels and instructions.
 - **24-Hour Forecast**: Regional outlooks (North, South, East, West, Central) with temperature, humidity, and wind data.
-- **PM2.5 Forecast**: 5-day hourly PM2.5 animation (Malaysian Meteorological Department MyCMAQ, Domain 02 Malaysia) as a third Air Quality tab, with LST valid-time labels and playback.
+- **PM2.5 Forecast**: One-day hourly PM2.5 outlook (Malaysian Meteorological Department MyCMAQ, Domain 02 Malaysia) as a third Air Quality tab, with LST valid-time labels, playback, and the header band read from Singapore's 24-hr PSI scale.
 - **4-Day Outlook**: Extended weather planning with high-fidelity icons and trend insights.
 - **Fully Responsive**: Optimized for everything from mobile devices to high-resolution desktop monitors.
 - **Progressive Web App (PWA)**: Installable on iOS and Android for a native-like experience with offline asset caching.
@@ -193,8 +193,11 @@ of visitors costs one upstream call per 5-minute window instead of one per visit
 
 The worker also serves the MyCMAQ PM2.5 forecast (`/mycmaq/latest`,
 `/mycmaq/frames`, `/mycmaq/image/...`) with a 6-hour cache — MetMalaysia
-publishes static PNGs plus a manifest only (no API), so the worker resolves
-the latest cycle and proxies the bytes. No API key is needed for these routes.
+publishes static PNGs plus a manifest only (no API), so the worker resolves a
+cycle and proxies the bytes. It picks the newest cycle whose frame window has
+already **started** (a cycle `D` covers `D+1 08:00` → `D+6 07:00` LST, so the
+newest cycle usually opens in the future and would otherwise put the app hours
+ahead of "now"). No API key is needed for these routes.
 
 To deploy/update the worker:
 

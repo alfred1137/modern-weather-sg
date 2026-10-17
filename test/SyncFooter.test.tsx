@@ -16,4 +16,14 @@ describe('SyncFooter', () => {
     render(<SyncFooter timestamp="2024-01-01T10:30:00" />)
     expect(screen.getByText(/Source data last updated at/)).toBeInTheDocument()
   })
+
+  it('renders the timestamp as DD-MMM HH:MM', () => {
+    render(<SyncFooter timestamp="2024-01-01T10:30:00" />)
+    expect(screen.getByText(/Source data last updated at/)).toHaveTextContent('01-Jan 10:30')
+  })
+
+  it('prefers an explicit label over the timestamp', () => {
+    render(<SyncFooter timestamp="2024-01-01T10:30:00" label="17-Oct 08:00" />)
+    expect(screen.getByText(/Source data last updated at/)).toHaveTextContent('17-Oct 08:00')
+  })
 })
