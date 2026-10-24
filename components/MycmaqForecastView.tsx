@@ -29,6 +29,17 @@ interface FrameLayers {
 const WINDOW_BACK_MS = 30 * 60 * 1000
 const WINDOW_FORWARD_MS = 24 * 60 * 60 * 1000
 
+// Singapore centre on the 1024×1024 Domain 02 MyCMAQ frame (px).
+const SG_CENTER_X = 315
+const SG_CENTER_Y = 562
+// Zoom window: 245 px left of Singapore centre, square → 490×490 region.
+// Scale factor to blow that region up to fill the 1024×1024 container.
+const ZOOM_HALF_SIZE = 245
+const ZOOM_SIZE = ZOOM_HALF_SIZE * 2
+const ZOOM_SCALE = 1024 / ZOOM_SIZE
+const SG_X_PCT = (SG_CENTER_X / 1024) * 100
+const SG_Y_PCT = (SG_CENTER_Y / 1024) * 100
+
 const trimFrames = (frames: MycmaqFrame[], nowMs: number): MycmaqFrame[] => {
   const windowed = frames.filter((f) => {
     const t = Date.parse(f.iso)
@@ -58,6 +69,7 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
   const frames = useMemo(() => trimFrames(forecast?.frames ?? [], asOf), [forecast, asOf])
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isZoomed, setIsZoomed] = useState(false)
   const [bufferedCount, setBufferedCount] = useState(0)
   // The frame the incoming layer has actually PAINTED. Until it matches the
   // incoming frame's url the outgoing layer stays opaque, so a frame that has
@@ -232,14 +244,22 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
             have not decoded yet showed that backdrop where the plumes should be:
             a dark flash in the dark theme and an invisible one in the light one.
             Square container: the d02 frames are a fixed 1024×1024. */}
-        <div className="relative w-full aspect-square">
+        {/* Zoom: tap (mobile) / hover (desktop) on Singapore. The layer div
+            scales from Singapore's centre so the point under your finger stays
+            put while the 490×490 region around it blows up to fill the card. */}
+        <div
+          className={`relative w-full aspect-square${isZoomed ? ' overflow-hidden' : ''}`}
+          onMouseEnter={() => setIsZoomed(true)}
+          onMouseLeave={() => setIsZoomed(false)}
+          onClick={() => setIsZoomed((prev) => !prev)}
+        >
           {[layerA, layerB].map((frame, slot) => {
             const incoming = (slot === 0) === aIncoming
             const src = mycmaqImageUrl(frame)
             return (
               <div
                 key={slot}
-                className={`absolute inset-0 bg-base isolate${
+                className={`absolute inset-0 bg-base isolate transition-transform duration-300${
                   incoming ? '' : ' transition-opacity duration-200'
                 }`}
                 style={{
@@ -247,6 +267,12 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
                   // painted, then fades out over it.
                   opacity: incoming || !incomingPainted ? 1 : 0,
                   zIndex: incoming ? 0 : 10,
+                  ...(isZoomed
+                    ? {
+                        transform: `scale(${ZOOM_SCALE})`,
+                        transformOrigin: `${SG_X_PCT}% ${SG_Y_PCT}%`,
+                      }
+                    : { transform: 'none' }),
                 }}
               >
                 <img
