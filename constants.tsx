@@ -153,18 +153,81 @@ export const SG_REGIONS = [
 
 // NEA air quality band tables, mapped onto the Catppuccin palette.
 export const PSI_BANDS = [
-  { max: 50, label: 'Good', range: '0 - 50', color: 'text-green', dot: 'bg-green' },
-  { max: 100, label: 'Moderate', range: '51 - 100', color: 'text-yellow', dot: 'bg-yellow' },
-  { max: 200, label: 'Unhealthy', range: '101 - 200', color: 'text-peach', dot: 'bg-peach' },
-  { max: 300, label: 'Very Unhealthy', range: '201 - 300', color: 'text-red', dot: 'bg-red' },
-  { max: Infinity, label: 'Hazardous', range: '> 300', color: 'text-mauve', dot: 'bg-mauve' },
+  {
+    max: 50,
+    label: 'Good',
+    range: '0 - 50',
+    color: 'text-green',
+    dot: 'bg-green',
+    icon: 'fa-thumbs-up',
+  },
+  {
+    max: 100,
+    label: 'Moderate',
+    range: '51 - 100',
+    color: 'text-yellow',
+    dot: 'bg-yellow',
+    icon: 'fa-face-meh',
+  },
+  {
+    max: 200,
+    label: 'Unhealthy',
+    range: '101 - 200',
+    color: 'text-peach',
+    dot: 'bg-peach',
+    icon: 'fa-mask-face',
+  },
+  {
+    max: 300,
+    label: 'Very Unhealthy',
+    range: '201 - 300',
+    color: 'text-red',
+    dot: 'bg-red',
+    icon: 'fa-ambulance',
+  },
+  {
+    max: Infinity,
+    label: 'Hazardous',
+    range: '> 300',
+    color: 'text-mauve',
+    dot: 'bg-mauve',
+    icon: 'fa-skull',
+  },
 ]
 
 export const PM25_BANDS = [
-  { max: 55, label: 'Normal', range: '0 - 55', color: 'text-green', dot: 'bg-green' },
-  { max: 150, label: 'Elevated', range: '56 - 150', color: 'text-yellow', dot: 'bg-yellow' },
-  { max: 250, label: 'High', range: '151 - 250', color: 'text-peach', dot: 'bg-peach' },
-  { max: Infinity, label: 'Very High', range: '>= 251', color: 'text-red', dot: 'bg-red' },
+  {
+    max: 55,
+    label: 'Normal',
+    range: '0 - 55',
+    color: 'text-green',
+    dot: 'bg-green',
+    icon: 'fa-thumbs-up',
+  },
+  {
+    max: 150,
+    label: 'Elevated',
+    range: '56 - 150',
+    color: 'text-yellow',
+    dot: 'bg-yellow',
+    icon: 'fa-face-meh',
+  },
+  {
+    max: 250,
+    label: 'High',
+    range: '151 - 250',
+    color: 'text-peach',
+    dot: 'bg-peach',
+    icon: 'fa-mask-face',
+  },
+  {
+    max: Infinity,
+    label: 'Very High',
+    range: '>= 251',
+    color: 'text-red',
+    dot: 'bg-red',
+    icon: 'fa-ambulance',
+  },
 ]
 
 export const getPSIColor = (psi: number): string =>
@@ -178,6 +241,12 @@ export const getPM25Color = (value: number): string =>
 
 export const getPM25Band = (value: number): string =>
   PM25_BANDS.find((b) => value <= b.max)?.label ?? 'Very High'
+
+export const getPSIIcon = (psi: number): string =>
+  PSI_BANDS.find((b) => psi <= b.max)?.icon ?? 'fa-skull'
+
+export const getPM25Icon = (value: number): string =>
+  PM25_BANDS.find((b) => value <= b.max)?.icon ?? 'fa-ambulance'
 
 // Canonical map image style for `rain-lighting_map_988.jpg` (F24h, PSI, Nowcast).
 // Used by getMapImageStyle(theme). RainAreasView uses different assets/filters.

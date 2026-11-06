@@ -12,8 +12,6 @@
 [![Vite][vite-shield]][vite-url]
 [![TypeScript][typescript-shield]][typescript-url]
 [![FontAwesome][fontawesome-shield]][fontawesome-url]
-[![Gemini][gemini-shield]][gemini-url]
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
@@ -28,7 +26,7 @@
     <br />
     <a href="https://alfred1137.github.io/modern-weather-sg/"><strong>Try the Demo »</strong></a>
     <br />
-      <img src="https://img.shields.io/badge/version-v1.5.4-blue" alt="Version">
+      <img src="https://img.shields.io/badge/version-v1.5.6-blue" alt="Version">
     <br />
     <br />
     <a href="https://github.com/alfred1137/modern-weather-sg/issues">Report Bug</a>
@@ -70,7 +68,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 
 > [!NOTE]
 > **Development Note**
-> This minisite was developed as a hobbyist project. Its creation was largely built with **vibe coding** using **Gemini 3 Preview** in **Google AI Studio** for logic generation and implementation of my design directions UI styling. It can serve as a showcase of how AI tools can bridge the gap between creative ideas and functional code.
+> This minisite was developed as a hobbyist project. Its creation was largely built with **vibe coding** for logic generation and implementation of my design directions and UI styling.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -104,7 +102,7 @@ Modern Weather.sg is a modern web interface for Singapore's real-time weather da
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Icons**: [FontAwesome 6](https://fontawesome.com/)
 - **API**: [Data.gov.sg APIs](https://data.gov.sg/) (NEA & PUB), proxied through a [Cloudflare Worker](https://workers.cloudflare.com/) that injects the API key and caches responses
-- **AI-Assisted Development**: [Google Gemini 3 (AI Studio)](https://aistudio.google.com/)
+- **AI-Assisted Development**: Built with AI-assisted coding for logic generation and UI styling.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -285,5 +283,3 @@ Project Link: [https://github.com/alfred1137/modern-weather-sg](https://github.c
 [typescript-url]: https://www.typescriptlang.org/
 [fontawesome-shield]: https://img.shields.io/badge/Font_Awesome-339AF0?style=for-the-badge&logo=fontawesome&logoColor=white
 [fontawesome-url]: https://fontawesome.com/
-[gemini-shield]: https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=google-gemini&logoColor=white
-[gemini-url]: https://aistudio.google.com/

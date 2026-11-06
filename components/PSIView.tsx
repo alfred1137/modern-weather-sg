@@ -6,8 +6,10 @@ import {
   PM25_BANDS,
   getPSIColor,
   getPSIBand,
+  getPSIIcon,
   getPM25Color,
   getPM25Band,
+  getPM25Icon,
   getMapImageStyle,
 } from '../constants'
 import SyncFooter from './SyncFooter'
@@ -76,6 +78,9 @@ const PSIView: React.FC<Props> = ({ data }) => {
 
   const colorFor = (region: RegionKey): string =>
     mode === 'psi' ? getPSIColor(valueFor(region)) : getPM25Color(valueFor(region))
+
+  const iconFor = (region: RegionKey): string =>
+    mode === 'psi' ? getPSIIcon(valueFor(region)) : getPM25Icon(valueFor(region))
 
   const activeTimestamp = mode === 'psi' ? data.psi.updateTimestamp : data.pm25.updateTimestamp
   const activeBands = mode === 'psi' ? PSI_BANDS : PM25_BANDS
@@ -213,14 +218,16 @@ const PSIView: React.FC<Props> = ({ data }) => {
                         <div
                           className={`bg-mantle/60 p-2 md:p-3 rounded-full border border-surface1/20 shadow-sm backdrop-blur-md group-hover:scale-110 transition-transform flex items-center justify-center ${colorClass}`}
                         >
-                          <span className="text-sm md:text-lg font-bold">{value}</span>
+                          <div className="scale-[0.7] md:scale-100">
+                            <i className={`fas ${iconFor(key)} ${colorClass} text-3xl`}></i>
+                          </div>
                         </div>
                       </div>
                       <div className="bg-crust/40 backdrop-blur-sm px-3 md:px-5 py-1 md:py-2 rounded-lg border border-surface1/10 text-center max-w-[160px] sm:max-w-none">
                         <span
                           className={`text-[13px] md:text-sm font-semibold block whitespace-normal leading-tight ${colorClass}`}
                         >
-                          {bandFor(key)}
+                          {value} - {bandFor(key)}
                         </span>
                       </div>
                     </div>
@@ -250,9 +257,9 @@ const PSIView: React.FC<Props> = ({ data }) => {
                     </h2>
                   </div>
                   <div className="flex-1 flex items-center justify-center gap-2 md:gap-3 bg-surface2/20 px-3 py-2 md:px-4 md:py-2.5 rounded-xl border border-surface1/20 min-w-0">
-                    <span className={`text-lg md:text-3xl font-bold ${colorFor(detailRegion)}`}>
-                      {detailValue}
-                    </span>
+                    <i
+                      className={`fas ${iconFor(detailRegion)} ${colorFor(detailRegion)} text-lg md:text-xl`}
+                    ></i>
                     <div className="flex flex-col">
                       <span className="text-[11px] md:text-xs font-semibold text-subtext0">
                         {unit}
@@ -260,7 +267,7 @@ const PSIView: React.FC<Props> = ({ data }) => {
                       <span
                         className={`text-[11px] md:text-xs font-semibold ${colorFor(detailRegion)}`}
                       >
-                        {bandFor(detailRegion)}
+                        {detailValue} - {bandFor(detailRegion)}
                       </span>
                     </div>
                   </div>
@@ -306,11 +313,9 @@ const PSIView: React.FC<Props> = ({ data }) => {
               {activeBands.map((band) => (
                 <div
                   key={band.label}
-                  className="flex items-center gap-2 md:gap-2.5 bg-surface0/50 rounded-lg px-3 py-2 border border-surface1/10"
+                  className="flex flex-col items-center gap-1 md:gap-1.5 bg-surface0/50 rounded-lg px-3 py-2 border border-surface1/10"
                 >
-                  <span
-                    className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full flex-shrink-0 ${band.dot}`}
-                  ></span>
+                  <i className={`fas ${band.icon} ${band.color} text-[11px] md:text-xs`}></i>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[11px] md:text-xs font-semibold text-text leading-tight">
                       {band.label}
