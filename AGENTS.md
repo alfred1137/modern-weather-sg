@@ -3,7 +3,7 @@
 Hobbyist React PWA (Vite + TypeScript) reimagining Singapore weather data.
 Quality gates: `npm run build` (tsc typecheck with `noEmit: true` + `vite build`
 → `dist/`), `npm run lint` (eslint — must stay at 0 warnings), `npm run test`
-(vitest + testing-library, 68 tests across 13 suites). No formatter in the
+(vitest + testing-library, 73 tests across 13 suites). No formatter in the
 gate; `npm run format` exists for manual prettier runs.
 
 ## Commands
@@ -41,6 +41,9 @@ null (reading 'edgesOut')". See the `npm-pin-management` skill before changing i
   cross-faded between two alternating frame layers),
   `Forecast24hView`, `Forecast4DayView`. No `FloodWarningView` exists.
 - **Shared** (`components/`): `Navigation`, `ThemeToggle`, `LegendModal`, `SyncFooter`.
+  The legend pill renders only on weather tabs (`NOWCAST`, `FORECAST_24H`,
+  `FORECAST_4DAY`) — hidden on `RAIN_AREAS` and `AIR_QUALITY` since those show
+  air quality bands, not weather conditions.
 - **Types**: all domain types + `AppTab` enum live in `types.ts`.
 - **Constants**: weather icon map (FontAwesome + Catppuccin colors), the 47
   Singapore `AREA_COORDINATES`, and `SG_REGIONS` live in `constants.tsx`.

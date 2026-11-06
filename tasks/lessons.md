@@ -255,6 +255,46 @@ hobby scale; leave as an explicit manual check for now.
   comparisons against a re-parsed header silently mismatch on `Kind`. Verify
   worker timestamps with node (`new Date(...).getTime()`), not PowerShell.
 
+## Animation + zoom regression (2026-11, 1.5.3 → 1.5.4)
+
+- **The two-layer crossfade requires the incoming layer to have ZERO transitions.**
+  The incoming layer (current frame) sits underneath at `opacity: 1`, `zIndex: 0`
+  and must appear instantly; the outgoing layer fades out on top (`zIndex: 10`,
+  `opacity: 1 → 0`). Adding `transition-transform duration-300` to the layer divs
+  (v1.5.3 zoom change) put a transition on the incoming layer too. Frame swaps run
+  on a 600ms timer; zoom transitions run 300ms; a swap landing mid-zoom-transition
+  composites both layers at intermediate scales → visible flash/shimmer. It only
+  happens when zoom state changes, hence the inconsistency.
+- **Fix: move `transform` + `transition-transform` to an inner wrapper div inside
+  each layer.** Keep the layer div free of `transition-transform` (only `bg-base
+isolate` + outgoing `transition-opacity duration-200`), exactly as v1.5.2 had
+  it. The incoming layer still reveals instantly; the zoom still animates via the
+  wrapper.
+- **Zoom symmetry: `transformOrigin` must be identical for zoom-in and zoom-out.**
+  Always use Singapore's center (`~31% 55%`); only `transform` toggles between
+  `scale()` and `none`. If zoom-out uses the default `50% 50%` origin, the return
+  path recentres instead of retracing zoom-in.
+- **Tests assert on layer structure.** `img.parentElement` is now the zoom
+  wrapper; the layer div holding `isolate`/`bg-base`/`opacity`/`zIndex` is
+  `img.parentElement.parentElement`. Update both test assertions together.
+- **"Light mode looks fine" is not evidence of correctness.** The flash is
+  theme-specific because the backdrop colour differs (`base` dark vs white light).
+  Verify on both themes.
+
+## Air quality icons + legend placement (2026-11, 1.5.6)
+
+- **Air quality bands now show an icon instead of a number on map markers and in
+  the detail region.** Label shows `"{value} - {band}"` (e.g. `52 - Moderate`).
+  Icon sized `text-3xl` with `scale-[0.7] md:scale-100`, mirroring
+  Forecast24hView's weather icons. Added `icon` field to `PSI_BANDS`/`PM25_BANDS`
+  plus `getPSIIcon()`/`getPM25Icon()` helpers in `constants.tsx`.
+- **Legend grid uses the icon instead of the colour dot.** The icon carries the
+  colour meaning; the dot was removed.
+- **Legend pill only on weather tabs.** Render the legend button only when
+  `activeTab` is `NOWCAST`, `FORECAST_24H`, or `FORECAST_4DAY`. Hidden on
+  `RAIN_AREAS` and `AIR_QUALITY` — those views show air quality bands, not
+  weather conditions.
+
 ## Files that encode these gotchas (update when you act)
 
 - `DESIGN.md` — normative legibility-first design target. Written as the
