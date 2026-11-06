@@ -136,13 +136,6 @@ const NowcastView: React.FC<Props> = ({ data }) => {
                 <MapMarker key={idx} item={item} />
               ))}
             </div>
-
-            <div className="absolute bottom-4 right-4 pointer-events-none z-20">
-              <div className="bg-mantle/90 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-surface1/20 text-xs font-semibold text-text flex items-center gap-2">
-                <i className="fas fa-hand-pointer text-blue"></i>
-                <span>Tap icons</span>
-              </div>
-            </div>
           </div>
 
           <div className="min-h-[70px] md:min-h-[80px] flex items-center justify-center max-w-5xl mx-auto w-full">

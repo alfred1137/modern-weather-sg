@@ -16,7 +16,7 @@ describe('NowcastView', () => {
 
   it('renders map view by default', () => {
     renderWithTheme(<NowcastView data={nowcastData()} />)
-    expect(screen.getByText('Tap icons')).toBeInTheDocument()
+    expect(screen.getByText('Nowcast')).toBeInTheDocument()
   })
 
   it('switches to grid view on button click', () => {

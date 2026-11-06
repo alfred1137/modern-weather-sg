@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sg-weather-v1.5.6'
+const CACHE_NAME = 'sg-weather-v1.5.7'
 const ASSETS_TO_CACHE = ['./', './index.html', './manifest.json', './icon.svg']
 
 async function openCache() {
