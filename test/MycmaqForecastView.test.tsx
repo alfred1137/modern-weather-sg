@@ -291,8 +291,8 @@ describe('MycmaqForecastView', () => {
     const incomingImg = imgs.find((img) => img.getAttribute('src')?.includes('20261016_10LST.png'))
     const outgoingImg = imgs.find((img) => img.getAttribute('src')?.includes('20261016_09LST.png'))
     if (!incomingImg || !outgoingImg) throw new Error('expected both frame layers mounted')
-    const incoming = incomingImg.parentElement as HTMLElement
-    const outgoing = outgoingImg.parentElement as HTMLElement
+    const incoming = incomingImg.parentElement!.parentElement as HTMLElement
+    const outgoing = outgoingImg.parentElement!.parentElement as HTMLElement
     // The current frame is opaque and sits UNDER the outgoing one...
     expect(incoming.style.opacity).toBe('1')
     expect(Number(incoming.style.zIndex ?? 0)).toBeLessThan(Number(outgoing.style.zIndex ?? 0))
@@ -321,7 +321,7 @@ describe('MycmaqForecastView', () => {
       />,
     )
     for (const img of container.querySelectorAll('img')) {
-      const layer = img.parentElement as HTMLElement
+      const layer = img.parentElement!.parentElement as HTMLElement
       // Each frame is clamped onto `base` on its own, inside an isolated group.
       // One shared overlay would clamp the MIXTURE of two frames instead, and
       // max() is convex, so the mid-fade mixture always came out darker.

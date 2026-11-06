@@ -259,7 +259,7 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
             return (
               <div
                 key={slot}
-                className={`absolute inset-0 bg-base isolate transition-transform duration-300${
+                className={`absolute inset-0 bg-base isolate${
                   incoming ? '' : ' transition-opacity duration-200'
                 }`}
                 style={{
@@ -267,28 +267,38 @@ const MycmaqForecastView: React.FC<Props> = ({ forecast, loading, error, onRetry
                   // painted, then fades out over it.
                   opacity: incoming || !incomingPainted ? 1 : 0,
                   zIndex: incoming ? 0 : 10,
-                  ...(isZoomed
-                    ? {
-                        transform: `scale(${ZOOM_SCALE})`,
-                        transformOrigin: `${SG_X_PCT}% ${SG_Y_PCT}%`,
-                      }
-                    : { transform: 'none' }),
                 }}
               >
-                <img
-                  src={src}
-                  style={mapStyle}
-                  className={`w-full h-full object-contain pointer-events-none${
-                    isLatte ? '' : ' mix-blend-lighten'
-                  }`}
-                  decoding="async"
-                  alt={incoming ? `PM2.5 forecast for ${frame.label}` : ''}
-                  aria-hidden={incoming ? undefined : true}
-                  onLoad={incoming ? () => setPaintedSrc(src) : undefined}
-                  onError={
-                    incoming ? () => console.debug('MyCMAQ frame missing:', frame.file) : undefined
-                  }
-                />
+                {/* Zoom transform lives on an inner wrapper so the layer div
+                    stays free of transition-transform. That keeps the incoming
+                    layer's instant reveal intact during frame swaps, while the
+                    zoom itself still animates. */}
+                <div
+                  className="absolute inset-0 transition-transform duration-300"
+                  style={{
+                    transform: isZoomed ? `scale(${ZOOM_SCALE})` : 'none',
+                    // Same origin both directions so zoom-out is the exact
+                    // reverse of zoom-in (no recentre shift on the way out).
+                    transformOrigin: `${SG_X_PCT}% ${SG_Y_PCT}%`,
+                  }}
+                >
+                  <img
+                    src={src}
+                    style={mapStyle}
+                    className={`w-full h-full object-contain pointer-events-none${
+                      isLatte ? '' : ' mix-blend-lighten'
+                    }`}
+                    decoding="async"
+                    alt={incoming ? `PM2.5 forecast for ${frame.label}` : ''}
+                    aria-hidden={incoming ? undefined : true}
+                    onLoad={incoming ? () => setPaintedSrc(src) : undefined}
+                    onError={
+                      incoming
+                        ? () => console.debug('MyCMAQ frame missing:', frame.file)
+                        : undefined
+                    }
+                  />
+                </div>
               </div>
             )
           })}
